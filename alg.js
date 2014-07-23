@@ -692,6 +692,7 @@
       toString: toString,
       simplify: simplify,
       fromString: fromString,
+      cloneMove: cloneMove,
       makeAlgTraversal: makeAlgTraversal,
       invert: invert,
       mirrorAcrossM: mirrorAcrossM,
