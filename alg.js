@@ -1,6 +1,12 @@
-var alg_jison = require("./alg/alg_jison").parser;
-
-module.exports = (function (){
+// Compatibility shim to work both in browers and node.js
+// Based on on https://gist.github.com/rpflorence/1198466
+(function (name, definition){
+  if (typeof module !== "undefined" && module.exports) { // Node.js
+    module.exports = definition(require("./alg_jison"));
+  } else { // Browser
+    window[name] = definition(alg_jison);
+  }
+})("alg", function (alg_jison) {
 
   var debug = false;
 
@@ -700,4 +706,7 @@ module.exports = (function (){
   return {
     cube: cube
   }
-})();
+
+});
+
+// var c = alg.cube;
