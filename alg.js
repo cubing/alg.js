@@ -585,10 +585,18 @@
     // Metrics
 
 
+    /*
+      [a, b] means:
+      If the cost is constant based on doing the move at all, count it as `a` moves.
+      If the cost depends on abs(amount), use `b` as a multiplier.
+
+      Note: An amount of 0 will always have a cost of 0.
+    */
     var moveCountScalars = {
        "obtm": {rotation: [0, 0], outer: [1, 0], inner: [2, 0]},
         "btm": {rotation: [0, 0], outer: [1, 0], inner: [1, 0]},
       "obqtm": {rotation: [0, 0], outer: [0, 1], inner: [0, 2]},
+       "bqtm": {rotation: [0, 0], outer: [0, 1], inner: [0, 1]},
         "etm": {rotation: [1, 0], outer: [1, 0], inner: [1, 0]}
     }
 
