@@ -525,6 +525,22 @@
 
 
 
+    var removeComments = makeAlgTraversal();
+
+    removeComments.comment_short = function() {
+      return [];
+    }
+
+    removeComments.comment_long = function() {
+      return [];
+    }
+
+
+
+    /************************************************************************************************/
+
+
+
     var mirrorM = {
       fixed: ["x", "M", "N"],
       sliceMap: {
@@ -706,6 +722,7 @@
       mirrorAcrossM: mirrorAcrossM,
       mirrorAcrossS: mirrorAcrossS,
       canonicalizeMove: canonicalizeMove,
+      removeComments: removeComments,
       toMoves: toMoves,
       expand: expand,
       countMoves: countMoves
