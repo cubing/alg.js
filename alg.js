@@ -327,6 +327,30 @@
       return Math.round(-Math.abs(x)) * antiSignish;
     }
 
+    function propertySameOrBothMissing(x, y, prop) {
+      if (prop in x && prop in y) {
+        return x[prop] == y[prop];
+      }
+      else {
+        return !(prop in x) && !(prop in y);
+      }
+    }
+
+    function sameBlock(moveA, moveB) {
+
+      if (moveA.type !== "move" || moveB.type !== "move") {
+        throw "Something other than a move was passed into sameBlock()."
+      }
+
+      // TODO: semantic comparison.
+      // e.g. only compare "startLayer" if the base is BASE_WIDE.
+
+      return propertySameOrBothMissing(moveA, moveB, "base") &&
+             propertySameOrBothMissing(moveA, moveB, "layer") &&
+             propertySameOrBothMissing(moveA, moveB, "startLayer") &&
+             propertySameOrBothMissing(moveA, moveB, "endLayer");
+    }
+
 
     /****************************************************************/
 
@@ -340,10 +364,7 @@
         if (move.type !== "move") {
           algOut.push(simplify[move.type](move));
         }
-        else if (algOut.length > 0 &&
-            algOut[algOut.length-1].startLayer == move.startLayer &&
-            algOut[algOut.length-1].endLayer == move.endLayer &&
-            algOut[algOut.length-1].base == move.base) {
+        else if (algOut.length > 0 && sameBlock(algOut[algOut.length-1], move)) {
           var amount = algOut[algOut.length-1].amount + move.amount;
           // Mod to [-2, -1, 0, 1, 2]
           // x | 0 truncates x towards 0.
@@ -360,7 +381,6 @@
         }
         //console.log(JSON.stringify(algOut));
       }
-      console.log(algOut);
       return algOut;
     }
 
