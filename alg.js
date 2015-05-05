@@ -364,7 +364,11 @@
         if (move.type !== "move") {
           algOut.push(simplify[move.type](move));
         }
-        else if (algOut.length > 0 && sameBlock(algOut[algOut.length-1], move)) {
+        else if (
+            algOut.length > 0 &&
+            algOut[algOut.length-1].type == "move" &&
+            sameBlock(algOut[algOut.length-1], move)
+          ) {
           var amount = algOut[algOut.length-1].amount + move.amount;
           // Mod to [-2, -1, 0, 1, 2]
           // x | 0 truncates x towards 0.
