@@ -339,7 +339,7 @@
     function sameBlock(moveA, moveB) {
 
       if (moveA.type !== "move" || moveB.type !== "move") {
-        throw "Something other than a move was passed into sameBlock()."
+        throw new Error("Something other than a move was passed into sameBlock().");
       }
 
       // TODO: semantic comparison.
