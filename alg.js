@@ -13,7 +13,8 @@
   var patterns = {
     single: /^[UFRBLD]$/,
     wide: /^([ufrbld])|([UFRBLD]w)$/,
-    slice: /^[MNES]$/,
+    singleSlice: /^[MES]$/,
+    wideSlice: /^[mes]$/,
     rotation: /^[xyz]$/,
     pause: /^\.$/
   };
@@ -36,12 +37,12 @@
   }
 
   var directionMap = {
-    "U": "U", "Uw": "U", "u": "U",           "y": "U",
-    "F": "F", "Fw": "F", "f": "F", "S": "F", "z": "F",
-    "R": "R", "Rw": "R", "r": "R", "N": "R", "x": "R",
+    "U": "U", "Uw": "U", "u": "U",                     "y": "U",
+    "F": "F", "Fw": "F", "f": "F", "S": "F", "s": "F", "z": "F",
+    "R": "R", "Rw": "R", "r": "R"          ,           "x": "R",
     "B": "B", "Bw": "B", "b": "B",
-    "L": "L", "Lw": "L", "l": "L", "M": "L",
-    "D": "D", "Dw": "D", "d": "D", "E": "D",
+    "L": "L", "Lw": "L", "l": "L", "M": "L", "m": "L",
+    "D": "D", "Dw": "D", "d": "D", "E": "D", "e": "D",
     ".": "."
   };
 
@@ -59,9 +60,18 @@
     } else if (mKind == "wide") {
       move.startLayer = orig.startLayer || 1;
       move.endLayer = orig.endLayer || 2;
-    } else if (mKind == "slice") {
+    } else if (mKind == "wideSlice") {
       move.startLayer = 2;
       move.endLayer = dimension - 1;
+    } else if (mKind == "singleSlice") {
+      if (dimension % 2 == 1) {
+        move.startLayer = (dimension + 1)/2;
+        move.endLayer = (dimension + 1)/2;
+      } else {
+        // Hack: Make the end layer larger than the start layer, so nothing moves.
+        move.startLayer = (dimension)/2 + 1;
+        move.endLayer = (dimension)/2;
+      }
     } else if (mKind == "rotation") {
       move.startLayer = 1;
       move.endLayer = dimension;
@@ -566,27 +576,27 @@
 
 
     var mirrorM = {
-      fixed: ["x", "M", "N"],
+      fixed: ["x", "M", "m"],
       sliceMap: {
-        "U": "U", "Uw": "Uw", "u": "u",           "y": "y",
-        "F": "F", "Fw": "Fw", "f": "f", "S": "S", "z": "z",
-        "R": "L", "Rw": "Lw", "r": "l", "N": "N", "x": "x",
+        "U": "U", "Uw": "Uw", "u": "u",                     "y": "y",
+        "F": "F", "Fw": "Fw", "f": "f", "S": "S", "s": "s", "z": "z",
+        "R": "L", "Rw": "Lw", "r": "l",                     "x": "x",
         "B": "B", "Bw": "Bw", "b": "b",
         "L": "R", "Lw": "Rw", "l": "r", "M": "M",
-        "D": "D", "Dw": "Dw", "d": "d", "E": "E"
+        "D": "D", "Dw": "Dw", "d": "d", "E": "E", "e": "e"
       }
     };
 
 
     var mirrorS = {
-      fixed: ["z", "S"],
+      fixed: ["z", "S", "s"],
       sliceMap: {
-        "U": "U", "Uw": "Uw", "u": "u",           "y": "y",
-        "F": "B", "Fw": "Bw", "f": "b", "S": "S", "z": "z",
-        "R": "R", "Rw": "Rw", "r": "r", "N": "N", "x": "x",
+        "U": "U", "Uw": "Uw", "u": "u",                     "y": "y",
+        "F": "B", "Fw": "Bw", "f": "b", "S": "S",           "z": "z",
+        "R": "R", "Rw": "Rw", "r": "r",                     "x": "x",
         "B": "F", "Bw": "Fw", "b": "f",
-        "L": "L", "Lw": "Lw", "l": "l", "M": "M",
-        "D": "D", "Dw": "Dw", "d": "d", "E": "E"
+        "L": "L", "Lw": "Lw", "l": "l", "M": "M", "m": "m",
+        "D": "D", "Dw": "Dw", "d": "d", "E": "E", "e": "e"
       }
     };
 
