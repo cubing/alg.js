@@ -18,5 +18,4 @@ export {
 
 export {Traversal} from "./traversal";
 
-// TODO: Nest inside Example namespace
-export * from "./example"
+export {Example} from "./example"
