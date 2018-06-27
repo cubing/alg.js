@@ -16,17 +16,7 @@ export {
   CommentLong
 } from "./algorithm";
 
-export {
-  DownUp,
-  Up,
-  Clone,
-  Invert,
-  Expand,
-  CountBlockMoves,
-  StructureEquals,
-  CoalesceMoves,
-  Concat
-} from "./traversal";
+export {Traversal} from "./traversal";
 
 // TODO: Nest inside Example namespace
 export * from "./example"

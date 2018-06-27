@@ -1,4 +1,4 @@
-import * as Traversal from "./traversal"
+import {Traversal} from "./traversal"
 
 "use strict";
 
