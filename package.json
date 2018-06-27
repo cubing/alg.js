@@ -1,0 +1,7 @@
+{
+  "name": "alg",
+  "version": "1.9.9",
+  "description": "TODO",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts"
+}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "umd",
+    "target": "es5",
+
+    "outDir": "build",
+    "declaration": true,
+    "sourceMap": true,
+
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "*.ts"
+  ],
+  "exclude": [
+    "build"
+  ]
+}
