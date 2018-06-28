@@ -6,7 +6,7 @@ export declare abstract class Algorithm {
     clone(): Algorithm;
     invert(): Algorithm;
     expand(): Algorithm;
-    countBlockMoves(): number;
+    countBaseMoves(): number;
     coalesceMoves(): Algorithm;
     toString(): string;
     structureEquals(nestedAlg: Algorithm): boolean;
@@ -16,7 +16,7 @@ export declare abstract class Repeatable extends Algorithm {
     amount: number;
     constructor(amount: number);
 }
-export declare type BaseMove = string;
+export declare type MoveFamily = string;
 export declare class Sequence extends Algorithm {
     nestedAlgs: Algorithm[];
     type: string;
@@ -29,13 +29,13 @@ export declare class Group extends Repeatable {
     constructor(nestedAlg: Algorithm, amount: number);
     dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp;
 }
-export declare class BlockMove extends Repeatable {
-    base: BaseMove;
+export declare class BaseMove extends Repeatable {
+    family: MoveFamily;
     type: string;
     layer?: number;
     startLayer?: number;
     endLayer?: number;
-    constructor(base: BaseMove, amount: number);
+    constructor(family: MoveFamily, amount: number);
     dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp;
 }
 export declare class Commutator extends Repeatable {

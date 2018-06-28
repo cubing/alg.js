@@ -4,10 +4,10 @@
 export {
   Algorithm,
   Repeatable,
-  BaseMove,
+  MoveFamily,
   Sequence,
   Group,
-  BlockMove,
+  BaseMove,
   Commutator,
   Conjugate,
   Pause,

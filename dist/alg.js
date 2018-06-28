@@ -108,7 +108,7 @@ exports.Algorithm = algorithm_1.Algorithm;
 exports.Repeatable = algorithm_1.Repeatable;
 exports.Sequence = algorithm_1.Sequence;
 exports.Group = algorithm_1.Group;
-exports.BlockMove = algorithm_1.BlockMove;
+exports.BaseMove = algorithm_1.BaseMove;
 exports.Commutator = algorithm_1.Commutator;
 exports.Conjugate = algorithm_1.Conjugate;
 exports.Pause = algorithm_1.Pause;
@@ -151,7 +151,7 @@ var Algorithm = /** @class */ (function () {
     Algorithm.prototype.clone = function () { return traversal_1.Traversal.Singleton.clone.traverse(this); };
     Algorithm.prototype.invert = function () { return traversal_1.Traversal.Singleton.invert.traverse(this); };
     Algorithm.prototype.expand = function () { return traversal_1.Traversal.Singleton.expand.traverse(this); };
-    Algorithm.prototype.countBlockMoves = function () { return traversal_1.Traversal.Singleton.countBlockMoves.traverse(this); };
+    Algorithm.prototype.countBaseMoves = function () { return traversal_1.Traversal.Singleton.countBaseMoves.traverse(this); };
     Algorithm.prototype.coalesceMoves = function () { return traversal_1.Traversal.Singleton.coalesceMoves.traverse(this); };
     Algorithm.prototype.toString = function () { return traversal_1.Traversal.Singleton.toString.traverse(this); };
     Algorithm.prototype.structureEquals = function (nestedAlg) {
@@ -206,22 +206,22 @@ var Group = /** @class */ (function (_super) {
     return Group;
 }(Repeatable));
 exports.Group = Group;
-var BlockMove = /** @class */ (function (_super) {
-    __extends(BlockMove, _super);
+var BaseMove = /** @class */ (function (_super) {
+    __extends(BaseMove, _super);
     // TODO: Handle layers in constructor
-    function BlockMove(base, amount) {
+    function BaseMove(family, amount) {
         var _this = _super.call(this, amount) || this;
-        _this.base = base;
-        _this.type = "blockMove";
+        _this.family = family;
+        _this.type = "baseMove";
         _this.freeze();
         return _this;
     }
-    BlockMove.prototype.dispatch = function (t, dataDown) {
-        return t.traverseBlockMove(this, dataDown);
+    BaseMove.prototype.dispatch = function (t, dataDown) {
+        return t.traverseBaseMove(this, dataDown);
     };
-    return BlockMove;
+    return BaseMove;
 }(Repeatable));
-exports.BlockMove = BlockMove;
+exports.BaseMove = BaseMove;
 var Commutator = /** @class */ (function (_super) {
     __extends(Commutator, _super);
     function Commutator(A, B, amount) {
@@ -371,8 +371,8 @@ var Traversal;
         Clone.prototype.traverseGroup = function (group) {
             return new algorithm_1.Group(this.traverse(group.nestedAlg), group.amount);
         };
-        Clone.prototype.traverseBlockMove = function (blockMove) {
-            return new algorithm_1.BlockMove(blockMove.base, blockMove.amount);
+        Clone.prototype.traverseBaseMove = function (baseMove) {
+            return new algorithm_1.BaseMove(baseMove.family, baseMove.amount);
         };
         Clone.prototype.traverseCommutator = function (commutator) {
             return new algorithm_1.Commutator(this.traverse(commutator.A), this.traverse(commutator.B), commutator.amount);
@@ -401,8 +401,8 @@ var Traversal;
         Invert.prototype.traverseGroup = function (group) {
             return new algorithm_1.Group(this.traverse(group.nestedAlg), group.amount);
         };
-        Invert.prototype.traverseBlockMove = function (blockMove) {
-            return new algorithm_1.BlockMove(blockMove.base, -blockMove.amount);
+        Invert.prototype.traverseBaseMove = function (baseMove) {
+            return new algorithm_1.BaseMove(baseMove.family, -baseMove.amount);
         };
         Invert.prototype.traverseCommutator = function (commutator) {
             return new algorithm_1.Commutator(commutator.B, commutator.A, commutator.amount);
@@ -461,8 +461,8 @@ var Traversal;
             // TODO: Pass raw Algorithm[] to sequence.
             return this.repeat([this.traverse(group.nestedAlg)], group);
         };
-        Expand.prototype.traverseBlockMove = function (blockMove) {
-            return blockMove;
+        Expand.prototype.traverseBaseMove = function (baseMove) {
+            return baseMove;
         };
         Expand.prototype.traverseCommutator = function (commutator) {
             var expandedA = this.traverse(commutator.A);
@@ -485,12 +485,12 @@ var Traversal;
         return Expand;
     }(Up));
     Traversal.Expand = Expand;
-    var CountBlockMoves = /** @class */ (function (_super) {
-        __extends(CountBlockMoves, _super);
-        function CountBlockMoves() {
+    var CountBaseMoves = /** @class */ (function (_super) {
+        __extends(CountBaseMoves, _super);
+        function CountBaseMoves() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
-        CountBlockMoves.prototype.traverseSequence = function (sequence) {
+        CountBaseMoves.prototype.traverseSequence = function (sequence) {
             var total = 0;
             for (var _i = 0, _a = sequence.nestedAlgs; _i < _a.length; _i++) {
                 var part = _a[_i];
@@ -498,25 +498,25 @@ var Traversal;
             }
             return total;
         };
-        CountBlockMoves.prototype.traverseGroup = function (group) {
+        CountBaseMoves.prototype.traverseGroup = function (group) {
             return this.traverse(group.nestedAlg);
         };
-        CountBlockMoves.prototype.traverseBlockMove = function (blockMove) {
+        CountBaseMoves.prototype.traverseBaseMove = function (baseMove) {
             return 1;
         };
-        CountBlockMoves.prototype.traverseCommutator = function (commutator) {
+        CountBaseMoves.prototype.traverseCommutator = function (commutator) {
             return 2 * (this.traverse(commutator.A) + this.traverse(commutator.B));
         };
-        CountBlockMoves.prototype.traverseConjugate = function (conjugate) {
+        CountBaseMoves.prototype.traverseConjugate = function (conjugate) {
             return 2 * (this.traverse(conjugate.A)) + this.traverse(conjugate.B);
         };
-        CountBlockMoves.prototype.traversePause = function (pause) { return 0; };
-        CountBlockMoves.prototype.traverseNewLine = function (newLine) { return 0; };
-        CountBlockMoves.prototype.traverseCommentShort = function (commentShort) { return 0; };
-        CountBlockMoves.prototype.traverseCommentLong = function (commentLong) { return 0; };
-        return CountBlockMoves;
+        CountBaseMoves.prototype.traversePause = function (pause) { return 0; };
+        CountBaseMoves.prototype.traverseNewLine = function (newLine) { return 0; };
+        CountBaseMoves.prototype.traverseCommentShort = function (commentShort) { return 0; };
+        CountBaseMoves.prototype.traverseCommentLong = function (commentLong) { return 0; };
+        return CountBaseMoves;
     }(Up));
-    Traversal.CountBlockMoves = CountBlockMoves;
+    Traversal.CountBaseMoves = CountBaseMoves;
     var StructureEquals = /** @class */ (function (_super) {
         __extends(StructureEquals, _super);
         function StructureEquals() {
@@ -539,11 +539,11 @@ var Traversal;
         StructureEquals.prototype.traverseGroup = function (group, dataDown) {
             return (dataDown instanceof algorithm_1.Group) && this.traverse(group.nestedAlg, dataDown.nestedAlg);
         };
-        StructureEquals.prototype.traverseBlockMove = function (blockMove, dataDown) {
+        StructureEquals.prototype.traverseBaseMove = function (baseMove, dataDown) {
             // TODO: Handle layers.
-            return dataDown instanceof algorithm_1.BlockMove &&
-                blockMove.base === dataDown.base &&
-                blockMove.amount === dataDown.amount;
+            return dataDown instanceof algorithm_1.BaseMove &&
+                baseMove.family === dataDown.family &&
+                baseMove.amount === dataDown.amount;
         };
         StructureEquals.prototype.traverseCommutator = function (commutator, dataDown) {
             return (dataDown instanceof algorithm_1.Commutator) &&
@@ -578,18 +578,18 @@ var Traversal;
         }
         CoalesceMoves.prototype.sameBlock = function (moveA, moveB) {
             // TODO: Handle layers
-            return moveA.base === moveB.base;
+            return moveA.family === moveB.family;
         };
         CoalesceMoves.prototype.traverseSequence = function (sequence) {
             var coalesced = [];
             for (var _i = 0, _a = sequence.nestedAlgs; _i < _a.length; _i++) {
                 var part = _a[_i];
-                if (!(part instanceof algorithm_1.BlockMove)) {
+                if (!(part instanceof algorithm_1.BaseMove)) {
                     coalesced.push(this.traverse(part));
                 }
                 else if (coalesced.length > 0) {
                     var last = coalesced[coalesced.length - 1];
-                    if (last instanceof algorithm_1.BlockMove &&
+                    if (last instanceof algorithm_1.BaseMove &&
                         this.sameBlock(last, part)) {
                         // TODO: This is cube-specific. Perhaps pass the modules as DataDown?
                         var amount = last.amount + part.amount;
@@ -599,7 +599,7 @@ var Traversal;
                             // but this is safe against shifting coding practices.
                             // TODO: Figure out if the shoot-in-the-foot risk
                             // modification is worth the speed.
-                            coalesced.push(new algorithm_1.BlockMove(part.base, amount));
+                            coalesced.push(new algorithm_1.BaseMove(part.family, amount));
                         }
                     }
                     else {
@@ -613,7 +613,7 @@ var Traversal;
             return new algorithm_1.Sequence(coalesced);
         };
         CoalesceMoves.prototype.traverseGroup = function (group) { return group; };
-        CoalesceMoves.prototype.traverseBlockMove = function (blockMove) { return blockMove; };
+        CoalesceMoves.prototype.traverseBaseMove = function (baseMove) { return baseMove; };
         CoalesceMoves.prototype.traverseCommutator = function (commutator) { return commutator; };
         CoalesceMoves.prototype.traverseConjugate = function (conjugate) { return conjugate; };
         CoalesceMoves.prototype.traversePause = function (pause) { return pause; };
@@ -640,7 +640,7 @@ var Traversal;
         };
         Concat.prototype.traverseSequence = function (sequence, dataDown) { return this.concatIntoSequence(sequence.nestedAlgs, dataDown); };
         Concat.prototype.traverseGroup = function (group, dataDown) { return this.concatIntoSequence([group], dataDown); };
-        Concat.prototype.traverseBlockMove = function (blockMove, dataDown) { return this.concatIntoSequence([blockMove], dataDown); };
+        Concat.prototype.traverseBaseMove = function (baseMove, dataDown) { return this.concatIntoSequence([baseMove], dataDown); };
         Concat.prototype.traverseCommutator = function (commutator, dataDown) { return this.concatIntoSequence([commutator], dataDown); };
         Concat.prototype.traverseConjugate = function (conjugate, dataDown) { return this.concatIntoSequence([conjugate], dataDown); };
         Concat.prototype.traversePause = function (pause, dataDown) { return this.concatIntoSequence([pause], dataDown); };
@@ -671,7 +671,7 @@ var Traversal;
             return sequence.nestedAlgs.map(function (a) { return _this.traverse(a); }).join(" ");
         };
         ToString.prototype.traverseGroup = function (group) { return "(" + group.nestedAlg + ")" + this.repetitionSuffix(group.amount); };
-        ToString.prototype.traverseBlockMove = function (blockMove) { return blockMove.base + this.repetitionSuffix(blockMove.amount); };
+        ToString.prototype.traverseBaseMove = function (baseMove) { return baseMove.family + this.repetitionSuffix(baseMove.amount); };
         ToString.prototype.traverseCommutator = function (commutator) { return "[" + commutator.A + ", " + commutator.B + "]" + this.repetitionSuffix(commutator.amount); };
         ToString.prototype.traverseConjugate = function (conjugate) { return "[" + conjugate.A + ": " + conjugate.B + "]" + this.repetitionSuffix(conjugate.amount); };
         // TODO: Remove spaces between repeated pauses (in traverseSequence)
@@ -689,7 +689,7 @@ var Traversal;
         Singleton.clone = new Clone();
         Singleton.invert = new Invert();
         Singleton.expand = new Expand();
-        Singleton.countBlockMoves = new CountBlockMoves();
+        Singleton.countBaseMoves = new CountBaseMoves();
         Singleton.structureEquals = new StructureEquals();
         Singleton.coalesceMoves = new CoalesceMoves();
         Singleton.concat = new Concat();
@@ -710,79 +710,79 @@ var algorithm_1 = __webpack_require__(1);
 var Example;
 (function (Example) {
     Example.Sune = new algorithm_1.Sequence([
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", 1),
-        new algorithm_1.BlockMove("R", -1),
-        new algorithm_1.BlockMove("U", 1),
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", -2),
-        new algorithm_1.BlockMove("R", -1)
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", 1),
+        new algorithm_1.BaseMove("R", -1),
+        new algorithm_1.BaseMove("U", 1),
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", -2),
+        new algorithm_1.BaseMove("R", -1)
     ]);
     Example.AntiSune = new algorithm_1.Sequence([
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", 2),
-        new algorithm_1.BlockMove("R", -1),
-        new algorithm_1.BlockMove("U", -1),
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", -1),
-        new algorithm_1.BlockMove("R", -1)
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", 2),
+        new algorithm_1.BaseMove("R", -1),
+        new algorithm_1.BaseMove("U", -1),
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", -1),
+        new algorithm_1.BaseMove("R", -1)
     ]);
     Example.SuneCommutator = new algorithm_1.Commutator(new algorithm_1.Sequence([
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", 1),
-        new algorithm_1.BlockMove("R", -2)
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", 1),
+        new algorithm_1.BaseMove("R", -2)
     ]), new algorithm_1.Sequence([
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", 1),
-        new algorithm_1.BlockMove("R", -1)
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", 1),
+        new algorithm_1.BaseMove("R", -1)
     ]), 1);
     Example.Niklas = new algorithm_1.Sequence([
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", -1),
-        new algorithm_1.BlockMove("L", -1),
-        new algorithm_1.BlockMove("U", 1),
-        new algorithm_1.BlockMove("R", -1),
-        new algorithm_1.BlockMove("U", -1),
-        new algorithm_1.BlockMove("L", 1),
-        new algorithm_1.BlockMove("U", 1)
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", -1),
+        new algorithm_1.BaseMove("L", -1),
+        new algorithm_1.BaseMove("U", 1),
+        new algorithm_1.BaseMove("R", -1),
+        new algorithm_1.BaseMove("U", -1),
+        new algorithm_1.BaseMove("L", 1),
+        new algorithm_1.BaseMove("U", 1)
     ]);
-    Example.FURURFCompact = new algorithm_1.Conjugate(new algorithm_1.BlockMove("F", 1), new algorithm_1.Commutator(new algorithm_1.BlockMove("U", 1), new algorithm_1.BlockMove("R", 1), 1), 1);
-    Example.APermCompact = new algorithm_1.Conjugate(new algorithm_1.BlockMove("R", 2), new algorithm_1.Commutator(new algorithm_1.BlockMove("F", 2), new algorithm_1.Sequence([
-        new algorithm_1.BlockMove("R", -1),
-        new algorithm_1.BlockMove("B", -1),
-        new algorithm_1.BlockMove("R", 1),
+    Example.FURURFCompact = new algorithm_1.Conjugate(new algorithm_1.BaseMove("F", 1), new algorithm_1.Commutator(new algorithm_1.BaseMove("U", 1), new algorithm_1.BaseMove("R", 1), 1), 1);
+    Example.APermCompact = new algorithm_1.Conjugate(new algorithm_1.BaseMove("R", 2), new algorithm_1.Commutator(new algorithm_1.BaseMove("F", 2), new algorithm_1.Sequence([
+        new algorithm_1.BaseMove("R", -1),
+        new algorithm_1.BaseMove("B", -1),
+        new algorithm_1.BaseMove("R", 1),
     ]), 1), 1);
     Example.FURURFMoves = new algorithm_1.Sequence([
-        new algorithm_1.BlockMove("F", 1),
-        new algorithm_1.BlockMove("U", 1),
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", -1),
-        new algorithm_1.BlockMove("R", -1),
-        new algorithm_1.BlockMove("F", -1)
+        new algorithm_1.BaseMove("F", 1),
+        new algorithm_1.BaseMove("U", 1),
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", -1),
+        new algorithm_1.BaseMove("R", -1),
+        new algorithm_1.BaseMove("F", -1)
     ]);
     Example.TPerm = new algorithm_1.Sequence([
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", 1),
-        new algorithm_1.BlockMove("R", -1),
-        new algorithm_1.BlockMove("U", -1),
-        new algorithm_1.BlockMove("R", -1),
-        new algorithm_1.BlockMove("F", 1),
-        new algorithm_1.BlockMove("R", 2),
-        new algorithm_1.BlockMove("U", -1),
-        new algorithm_1.BlockMove("R", -1),
-        new algorithm_1.BlockMove("U", -1),
-        new algorithm_1.BlockMove("R", 1),
-        new algorithm_1.BlockMove("U", 1),
-        new algorithm_1.BlockMove("R", -1),
-        new algorithm_1.BlockMove("F", -1)
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", 1),
+        new algorithm_1.BaseMove("R", -1),
+        new algorithm_1.BaseMove("U", -1),
+        new algorithm_1.BaseMove("R", -1),
+        new algorithm_1.BaseMove("F", 1),
+        new algorithm_1.BaseMove("R", 2),
+        new algorithm_1.BaseMove("U", -1),
+        new algorithm_1.BaseMove("R", -1),
+        new algorithm_1.BaseMove("U", -1),
+        new algorithm_1.BaseMove("R", 1),
+        new algorithm_1.BaseMove("U", 1),
+        new algorithm_1.BaseMove("R", -1),
+        new algorithm_1.BaseMove("F", -1)
     ]);
-    Example.HeadlightSwaps = new algorithm_1.Conjugate(new algorithm_1.BlockMove("F", 1), new algorithm_1.Commutator(new algorithm_1.BlockMove("R", 1), new algorithm_1.BlockMove("U", 1), 3), 1);
+    Example.HeadlightSwaps = new algorithm_1.Conjugate(new algorithm_1.BaseMove("F", 1), new algorithm_1.Commutator(new algorithm_1.BaseMove("R", 1), new algorithm_1.BaseMove("U", 1), 3), 1);
     Example.AllAlgTypes = [
-        new algorithm_1.Sequence([new algorithm_1.BlockMove("R", 1), new algorithm_1.BlockMove("U", -1)]),
-        new algorithm_1.Group(new algorithm_1.BlockMove("F", 1), 2),
-        new algorithm_1.BlockMove("R", 2),
-        new algorithm_1.Commutator(new algorithm_1.BlockMove("R", 2), new algorithm_1.BlockMove("U", 2), 2),
-        new algorithm_1.Conjugate(new algorithm_1.BlockMove("L", 2), new algorithm_1.BlockMove("D", -1), 2),
+        new algorithm_1.Sequence([new algorithm_1.BaseMove("R", 1), new algorithm_1.BaseMove("U", -1)]),
+        new algorithm_1.Group(new algorithm_1.BaseMove("F", 1), 2),
+        new algorithm_1.BaseMove("R", 2),
+        new algorithm_1.Commutator(new algorithm_1.BaseMove("R", 2), new algorithm_1.BaseMove("U", 2), 2),
+        new algorithm_1.Conjugate(new algorithm_1.BaseMove("L", 2), new algorithm_1.BaseMove("D", -1), 2),
         new algorithm_1.Pause(),
         new algorithm_1.NewLine(),
         new algorithm_1.CommentShort("short comment"),

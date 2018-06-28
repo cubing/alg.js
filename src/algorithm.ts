@@ -15,7 +15,7 @@ export abstract class Algorithm {
   clone():           Algorithm { return Traversal.Singleton.clone.traverse(this);           }
   invert():          Algorithm { return Traversal.Singleton.invert.traverse(this);          }
   expand():          Algorithm { return Traversal.Singleton.expand.traverse(this);          }
-  countBlockMoves(): number    { return Traversal.Singleton.countBlockMoves.traverse(this); }
+  countBaseMoves(): number    { return Traversal.Singleton.countBaseMoves.traverse(this); }
   coalesceMoves():   Algorithm { return Traversal.Singleton.coalesceMoves.traverse(this);   }
   toString():        string    { return Traversal.Singleton.toString.traverse(this);        }
 
@@ -34,7 +34,7 @@ export abstract class Repeatable extends Algorithm {
   }
 }
 
-export type BaseMove = string; // TODO: Convert to an enum with string mappings.
+export type MoveFamily = string; // TODO: Convert to an enum with string mappings.
 
 export class Sequence extends Algorithm {
   public type: string = "sequence";
@@ -60,19 +60,19 @@ export class Group extends Repeatable {
   }
 }
 
-export class BlockMove extends Repeatable {
-  public type: string = "blockMove";
+export class BaseMove extends Repeatable {
+  public type: string = "baseMove";
   // TODO: Typesafe layer types?
   public layer?: number;
   public startLayer?: number;
   public endLayer?: number;
   // TODO: Handle layers in constructor
-  constructor(public base: BaseMove, amount: number) {
+  constructor(public family: MoveFamily, amount: number) {
     super(amount);
     this.freeze();
   }
   dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseBlockMove(this, dataDown);
+    return t.traverseBaseMove(this, dataDown);
   }
 }
 

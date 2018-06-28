@@ -1,4 +1,4 @@
-import {Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong} from "./algorithm"
+import {Algorithm, Sequence, BaseMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong} from "./algorithm"
 
 "use strict";
 
@@ -6,7 +6,7 @@ export interface AlgorithmJSON {
   type: string;
   nestedAlg?: AlgorithmJSON;
   nestedAlgs?: AlgorithmJSON[];
-  base?: string;
+  family?: string;
   amount?: number;
   A?: AlgorithmJSON;
   B?: AlgorithmJSON;
@@ -23,11 +23,11 @@ export function fromJSON(json: AlgorithmJSON): Algorithm {
       if (!json.nestedAlg) { throw "Missing nestedAlg" }
       if (!json.amount) { throw "Missing amount" }
       return new Group(this.fromJSON(json.nestedAlg), json.amount);
-    case "blockMove":
+    case "baseMove":
       // TODO: Handle layers
-      if (!json.base) { throw "Missing base" }
+      if (!json.family) { throw "Missing family" }
       if (!json.amount) { throw "Missing amount" }
-      return new BlockMove(json.base, json.amount);
+      return new BaseMove(json.family, json.amount);
     case "commutator":
       if (!json.A) { throw "Missing A" }
       if (!json.B) { throw "Missing B" }
