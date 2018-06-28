@@ -1,23 +1,27 @@
-const path = require('path');
+const path = require("path");
+
+const lib_name = "alg";
 
 module.exports = {
-  entry: './index.ts',
-  mode: "development",
+  entry: "./index.ts",
+  mode: "none",
   module: {
     rules: [
       {
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/
       }
     ]
   },
   resolve: {
-    extensions: [ '.ts', '.js' ]
+    extensions: [ ".ts" ]
   },
   output: {
-    filename: 'alg.js',
-    path: path.resolve(__dirname, 'dist'),
-    library: "alg",
-    libraryTarget: "umd"
+    filename: lib_name + ".js",
+    path: path.resolve(__dirname, "dist"),
+    library: lib_name,
+    libraryTarget: "umd",
+    // Workaround for Webpack 4. See https://github.com/webpack/webpack/issues/6522#issuecomment-371120689
+    globalObject: "typeof self !== \"undefined\" ? self : this"
   }
 };
