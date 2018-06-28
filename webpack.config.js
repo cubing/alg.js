@@ -3,7 +3,7 @@ const path = require("path");
 const lib_name = "alg";
 
 module.exports = {
-  entry: "./index.ts",
+  entry: "./src/index.ts",
   mode: "none",
   module: {
     rules: [

@@ -1,23 +1,21 @@
-import * as Alg from "../algorithm"
-import * as Example from "../example"
-import * as Traversal from "../traversal"
-import {fromJSON} from "../json"
+import * as Alg from "../src/algorithm"
+import {Example} from "../src/example"
+import {Traversal} from "../src/traversal"
+import {fromJSON} from "../src/json"
 
 "use strict";
 
-window.addEventListener("load", function() {
-
 // Hacky, yet effective.
 function algTest(description: string, condition: boolean) {
-  var li = document.createElement("li");
+  // var li = document.createElement("li");
   if (condition) {
     console.log("\u2705 " + description);
-    li.textContent = "\u2705 " + description;
+    // li.textContent = "\u2705 " + description;
   } else {
     console.error("\u274C " + description);
-    li.textContent = "\u274C " + description;
+    // li.textContent = "\u274C " + description;
   }
-  document.body.appendChild(li);
+  // document.body.appendChild(li);
 }
 
 (function TestToString() {
@@ -172,5 +170,3 @@ class Depth extends Traversal.Up<number> {
   }
    algTest("Modifying BlockMove should not succeed.", e instanceof TypeError);
 })();
-
-});
