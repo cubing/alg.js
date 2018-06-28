@@ -17,36 +17,36 @@ export interface AlgorithmJSON {
 export function fromJSON(json: AlgorithmJSON): Algorithm {
   switch (json.type) {
     case "sequence":
-      if (!json.nestedAlgs) { throw "Missing nestedAlgs" }
+      if (!json.nestedAlgs) {throw "Missing nestedAlgs"}
       return new Sequence(json.nestedAlgs.map(j => this.fromJSON(j)));
     case "group":
-      if (!json.nestedAlg) { throw "Missing nestedAlg" }
-      if (!json.amount) { throw "Missing amount" }
+      if (!json.nestedAlg) {throw "Missing nestedAlg"}
+      if (!json.amount) {throw "Missing amount"}
       return new Group(this.fromJSON(json.nestedAlg), json.amount);
     case "baseMove":
       // TODO: Handle layers
-      if (!json.family) { throw "Missing family" }
-      if (!json.amount) { throw "Missing amount" }
+      if (!json.family) {throw "Missing family"}
+      if (!json.amount) {throw "Missing amount"}
       return new BaseMove(json.family, json.amount);
     case "commutator":
-      if (!json.A) { throw "Missing A" }
-      if (!json.B) { throw "Missing B" }
-      if (!json.amount) { throw "Missing amount" }
+      if (!json.A) {throw "Missing A"}
+      if (!json.B) {throw "Missing B"}
+      if (!json.amount) {throw "Missing amount"}
       return new Commutator(this.fromJSON(json.A), this.fromJSON(json.B), json.amount);
     case "conjugate":
-      if (!json.A) { throw "Missing A" }
-      if (!json.B) { throw "Missing B" }
-      if (!json.amount) { throw "Missing amount" }
+      if (!json.A) {throw "Missing A"}
+      if (!json.B) {throw "Missing B"}
+      if (!json.amount) {throw "Missing amount"}
       return new Conjugate(this.fromJSON(json.A), this.fromJSON(json.B), json.amount);
     case "pause":
       return new Pause();
     case "newLine":
       return new NewLine();
     case "commentShort":
-      if (!json.comment) { throw "Missing comment" }
+      if (!json.comment) {throw "Missing comment"}
       return new CommentShort(json.comment);
     case "commentLong":
-      if (!json.comment) { throw "Missing comment" }
+      if (!json.comment) {throw "Missing comment"}
       return new CommentLong(json.comment);
     default:
       throw "Unknown alg type.";

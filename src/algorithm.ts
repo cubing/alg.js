@@ -12,12 +12,12 @@ export abstract class Algorithm {
     Object.freeze(this);
   }
 
-  clone():           Algorithm { return Traversal.Singleton.clone.traverse(this);           }
-  invert():          Algorithm { return Traversal.Singleton.invert.traverse(this);          }
-  expand():          Algorithm { return Traversal.Singleton.expand.traverse(this);          }
-  countBaseMoves(): number    { return Traversal.Singleton.countBaseMoves.traverse(this); }
-  coalesceMoves():   Algorithm { return Traversal.Singleton.coalesceMoves.traverse(this);   }
-  toString():        string    { return Traversal.Singleton.toString.traverse(this);        }
+  clone(): Algorithm {return Traversal.Singleton.clone.traverse(this);}
+  invert(): Algorithm {return Traversal.Singleton.invert.traverse(this);}
+  expand(): Algorithm {return Traversal.Singleton.expand.traverse(this);}
+  countBaseMoves(): number {return Traversal.Singleton.countBaseMoves.traverse(this);}
+  coalesceMoves(): Algorithm {return Traversal.Singleton.coalesceMoves.traverse(this);}
+  toString(): string {return Traversal.Singleton.toString.traverse(this);}
 
   structureEquals(nestedAlg: Algorithm): boolean {
     return Traversal.Singleton.structureEquals.traverse(this, nestedAlg);

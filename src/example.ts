@@ -5,55 +5,55 @@ import {Algorithm, Sequence, BaseMove, Commutator, Group, Conjugate, Pause, NewL
 export namespace Example {
 
   export const Sune: Sequence = new Sequence([
-    new BaseMove("R",  1),
-    new BaseMove("U",  1),
+    new BaseMove("R", 1),
+    new BaseMove("U", 1),
     new BaseMove("R", -1),
-    new BaseMove("U",  1),
-    new BaseMove("R",  1),
+    new BaseMove("U", 1),
+    new BaseMove("R", 1),
     new BaseMove("U", -2),
     new BaseMove("R", -1)
   ]);
 
   export const AntiSune: Sequence = new Sequence([
-    new BaseMove("R",  1),
-    new BaseMove("U",  2),
+    new BaseMove("R", 1),
+    new BaseMove("U", 2),
     new BaseMove("R", -1),
     new BaseMove("U", -1),
-    new BaseMove("R",  1),
+    new BaseMove("R", 1),
     new BaseMove("U", -1),
     new BaseMove("R", -1)
   ]);
 
   export const SuneCommutator: Algorithm = new Commutator(
     new Sequence([
-      new BaseMove("R",  1),
-      new BaseMove("U",  1),
+      new BaseMove("R", 1),
+      new BaseMove("U", 1),
       new BaseMove("R", -2)
     ]),
     new Sequence([
-      new BaseMove("R",  1),
-      new BaseMove("U",  1),
+      new BaseMove("R", 1),
+      new BaseMove("U", 1),
       new BaseMove("R", -1)
     ]),
     1
   )
 
   export const Niklas: Sequence = new Sequence([
-    new BaseMove("R",  1),
-    new BaseMove("U",  -1),
+    new BaseMove("R", 1),
+    new BaseMove("U", -1),
     new BaseMove("L", -1),
     new BaseMove("U", 1),
-    new BaseMove("R",  -1),
-    new BaseMove("U",  -1),
+    new BaseMove("R", -1),
+    new BaseMove("U", -1),
     new BaseMove("L", 1),
     new BaseMove("U", 1)
   ]);
 
   export const FURURFCompact: Algorithm = new Conjugate(
-    new BaseMove("F",  1),
+    new BaseMove("F", 1),
     new Commutator(
-      new BaseMove("U",  1),
-      new BaseMove("R",  1),
+      new BaseMove("U", 1),
+      new BaseMove("R", 1),
       1
     ),
     1
@@ -74,27 +74,27 @@ export namespace Example {
   );
 
   export const FURURFMoves: Algorithm = new Sequence([
-    new BaseMove("F",  1),
-    new BaseMove("U",  1),
-    new BaseMove("R",  1),
+    new BaseMove("F", 1),
+    new BaseMove("U", 1),
+    new BaseMove("R", 1),
     new BaseMove("U", -1),
     new BaseMove("R", -1),
     new BaseMove("F", -1)
   ]);
 
   export const TPerm: Algorithm = new Sequence([
-    new BaseMove("R",  1),
-    new BaseMove("U",  1),
+    new BaseMove("R", 1),
+    new BaseMove("U", 1),
     new BaseMove("R", -1),
     new BaseMove("U", -1),
     new BaseMove("R", -1),
-    new BaseMove("F",  1),
-    new BaseMove("R",  2),
+    new BaseMove("F", 1),
+    new BaseMove("R", 2),
     new BaseMove("U", -1),
     new BaseMove("R", -1),
     new BaseMove("U", -1),
-    new BaseMove("R",  1),
-    new BaseMove("U",  1),
+    new BaseMove("R", 1),
+    new BaseMove("U", 1),
     new BaseMove("R", -1),
     new BaseMove("F", -1)
   ]);
