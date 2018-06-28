@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
     "moduleResolution": "node",
-    "module": "umd",
     "target": "es5",
 
-    "outDir": "build",
     "declaration": true,
     "sourceMap": true,
 
@@ -15,8 +13,5 @@
   },
   "include": [
     "*.ts"
-  ],
-  "exclude": [
-    "build"
   ]
 }

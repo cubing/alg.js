@@ -2,6 +2,15 @@
   "name": "alg",
   "version": "1.9.9",
   "description": "TODO",
+  "author": "Lucas Garron <code@garron.net> (https://garron.net/)",
+  "license": "MIT",
   "main": "./build/index.js",
-  "types": "./build/index.d.ts"
+  "types": "./build/index.d.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "ts-loader": "^4.4.2",
+    "typescript": "^2.9.2",
+    "webpack": "^4.12.2",
+    "webpack-cli": "^3.0.8"
+  }
 }
