@@ -1,5 +1,9 @@
 NODE_BIN = ./node_modules/.bin
 
+.PHONY: dist
+dist:
+	${NODE_BIN}/webpack-cli
+
 .PHONY: dev
 dev:
 	${NODE_BIN}/webpack-cli --watch
