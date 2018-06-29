@@ -27,15 +27,6 @@ export abstract class Algorithm {
   }
 }
 
-export abstract class Repeatable extends Algorithm {
-  // TODO: Make `amount` an optional argument in derived class constructors.
-  constructor(public amount: number) {
-    super();
-  }
-}
-
-export type MoveFamily = string; // TODO: Convert to an enum with string mappings.
-
 export class Sequence extends Algorithm {
   public type: string = "sequence";
   constructor(public nestedAlgs: Algorithm[]) {
@@ -46,6 +37,15 @@ export class Sequence extends Algorithm {
     return t.traverseSequence(this, dataDown);
   }
 }
+
+export abstract class Repeatable extends Algorithm {
+  // TODO: Make `amount` an optional argument in derived class constructors.
+  constructor(public amount: number) {
+    super();
+  }
+}
+
+export type MoveFamily = string; // TODO: Convert to an enum with string mappings.
 
 // Group is is like a Sequence, but is enclosed in parentheses when
 // written.
