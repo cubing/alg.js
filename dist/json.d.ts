@@ -3,7 +3,7 @@ export interface AlgorithmJSON {
     type: string;
     nestedAlg?: AlgorithmJSON;
     nestedAlgs?: AlgorithmJSON[];
-    base?: string;
+    family?: string;
     amount?: number;
     A?: AlgorithmJSON;
     B?: AlgorithmJSON;

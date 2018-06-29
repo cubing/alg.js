@@ -19,3 +19,5 @@ export {
 export {Traversal} from "./traversal";
 
 export {Example} from "./example"
+
+export {AlgorithmJSON, fromJSON} from "./json"

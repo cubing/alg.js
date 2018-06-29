@@ -119,6 +119,8 @@ var traversal_1 = __webpack_require__(2);
 exports.Traversal = traversal_1.Traversal;
 var example_1 = __webpack_require__(3);
 exports.Example = example_1.Example;
+var json_1 = __webpack_require__(4);
+exports.fromJSON = json_1.fromJSON;
 
 
 /***/ }),
@@ -163,17 +165,6 @@ var Algorithm = /** @class */ (function () {
     return Algorithm;
 }());
 exports.Algorithm = Algorithm;
-var Repeatable = /** @class */ (function (_super) {
-    __extends(Repeatable, _super);
-    // TODO: Make `amount` an optional argument in derived class constructors.
-    function Repeatable(amount) {
-        var _this = _super.call(this) || this;
-        _this.amount = amount;
-        return _this;
-    }
-    return Repeatable;
-}(Algorithm));
-exports.Repeatable = Repeatable;
 var Sequence = /** @class */ (function (_super) {
     __extends(Sequence, _super);
     function Sequence(nestedAlgs) {
@@ -189,6 +180,17 @@ var Sequence = /** @class */ (function (_super) {
     return Sequence;
 }(Algorithm));
 exports.Sequence = Sequence;
+var Repeatable = /** @class */ (function (_super) {
+    __extends(Repeatable, _super);
+    // TODO: Make `amount` an optional argument in derived class constructors.
+    function Repeatable(amount) {
+        var _this = _super.call(this) || this;
+        _this.amount = amount;
+        return _this;
+    }
+    return Repeatable;
+}(Algorithm));
+exports.Repeatable = Repeatable;
 // Group is is like a Sequence, but is enclosed in parentheses when
 // written.
 var Group = /** @class */ (function (_super) {
@@ -731,11 +733,7 @@ var Example;
         new algorithm_1.BaseMove("R", 1),
         new algorithm_1.BaseMove("U", 1),
         new algorithm_1.BaseMove("R", -2)
-    ]), new algorithm_1.Sequence([
-        new algorithm_1.BaseMove("R", 1),
-        new algorithm_1.BaseMove("U", 1),
-        new algorithm_1.BaseMove("R", -1)
-    ]), 1);
+    ]), new algorithm_1.Conjugate(new algorithm_1.BaseMove("R", 1), new algorithm_1.BaseMove("U", 1), 1), 1);
     Example.Niklas = new algorithm_1.Sequence([
         new algorithm_1.BaseMove("R", 1),
         new algorithm_1.BaseMove("U", -1),
@@ -789,6 +787,84 @@ var Example;
         new algorithm_1.CommentLong("long comment")
     ];
 })(Example = exports.Example || (exports.Example = {}));
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var algorithm_1 = __webpack_require__(1);
+"use strict";
+// TODO: Implement using Traversal?
+function fromJSON(json) {
+    var _this = this;
+    switch (json.type) {
+        case "sequence":
+            if (!json.nestedAlgs) {
+                throw "Missing nestedAlgs";
+            }
+            return new algorithm_1.Sequence(json.nestedAlgs.map(function (j) { return _this.fromJSON(j); }));
+        case "group":
+            if (!json.nestedAlg) {
+                throw "Missing nestedAlg";
+            }
+            if (!json.amount) {
+                throw "Missing amount";
+            }
+            return new algorithm_1.Group(this.fromJSON(json.nestedAlg), json.amount);
+        case "baseMove":
+            // TODO: Handle layers
+            if (!json.family) {
+                throw "Missing family";
+            }
+            if (!json.amount) {
+                throw "Missing amount";
+            }
+            return new algorithm_1.BaseMove(json.family, json.amount);
+        case "commutator":
+            if (!json.A) {
+                throw "Missing A";
+            }
+            if (!json.B) {
+                throw "Missing B";
+            }
+            if (!json.amount) {
+                throw "Missing amount";
+            }
+            return new algorithm_1.Commutator(this.fromJSON(json.A), this.fromJSON(json.B), json.amount);
+        case "conjugate":
+            if (!json.A) {
+                throw "Missing A";
+            }
+            if (!json.B) {
+                throw "Missing B";
+            }
+            if (!json.amount) {
+                throw "Missing amount";
+            }
+            return new algorithm_1.Conjugate(this.fromJSON(json.A), this.fromJSON(json.B), json.amount);
+        case "pause":
+            return new algorithm_1.Pause();
+        case "newLine":
+            return new algorithm_1.NewLine();
+        case "commentShort":
+            if (!json.comment) {
+                throw "Missing comment";
+            }
+            return new algorithm_1.CommentShort(json.comment);
+        case "commentLong":
+            if (!json.comment) {
+                throw "Missing comment";
+            }
+            return new algorithm_1.CommentLong(json.comment);
+        default:
+            throw "Unknown alg type.";
+    }
+}
+exports.fromJSON = fromJSON;
 
 
 /***/ })

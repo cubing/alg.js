@@ -12,17 +12,17 @@ export declare abstract class Algorithm {
     structureEquals(nestedAlg: Algorithm): boolean;
     concat(nestedAlg: Algorithm): Sequence;
 }
-export declare abstract class Repeatable extends Algorithm {
-    amount: number;
-    constructor(amount: number);
-}
-export declare type MoveFamily = string;
 export declare class Sequence extends Algorithm {
     nestedAlgs: Algorithm[];
     type: string;
     constructor(nestedAlgs: Algorithm[]);
     dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp;
 }
+export declare abstract class Repeatable extends Algorithm {
+    amount: number;
+    constructor(amount: number);
+}
+export declare type MoveFamily = string;
 export declare class Group extends Repeatable {
     nestedAlg: Algorithm;
     type: string;
