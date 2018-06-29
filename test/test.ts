@@ -121,7 +121,7 @@ describe("Custom Traversal", () => {
 
     var depth = new Depth();
     expect(depth.traverse(Ex.Sune)).to.equal(0);
-    expect(depth.traverse(Ex.SuneCommutator)).to.equal(1);
+    expect(depth.traverse(Ex.HeadlightSwaps)).to.equal(2);
     expect(depth.traverse(Ex.FURURFCompact)).to.equal(2);
   });
 

@@ -30,11 +30,11 @@ export namespace Example {
       new BaseMove("U",  1),
       new BaseMove("R", -2)
     ]),
-    new Sequence([
+    new Conjugate(
       new BaseMove("R",  1),
       new BaseMove("U",  1),
-      new BaseMove("R", -1)
-    ]),
+      1
+    ),
     1
   )
 
