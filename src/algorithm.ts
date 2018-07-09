@@ -60,8 +60,11 @@ export class Group extends Repeatable {
   }
 }
 
-export class BaseMove extends Repeatable {
-  public type: string = "baseMove";
+export abstract class BaseMove extends Repeatable {
+}
+
+export class BlockMove extends BaseMove {
+  public type: string = "blockMove";
   // TODO: Typesafe layer types?
   public layer?: number;
   public startLayer?: number;
@@ -72,7 +75,7 @@ export class BaseMove extends Repeatable {
     this.freeze();
   }
   dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseBaseMove(this, dataDown);
+    return t.traverseBlockMove(this, dataDown);
   }
 }
 

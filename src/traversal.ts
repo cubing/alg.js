@@ -1,4 +1,4 @@
-import {Algorithm, Sequence, BaseMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong, Repeatable} from "./algorithm"
+import {Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong, Repeatable} from "./algorithm"
 
 "use strict";
 
@@ -11,7 +11,7 @@ export namespace Traversal {
 
     public abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
     public abstract traverseGroup(group: Group, dataDown: DataDown): DataUp;
-    public abstract traverseBaseMove(baseMove: BaseMove, dataDown: DataDown): DataUp;
+    public abstract traverseBlockMove(blockMove: BlockMove, dataDown: DataDown): DataUp;
     public abstract traverseCommutator(commutator: Commutator, dataDown: DataDown): DataUp;
     public abstract traverseConjugate(conjugate: Conjugate, dataDown: DataDown): DataUp;
     public abstract traversePause(pause: Pause, dataDown: DataDown): DataUp;
@@ -27,7 +27,7 @@ export namespace Traversal {
 
     public abstract traverseSequence(sequence: Sequence): DataUp;
     public abstract traverseGroup(group: Group): DataUp;
-    public abstract traverseBaseMove(baseMove: BaseMove): DataUp;
+    public abstract traverseBlockMove(blockMove: BlockMove): DataUp;
     public abstract traverseCommutator(commutator: Commutator): DataUp;
     public abstract traverseConjugate(conjugate: Conjugate): DataUp;
     public abstract traversePause(pause: Pause): DataUp;
@@ -43,8 +43,8 @@ export namespace Traversal {
     public traverseGroup(group: Group): Algorithm {
       return new Group(this.traverse(group.nestedAlg), group.amount);
     }
-    public traverseBaseMove(baseMove: BaseMove): Algorithm {
-      return new BaseMove(baseMove.family, baseMove.amount);
+    public traverseBlockMove(blockMove: BlockMove): Algorithm {
+      return new BlockMove(blockMove.family, blockMove.amount);
     }
     public traverseCommutator(commutator: Commutator): Algorithm {
       return new Commutator(this.traverse(commutator.A), this.traverse(commutator.B), commutator.amount);
@@ -67,8 +67,8 @@ export namespace Traversal {
     public traverseGroup(group: Group): Algorithm {
       return new Group(this.traverse(group.nestedAlg), group.amount);
     }
-    public traverseBaseMove(baseMove: BaseMove): Algorithm {
-      return new BaseMove(baseMove.family, -baseMove.amount);
+    public traverseBlockMove(blockMove: BlockMove): Algorithm {
+      return new BlockMove(blockMove.family, -blockMove.amount);
     }
     public traverseCommutator(commutator: Commutator): Algorithm {
       return new Commutator(commutator.B, commutator.A, commutator.amount);
@@ -123,8 +123,8 @@ export namespace Traversal {
       // TODO: Pass raw Algorithm[] to sequence.
       return this.repeat([this.traverse(group.nestedAlg)], group);
     }
-    public traverseBaseMove(baseMove: BaseMove): Algorithm {
-      return baseMove;
+    public traverseBlockMove(blockMove: BlockMove): Algorithm {
+      return blockMove;
     }
     public traverseCommutator(commutator: Commutator): Algorithm {
       var expandedA = this.traverse(commutator.A)
@@ -166,7 +166,7 @@ export namespace Traversal {
     public traverseGroup(group: Group): number {
       return this.traverse(group.nestedAlg);
     }
-    public traverseBaseMove(baseMove: BaseMove): number {
+    public traverseBlockMove(blockMove: BlockMove): number {
       return 1;
     }
     public traverseCommutator(commutator: Commutator): number {
@@ -199,11 +199,11 @@ export namespace Traversal {
     public traverseGroup(group: Group, dataDown: Algorithm): boolean {
       return (dataDown instanceof Group) && this.traverse(group.nestedAlg, dataDown.nestedAlg);
     }
-    public traverseBaseMove(baseMove: BaseMove, dataDown: Algorithm): boolean {
+    public traverseBlockMove(blockMove: BlockMove, dataDown: Algorithm): boolean {
       // TODO: Handle layers.
-      return dataDown instanceof BaseMove &&
-             baseMove.family === dataDown.family &&
-             baseMove.amount === dataDown.amount;
+      return dataDown instanceof BlockMove &&
+             blockMove.family === dataDown.family &&
+             blockMove.amount === dataDown.amount;
     }
     public traverseCommutator(commutator: Commutator, dataDown: Algorithm): boolean {
       return (dataDown instanceof Commutator) &&
@@ -231,7 +231,7 @@ export namespace Traversal {
 
   // TODO: Test that inverses are bijections.
   export class CoalesceMoves extends Up<Algorithm> {
-    private sameBlock(moveA: BaseMove, moveB: BaseMove): boolean {
+    private sameBlock(moveA: BlockMove, moveB: BlockMove): boolean {
       // TODO: Handle layers
       return moveA.family === moveB.family;
     }
@@ -239,11 +239,11 @@ export namespace Traversal {
     public traverseSequence(sequence: Sequence): Sequence {
       var coalesced: Algorithm[] = [];
       for (var part of sequence.nestedAlgs) {
-        if (!(part instanceof BaseMove)) {
+        if (!(part instanceof BlockMove)) {
           coalesced.push(this.traverse(part));
         } else if (coalesced.length > 0) {
           var last = coalesced[coalesced.length-1];
-          if (last instanceof BaseMove &&
+          if (last instanceof BlockMove &&
               this.sameBlock(last, part)) {
             // TODO: This is cube-specific. Perhaps pass the modules as DataDown?
             var amount = last.amount + part.amount;
@@ -253,7 +253,7 @@ export namespace Traversal {
               // but this is safe against shifting coding practices.
               // TODO: Figure out if the shoot-in-the-foot risk
               // modification is worth the speed.
-              coalesced.push(new BaseMove(part.family, amount));
+              coalesced.push(new BlockMove(part.family, amount));
             }
           } else {
             coalesced.push(part);
@@ -265,7 +265,7 @@ export namespace Traversal {
       return new Sequence(coalesced);
     }
     public traverseGroup(group: Group):                      Algorithm { return group; }
-    public traverseBaseMove(baseMove: BaseMove):             Algorithm { return baseMove; }
+    public traverseBlockMove(blockMove: BlockMove):          Algorithm { return blockMove; }
     public traverseCommutator(commutator: Commutator):       Algorithm { return commutator; }
     public traverseConjugate(conjugate: Conjugate):          Algorithm { return conjugate; }
     public traversePause(pause: Pause):                      Algorithm { return pause; }
@@ -286,7 +286,7 @@ export namespace Traversal {
     }
     public traverseSequence(     sequence:     Sequence,     dataDown: Algorithm): Sequence {return this.concatIntoSequence(sequence.nestedAlgs, dataDown); }
     public traverseGroup(        group:        Group,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([group]          , dataDown); }
-    public traverseBaseMove(    baseMove:    BaseMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([baseMove]      , dataDown); }
+    public traverseBlockMove(    BlockMove:    BlockMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([BlockMove]      , dataDown); }
     public traverseCommutator(   commutator:   Commutator,   dataDown: Algorithm): Sequence {return this.concatIntoSequence([commutator]     , dataDown); }
     public traverseConjugate(    conjugate:    Conjugate,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([conjugate]      , dataDown); }
     public traversePause(        pause:        Pause,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([pause]          , dataDown); }
@@ -309,7 +309,7 @@ export namespace Traversal {
     }
     public traverseSequence(     sequence:     Sequence,     ): string { return sequence.nestedAlgs.map(a => this.traverse(a)).join(" "); }
     public traverseGroup(        group:        Group,        ): string { return "(" + group.nestedAlg + ")" + this.repetitionSuffix(group.amount); }
-    public traverseBaseMove(    baseMove:    BaseMove,    ): string { return baseMove.family + this.repetitionSuffix(baseMove.amount); }
+    public traverseBlockMove(    blockMove:    BlockMove,    ): string { return blockMove.family + this.repetitionSuffix(blockMove.amount); }
     public traverseCommutator(   commutator:   Commutator,   ): string { return "[" + commutator.A + ", " + commutator.B + "]" + this.repetitionSuffix(commutator.amount); }
     public traverseConjugate(    conjugate:    Conjugate,    ): string { return "[" + conjugate.A + ": " + conjugate.B + "]" + this.repetitionSuffix(conjugate.amount); }
     // TODO: Remove spaces between repeated pauses (in traverseSequence)

@@ -29,7 +29,9 @@ export declare class Group extends Repeatable {
     constructor(nestedAlg: Algorithm, amount: number);
     dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp;
 }
-export declare class BaseMove extends Repeatable {
+export declare abstract class BaseMove extends Repeatable {
+}
+export declare class BlockMove extends BaseMove {
     family: MoveFamily;
     type: string;
     layer?: number;

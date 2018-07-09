@@ -1,5 +1,5 @@
 import * as Alg from "../src/algorithm"
-import {BaseMove as BM} from "../src/algorithm"
+import {BlockMove as BM} from "../src/algorithm"
 import {Example as Ex} from "../src/example"
 import {Traversal} from "../src/traversal"
 import {fromJSON} from "../src/json"
@@ -104,7 +104,7 @@ describe("Custom Traversal", () => {
       public traverseGroup(group: Alg.Group): number {
         return 1 + this.traverse(group.nestedAlg);
       }
-      public traverseBaseMove(blockMove: Alg.BaseMove): number {
+      public traverseBlockMove(blockMove: Alg.BaseMove): number {
         return 0;
       }
       public traverseCommutator(commutator: Alg.Commutator): number {
@@ -148,9 +148,9 @@ describe("Custom Traversal", () => {
     // TODO: Figure out how to add definitions to existing traversals like ToString.
 
     var h = new ConfabAwareClone();
-    var t = h.traverse(new Alg.Group(new Confabulator(new Alg.BaseMove("R", 1)), 2));
+    var t = h.traverse(new Alg.Group(new Confabulator(new Alg.BlockMove("R", 1)), 2));
     // console.log();
-    var t2 = new Alg.Group(new Alg.Commutator(new Alg.BaseMove("R", 1), new Alg.BaseMove("R", 1), 3), 2);
+    var t2 = new Alg.Group(new Alg.Commutator(new Alg.BlockMove("R", 1), new Alg.BlockMove("R", 1), 3), 2);
     e(t, t2).to.be.true;
     expect(t.toString()).to.equal("([R, R]3)2");
 
@@ -167,7 +167,7 @@ describe("Object Freezing", () => {
   });
 
   it("should not be possible to modify a BaseMove", () => {
-      var b = new Alg.BaseMove("R", 4);
+      var b = new Alg.BlockMove("R", 4);
       var e: any;
       try {
         b.amount = 2;
