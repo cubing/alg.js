@@ -18,6 +18,10 @@ describe("toString", () => {
     expect(String(Ex.Sune)).to.equal("R U R' U R U2' R'");
   });
 
+  it("should convert E Perm to string", () => {
+    expect(Ex.EPerm.toString()).to.equal("x' [[R: U'], D] [[R: U], D] x");
+  });
+
   it("should convert U U to string", () => {
     expect(UU.toString()).to.equal("U U");
   });
@@ -104,6 +108,9 @@ describe("Custom Traversal", () => {
       public traverseGroup(group: Alg.Group): number {
         return 1 + this.traverse(group.nestedAlg);
       }
+      public traverseRotation(rotation: Alg.Rotation): number {
+        return 0;
+      }
       public traverseBlockMove(blockMove: Alg.BaseMove): number {
         return 0;
       }
@@ -160,7 +167,7 @@ describe("Custom Traversal", () => {
 
 describe("Object Freezing", () => {
   it("should freeze all example alg types", () => {
-    expect(Ex.AllAlgTypes.length).to.equal(9);
+    expect(Ex.AllAlgTypes.length).to.equal(10);
     for (var a of Ex.AllAlgTypes) {
       expect(Object.isFrozen(a)).to.be.true;
     }

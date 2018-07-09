@@ -63,6 +63,17 @@ export class Group extends Repeatable {
 export abstract class BaseMove extends Repeatable {
 }
 
+export class Rotation extends BaseMove {
+  public type: string = "rotation";
+  constructor(public family: MoveFamily, amount: number) {
+    super(amount);
+    this.freeze();
+  }
+  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
+    return t.traverseRotation(this, dataDown);
+  }
+}
+
 export class BlockMove extends BaseMove {
   public type: string = "blockMove";
   // TODO: Typesafe layer types?

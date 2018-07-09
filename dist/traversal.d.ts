@@ -1,10 +1,11 @@
-import { Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong } from "./algorithm";
+import { Algorithm, Sequence, Rotation, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong } from "./algorithm";
 export declare namespace Traversal {
     abstract class DownUp<DataDown, DataUp> {
         traverse(algorithm: Algorithm, dataDown: DataDown): DataUp;
         abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
         abstract traverseGroup(group: Group, dataDown: DataDown): DataUp;
         abstract traverseBlockMove(blockMove: BlockMove, dataDown: DataDown): DataUp;
+        abstract traverseRotation(rotation: Rotation, dataDown: DataDown): DataUp;
         abstract traverseCommutator(commutator: Commutator, dataDown: DataDown): DataUp;
         abstract traverseConjugate(conjugate: Conjugate, dataDown: DataDown): DataUp;
         abstract traversePause(pause: Pause, dataDown: DataDown): DataUp;
@@ -17,6 +18,7 @@ export declare namespace Traversal {
         abstract traverseSequence(sequence: Sequence): DataUp;
         abstract traverseGroup(group: Group): DataUp;
         abstract traverseBlockMove(blockMove: BlockMove): DataUp;
+        abstract traverseRotation(rotation: Rotation): DataUp;
         abstract traverseCommutator(commutator: Commutator): DataUp;
         abstract traverseConjugate(conjugate: Conjugate): DataUp;
         abstract traversePause(pause: Pause): DataUp;
@@ -27,6 +29,7 @@ export declare namespace Traversal {
     class Clone extends Up<Algorithm> {
         traverseSequence(sequence: Sequence): Sequence;
         traverseGroup(group: Group): Algorithm;
+        traverseRotation(rotation: Rotation): Algorithm;
         traverseBlockMove(blockMove: BlockMove): Algorithm;
         traverseCommutator(commutator: Commutator): Algorithm;
         traverseConjugate(conjugate: Conjugate): Algorithm;
@@ -38,6 +41,7 @@ export declare namespace Traversal {
     class Invert extends Up<Algorithm> {
         traverseSequence(sequence: Sequence): Sequence;
         traverseGroup(group: Group): Algorithm;
+        traverseRotation(rotation: Rotation): Algorithm;
         traverseBlockMove(blockMove: BlockMove): Algorithm;
         traverseCommutator(commutator: Commutator): Algorithm;
         traverseConjugate(conjugate: Conjugate): Algorithm;
@@ -51,6 +55,7 @@ export declare namespace Traversal {
         private repeat;
         traverseSequence(sequence: Sequence): Sequence;
         traverseGroup(group: Group): Algorithm;
+        traverseRotation(rotation: Rotation): Algorithm;
         traverseBlockMove(blockMove: BlockMove): Algorithm;
         traverseCommutator(commutator: Commutator): Algorithm;
         traverseConjugate(conjugate: Conjugate): Algorithm;
@@ -62,6 +67,7 @@ export declare namespace Traversal {
     class CountBaseMoves extends Up<number> {
         traverseSequence(sequence: Sequence): number;
         traverseGroup(group: Group): number;
+        traverseRotation(rotation: Rotation): number;
         traverseBlockMove(blockMove: BlockMove): number;
         traverseCommutator(commutator: Commutator): number;
         traverseConjugate(conjugate: Conjugate): number;
@@ -73,6 +79,7 @@ export declare namespace Traversal {
     class StructureEquals extends DownUp<Algorithm, boolean> {
         traverseSequence(sequence: Sequence, dataDown: Algorithm): boolean;
         traverseGroup(group: Group, dataDown: Algorithm): boolean;
+        traverseRotation(rotation: Rotation, dataDown: Algorithm): boolean;
         traverseBlockMove(blockMove: BlockMove, dataDown: Algorithm): boolean;
         traverseCommutator(commutator: Commutator, dataDown: Algorithm): boolean;
         traverseConjugate(conjugate: Conjugate, dataDown: Algorithm): boolean;
@@ -85,6 +92,7 @@ export declare namespace Traversal {
         private sameBlock;
         traverseSequence(sequence: Sequence): Sequence;
         traverseGroup(group: Group): Algorithm;
+        traverseRotation(rotation: Rotation): Algorithm;
         traverseBlockMove(blockMove: BlockMove): Algorithm;
         traverseCommutator(commutator: Commutator): Algorithm;
         traverseConjugate(conjugate: Conjugate): Algorithm;
@@ -97,6 +105,7 @@ export declare namespace Traversal {
         private concatIntoSequence;
         traverseSequence(sequence: Sequence, dataDown: Algorithm): Sequence;
         traverseGroup(group: Group, dataDown: Algorithm): Sequence;
+        traverseRotation(Rotation: Rotation, dataDown: Algorithm): Sequence;
         traverseBlockMove(BlockMove: BlockMove, dataDown: Algorithm): Sequence;
         traverseCommutator(commutator: Commutator, dataDown: Algorithm): Sequence;
         traverseConjugate(conjugate: Conjugate, dataDown: Algorithm): Sequence;
@@ -109,6 +118,7 @@ export declare namespace Traversal {
         private repetitionSuffix;
         traverseSequence(sequence: Sequence): string;
         traverseGroup(group: Group): string;
+        traverseRotation(rotation: Rotation): string;
         traverseBlockMove(blockMove: BlockMove): string;
         traverseCommutator(commutator: Commutator): string;
         traverseConjugate(conjugate: Conjugate): string;
