@@ -3,14 +3,6 @@ export declare abstract class Algorithm {
     abstract readonly type: string;
     abstract dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp;
     protected freeze(): void;
-    clone(): Algorithm;
-    invert(): Algorithm;
-    expand(): Algorithm;
-    countBaseMoves(): number;
-    coalesceMoves(): Algorithm;
-    toString(): string;
-    structureEquals(nestedAlg: Algorithm): boolean;
-    concat(nestedAlg: Algorithm): Sequence;
 }
 export declare class Sequence extends Algorithm {
     nestedAlgs: Algorithm[];

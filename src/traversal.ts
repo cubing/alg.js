@@ -111,7 +111,7 @@ export namespace Traversal {
       var once: Algorithm[];
       if (amountDir == -1) {
         // TODO: Avoid casting to sequence.
-        once = (<Sequence>(new Sequence(algList)).invert()).nestedAlgs;
+        once = (<Sequence>(invert(new Sequence(algList)))).nestedAlgs;
       } else {
         once = algList;
       }
@@ -144,8 +144,8 @@ export namespace Traversal {
       once = once.concat(
         expandedA,
         expandedB,
-        expandedA.invert(),
-        expandedB.invert()
+        invert(expandedA),
+        invert(expandedB)
       );
       return this.repeat(this.flattenSequenceOneLevel(once), commutator);
     }
@@ -156,7 +156,7 @@ export namespace Traversal {
       once = once.concat(
         expandedA,
         expandedB,
-        expandedA.invert()
+        invert(expandedA)
       );
       return this.repeat(this.flattenSequenceOneLevel(once), conjugate);
     }
@@ -256,7 +256,7 @@ export namespace Traversal {
       return moveA.family === moveB.family;
     }
 
-    // TODO: Handle rotations.
+    // TODO: Handle
     public traverseSequence(sequence: Sequence): Sequence {
       var coalesced: Algorithm[] = [];
       for (var part of sequence.nestedAlgs) {
@@ -334,8 +334,8 @@ export namespace Traversal {
     public traverseGroup(        group:        Group,        ): string { return "(" + group.nestedAlg + ")" + this.repetitionSuffix(group.amount); }
     public traverseRotation(     rotation:     Rotation,     ): string { return rotation.family + this.repetitionSuffix(rotation.amount); }
     public traverseBlockMove(    blockMove:    BlockMove,    ): string { return blockMove.family + this.repetitionSuffix(blockMove.amount); }
-    public traverseCommutator(   commutator:   Commutator,   ): string { return "[" + commutator.A + ", " + commutator.B + "]" + this.repetitionSuffix(commutator.amount); }
-    public traverseConjugate(    conjugate:    Conjugate,    ): string { return "[" + conjugate.A + ": " + conjugate.B + "]" + this.repetitionSuffix(conjugate.amount); }
+    public traverseCommutator(   commutator:   Commutator,   ): string { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); }
+    public traverseConjugate(    conjugate:    Conjugate,    ): string { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); }
     // TODO: Remove spaces between repeated pauses (in traverseSequence)
     public traversePause(        pause:        Pause,        ): string { return "."; }
     public traverseNewLine(      newLine:      NewLine,      ): string { return "\n"; }
@@ -345,15 +345,27 @@ export namespace Traversal {
     public traverseCommentLong(  commentLong:  CommentLong,  ): string { return "/*" + commentLong.comment + "*/"; }
   }
 
-  export namespace Singleton {
-    export const clone           = new Clone();
-    export const invert          = new Invert();
-    export const expand          = new Expand();
-    export const countBaseMoves  = new CountBaseMoves();
-    export const structureEquals = new StructureEquals();
-    export const coalesceMoves   = new CoalesceMoves();
-    export const concat          = new Concat();
-    export const toString        = new ToString();
-  }
-
 }
+
+function makeDownUp<DataDown, DataUp>(
+  ctor: { new(): Traversal.DownUp<DataDown, DataUp> }
+ ): (a: Algorithm, dataDown: DataDown) => DataUp {
+  var instance = new ctor();
+  return instance.traverse.bind(instance);
+}
+
+function makeUp<DataUp>(
+  ctor: { new(): Traversal.Up<DataUp> }
+ ): (a: Algorithm) => DataUp {
+  var instance = new ctor();
+  return instance.traverse.bind(instance);
+}
+
+export const clone           = makeUp(Traversal.Clone);
+export const invert          = makeUp(Traversal.Invert);
+export const expand          = makeUp(Traversal.Expand);
+export const countBaseMoves  = makeUp(Traversal.CountBaseMoves);
+export const structureEquals = makeDownUp(Traversal.StructureEquals);
+export const coalesceMoves   = makeUp(Traversal.CoalesceMoves);
+export const concat          = makeDownUp(Traversal.Concat);
+export const algToString     = makeUp(Traversal.ToString);

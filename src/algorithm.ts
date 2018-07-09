@@ -1,4 +1,14 @@
-import {Traversal} from "./traversal"
+import {
+  Traversal,
+  clone,
+  invert,
+  expand,
+  countBaseMoves,
+  coalesceMoves,
+  algToString,
+  structureEquals,
+  concat
+} from "./traversal"
 
 "use strict";
 
@@ -12,19 +22,19 @@ export abstract class Algorithm {
     Object.freeze(this);
   }
 
-  clone():           Algorithm { return Traversal.Singleton.clone.traverse(this);           }
-  invert():          Algorithm { return Traversal.Singleton.invert.traverse(this);          }
-  expand():          Algorithm { return Traversal.Singleton.expand.traverse(this);          }
-  countBaseMoves(): number    { return Traversal.Singleton.countBaseMoves.traverse(this); }
-  coalesceMoves():   Algorithm { return Traversal.Singleton.coalesceMoves.traverse(this);   }
-  toString():        string    { return Traversal.Singleton.toString.traverse(this);        }
+  // clone():           Algorithm { return clone(this);           }
+  // invert():          Algorithm { return invert(this);          }
+  // expand():          Algorithm { return expand(this);          }
+  // countBaseMoves():  number    { return countBaseMoves(this);  }
+  // coalesceMoves():   Algorithm { return coalesceMoves(this);   }
+  // toString():        string    { return algToString(this);     }
 
-  structureEquals(nestedAlg: Algorithm): boolean {
-    return Traversal.Singleton.structureEquals.traverse(this, nestedAlg);
-  }
-  concat(nestedAlg: Algorithm): Sequence {
-    return Traversal.Singleton.concat.traverse(this, nestedAlg);
-  }
+  // structureEquals(nestedAlg: Algorithm): boolean {
+  //   return structureEquals(this, nestedAlg);
+  // }
+  // concat(nestedAlg: Algorithm): Sequence {
+  //   return concat(this, nestedAlg);
+  // }
 }
 
 export class Sequence extends Algorithm {

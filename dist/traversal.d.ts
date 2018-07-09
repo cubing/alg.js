@@ -127,14 +127,12 @@ export declare namespace Traversal {
         traverseCommentShort(commentShort: CommentShort): string;
         traverseCommentLong(commentLong: CommentLong): string;
     }
-    namespace Singleton {
-        const clone: Clone;
-        const invert: Invert;
-        const expand: Expand;
-        const countBaseMoves: CountBaseMoves;
-        const structureEquals: StructureEquals;
-        const coalesceMoves: CoalesceMoves;
-        const concat: Concat;
-        const toString: ToString;
-    }
 }
+export declare const clone: (a: Algorithm) => Algorithm;
+export declare const invert: (a: Algorithm) => Algorithm;
+export declare const expand: (a: Algorithm) => Algorithm;
+export declare const countBaseMoves: (a: Algorithm) => number;
+export declare const structureEquals: (a: Algorithm, dataDown: Algorithm) => boolean;
+export declare const coalesceMoves: (a: Algorithm) => Algorithm;
+export declare const concat: (a: Algorithm, dataDown: Algorithm) => Sequence;
+export declare const algToString: (a: Algorithm) => string;

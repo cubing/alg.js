@@ -16,7 +16,17 @@ export {
   CommentLong
 } from "./algorithm";
 
-export {Traversal} from "./traversal";
+export {
+  Traversal,
+  clone,
+  invert,
+  expand,
+  countBaseMoves,
+  structureEquals,
+  coalesceMoves,
+  concat,
+  algToString
+} from "./traversal";
 
 export {Example} from "./example"
 

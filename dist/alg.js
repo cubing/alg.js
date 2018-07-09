@@ -117,6 +117,14 @@ exports.CommentShort = algorithm_1.CommentShort;
 exports.CommentLong = algorithm_1.CommentLong;
 var traversal_1 = __webpack_require__(2);
 exports.Traversal = traversal_1.Traversal;
+exports.clone = traversal_1.clone;
+exports.invert = traversal_1.invert;
+exports.expand = traversal_1.expand;
+exports.countBaseMoves = traversal_1.countBaseMoves;
+exports.structureEquals = traversal_1.structureEquals;
+exports.coalesceMoves = traversal_1.coalesceMoves;
+exports.concat = traversal_1.concat;
+exports.algToString = traversal_1.algToString;
 var example_1 = __webpack_require__(3);
 exports.Example = example_1.Example;
 var json_1 = __webpack_require__(4);
@@ -140,8 +148,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var traversal_1 = __webpack_require__(2);
-"use strict";
 var Algorithm = /** @class */ (function () {
     function Algorithm() {
     }
@@ -149,18 +155,6 @@ var Algorithm = /** @class */ (function () {
     // are frozen after initial construction.
     Algorithm.prototype.freeze = function () {
         Object.freeze(this);
-    };
-    Algorithm.prototype.clone = function () { return traversal_1.Traversal.Singleton.clone.traverse(this); };
-    Algorithm.prototype.invert = function () { return traversal_1.Traversal.Singleton.invert.traverse(this); };
-    Algorithm.prototype.expand = function () { return traversal_1.Traversal.Singleton.expand.traverse(this); };
-    Algorithm.prototype.countBaseMoves = function () { return traversal_1.Traversal.Singleton.countBaseMoves.traverse(this); };
-    Algorithm.prototype.coalesceMoves = function () { return traversal_1.Traversal.Singleton.coalesceMoves.traverse(this); };
-    Algorithm.prototype.toString = function () { return traversal_1.Traversal.Singleton.toString.traverse(this); };
-    Algorithm.prototype.structureEquals = function (nestedAlg) {
-        return traversal_1.Traversal.Singleton.structureEquals.traverse(this, nestedAlg);
-    };
-    Algorithm.prototype.concat = function (nestedAlg) {
-        return traversal_1.Traversal.Singleton.concat.traverse(this, nestedAlg);
     };
     return Algorithm;
 }());
@@ -337,8 +331,6 @@ var CommentLong = /** @class */ (function (_super) {
     return CommentLong;
 }(Algorithm));
 exports.CommentLong = CommentLong;
-// TODO
-// export class TimeStamp extends Algorithm implements Algorithm
 
 
 /***/ }),
@@ -473,7 +465,7 @@ var Traversal;
             var once;
             if (amountDir == -1) {
                 // TODO: Avoid casting to sequence.
-                once = (new algorithm_1.Sequence(algList)).invert().nestedAlgs;
+                once = (exports.invert(new algorithm_1.Sequence(algList))).nestedAlgs;
             }
             else {
                 once = algList;
@@ -502,14 +494,14 @@ var Traversal;
             var expandedA = this.traverse(commutator.A);
             var expandedB = this.traverse(commutator.B);
             var once = [];
-            once = once.concat(expandedA, expandedB, expandedA.invert(), expandedB.invert());
+            once = once.concat(expandedA, expandedB, exports.invert(expandedA), exports.invert(expandedB));
             return this.repeat(this.flattenSequenceOneLevel(once), commutator);
         };
         Expand.prototype.traverseConjugate = function (conjugate) {
             var expandedA = this.traverse(conjugate.A);
             var expandedB = this.traverse(conjugate.B);
             var once = [];
-            once = once.concat(expandedA, expandedB, expandedA.invert());
+            once = once.concat(expandedA, expandedB, exports.invert(expandedA));
             return this.repeat(this.flattenSequenceOneLevel(once), conjugate);
         };
         Expand.prototype.traversePause = function (pause) { return pause; };
@@ -623,6 +615,7 @@ var Traversal;
             // TODO: Handle layers
             return moveA.family === moveB.family;
         };
+        // TODO: Handle
         CoalesceMoves.prototype.traverseSequence = function (sequence) {
             var coalesced = [];
             for (var _i = 0, _a = sequence.nestedAlgs; _i < _a.length; _i++) {
@@ -718,8 +711,8 @@ var Traversal;
         ToString.prototype.traverseGroup = function (group) { return "(" + group.nestedAlg + ")" + this.repetitionSuffix(group.amount); };
         ToString.prototype.traverseRotation = function (rotation) { return rotation.family + this.repetitionSuffix(rotation.amount); };
         ToString.prototype.traverseBlockMove = function (blockMove) { return blockMove.family + this.repetitionSuffix(blockMove.amount); };
-        ToString.prototype.traverseCommutator = function (commutator) { return "[" + commutator.A + ", " + commutator.B + "]" + this.repetitionSuffix(commutator.amount); };
-        ToString.prototype.traverseConjugate = function (conjugate) { return "[" + conjugate.A + ": " + conjugate.B + "]" + this.repetitionSuffix(conjugate.amount); };
+        ToString.prototype.traverseCommutator = function (commutator) { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); };
+        ToString.prototype.traverseConjugate = function (conjugate) { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); };
         // TODO: Remove spaces between repeated pauses (in traverseSequence)
         ToString.prototype.traversePause = function (pause) { return "."; };
         ToString.prototype.traverseNewLine = function (newLine) { return "\n"; };
@@ -730,18 +723,23 @@ var Traversal;
         return ToString;
     }(Up));
     Traversal.ToString = ToString;
-    var Singleton;
-    (function (Singleton) {
-        Singleton.clone = new Clone();
-        Singleton.invert = new Invert();
-        Singleton.expand = new Expand();
-        Singleton.countBaseMoves = new CountBaseMoves();
-        Singleton.structureEquals = new StructureEquals();
-        Singleton.coalesceMoves = new CoalesceMoves();
-        Singleton.concat = new Concat();
-        Singleton.toString = new ToString();
-    })(Singleton = Traversal.Singleton || (Traversal.Singleton = {}));
 })(Traversal = exports.Traversal || (exports.Traversal = {}));
+function makeDownUp(ctor) {
+    var instance = new ctor();
+    return instance.traverse.bind(instance);
+}
+function makeUp(ctor) {
+    var instance = new ctor();
+    return instance.traverse.bind(instance);
+}
+exports.clone = makeUp(Traversal.Clone);
+exports.invert = makeUp(Traversal.Invert);
+exports.expand = makeUp(Traversal.Expand);
+exports.countBaseMoves = makeUp(Traversal.CountBaseMoves);
+exports.structureEquals = makeDownUp(Traversal.StructureEquals);
+exports.coalesceMoves = makeUp(Traversal.CoalesceMoves);
+exports.concat = makeDownUp(Traversal.Concat);
+exports.algToString = makeUp(Traversal.ToString);
 
 
 /***/ }),
@@ -867,7 +865,6 @@ function fromJSON(json) {
             }
             return new algorithm_1.Group(this.fromJSON(json.nestedAlg), json.amount);
         case "rotation":
-            // TODO: Handle layers
             if (!json.family) {
                 throw "Missing family";
             }
