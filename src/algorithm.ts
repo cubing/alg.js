@@ -46,7 +46,7 @@ export class Sequence extends Algorithm {
 
 export class Group extends UnitWithAmount {
   public type: string = "group";
-  constructor(public nestedAlg: Algorithm, amount: number) {
+  constructor(public nestedAlg: Unit | Sequence, amount: number) {
     super(amount);
     this.freeze();
   }
