@@ -19,6 +19,20 @@ var UU = new Alg.Sequence([new BlockMove("U", 1), new BlockMove("U", 1)]);
 var U2 = new Alg.Sequence([new BlockMove("U", 2)]);
 var R  = new Alg.Sequence([new BlockMove("R", 1)]);
 
+describe("Sequence", () => {
+  it("should throw an error for an empty sequence", () => {
+    expect(() => new Alg.Sequence([])).to.throw(/cannot be empty/);
+  });
+
+  it("should throw an error for a nested sequence", () => {
+    expect(() => new Alg.Sequence([new Alg.Sequence([new Alg.BlockMove("R", 1)])])).to.throw(/can only contain/);
+  });
+});
+
+var e = function(a1: Alg.Algorithm, a2: Alg.Algorithm) {
+  return expect(structureEquals(a1, a2));
+}
+
 describe("algToString()", () => {
   it("should convert Sune to string", () => {
     expect(algToString(Ex.Sune)).to.equal("R U R' U R U2' R'");

@@ -32,6 +32,9 @@ export class Sequence extends Algorithm {
   public type: string = "sequence";
   constructor(public nestedAlgs: Unit[]) {
     super();
+    if (nestedAlgs.length == 0) {
+      throw "A sequence cannot be empty."
+    }
     for (var n of nestedAlgs) {
       if (!(n instanceof Unit)) {
         throw "A Sequence can only contain `Unit`s."
