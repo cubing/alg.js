@@ -29,6 +29,12 @@ describe("Sequence", () => {
   });
 });
 
+describe("BlockMove", () => {
+  it("should throw an error for an invalid family", () => {
+    expect(() => new Alg.BlockMove("Q", 1)).to.throw(/Invalid block move family/);
+  });
+});
+
 var e = function(a1: Alg.Algorithm, a2: Alg.Algorithm) {
   return expect(structureEquals(a1, a2));
 }
