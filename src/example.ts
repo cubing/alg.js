@@ -14,8 +14,6 @@ import {
   CommentLong
 } from "./algorithm";
 
-"use strict";
-
 export namespace Example {
 
   export const Sune: Sequence = new Sequence([

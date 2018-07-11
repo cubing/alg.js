@@ -14,8 +14,6 @@ import {
   CommentLong
 } from "./algorithm";
 
-"use strict";
-
 function dispatch<DataDown, DataUp>(t: DownUp<DataDown, DataUp>, algorithm: Algorithm, dataDown: DataDown): DataUp {
   switch (algorithm.type) {
     case "sequence":

@@ -6,8 +6,6 @@ import {
   algToString
 } from "./traversal"
 
-"use strict";
-
 export abstract class Algorithm {
   public readonly abstract type: string
 

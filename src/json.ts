@@ -1,7 +1,5 @@
 import {Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong} from "./algorithm"
 
-"use strict";
-
 export interface AlgorithmJSON {
   type: string;
   nestedAlg?: AlgorithmJSON;
