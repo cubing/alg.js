@@ -1,5 +1,4 @@
 import {
-  Traversal,
   clone,
   invert,
   expand,

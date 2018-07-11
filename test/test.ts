@@ -2,7 +2,6 @@ import * as Alg from "../src/algorithm"
 import {BlockMove as BM} from "../src/algorithm"
 import {Example as Ex} from "../src/example"
 import {
-  Traversal,
   clone,
   invert,
   expand,
@@ -39,20 +38,17 @@ describe("toString", () => {
 });
 
 var e = function(a1: Alg.Algorithm, a2: Alg.Algorithm) {
-  var structureEquals = new Traversal.StructureEquals();
-  return expect(structureEquals.traverse(a1, a2));
+  return expect(structureEquals(a1, a2));
 }
 
 describe("Traversal", () => {
   it("should correctly traverse using CountBaseMoves", () => {
-    var t = new Traversal.CountBaseMoves();
-    expect(t.traverse(Ex.Sune)).to.equal(7);
+    expect(countBaseMoves(Ex.Sune)).to.equal(7);
 
     expect(countBaseMoves(Ex.Sune)).to.equal(7);
   });
  
   it("should correctly traverse using StructureEquals", () => {
-    var s = new Traversal.StructureEquals();
     e(Ex.FURURFCompact, Ex.FURURFMoves).to.be.false;
     e(Ex.FURURFMoves, Ex.FURURFCompact).to.be.false;
     e(Ex.FURURFMoves, Ex.FURURFMoves).to.be.true;
@@ -60,7 +56,6 @@ describe("Traversal", () => {
   });
  
   it("should correctly traverse using Expand", () => {
-    var s = new Traversal.StructureEquals();
     e(expand(Ex.FURURFCompact), Ex.FURURFMoves).to.be.true;
     e(expand(Ex.Sune), Ex.Sune).to.be.true;
     e(expand(Ex.SuneCommutator), Ex.Sune).to.be.false;
@@ -109,40 +104,40 @@ describe("JSON", () => {
   });
 });
 
-describe("Custom Traversal", () => {
-  it("should be able to calculate alg depth", () => {
-    class Depth extends Traversal.Up<number> {
-      public traverseSequence(sequence: Alg.Sequence): number {
-        var max = 0;
-        for (var part of sequence.nestedAlgs) {
-          max = Math.max(max, this.traverse(part));
-        }
-        return max;
-      }
-      public traverseGroup(group: Alg.Group): number {
-        return 1 + this.traverse(group.nestedAlg);
-      }
-      public traverseBlockMove(blockMove: Alg.BaseMove): number {
-        return 0;
-      }
-      public traverseCommutator(commutator: Alg.Commutator): number {
-        return 1 + Math.max(this.traverse(commutator.A), this.traverse(commutator.B));
-      }
-      public traverseConjugate(conjugate: Alg.Conjugate): number {
-        return 1 + Math.max(this.traverse(conjugate.A), this.traverse(conjugate.B));
-      }
-      public traversePause(pause: Alg.Pause):                      number { return 0; }
-      public traverseNewLine(newLine: Alg.NewLine):                number { return 0; }
-      public traverseCommentShort(commentShort: Alg.CommentShort): number { return 0; }
-      public traverseCommentLong(commentLong: Alg.CommentLong):    number { return 0; }
-    }
+// describe("Custom Traversal", () => {
+//   it("should be able to calculate alg depth", () => {
+//     class Depth extends Traversal.Up<number> {
+//       public traverseSequence(sequence: Alg.Sequence): number {
+//         var max = 0;
+//         for (var part of sequence.nestedAlgs) {
+//           max = Math.max(max, this.traverse(part));
+//         }
+//         return max;
+//       }
+//       public traverseGroup(group: Alg.Group): number {
+//         return 1 + this.traverse(group.nestedAlg);
+//       }
+//       public traverseBlockMove(blockMove: Alg.BaseMove): number {
+//         return 0;
+//       }
+//       public traverseCommutator(commutator: Alg.Commutator): number {
+//         return 1 + Math.max(this.traverse(commutator.A), this.traverse(commutator.B));
+//       }
+//       public traverseConjugate(conjugate: Alg.Conjugate): number {
+//         return 1 + Math.max(this.traverse(conjugate.A), this.traverse(conjugate.B));
+//       }
+//       public traversePause(pause: Alg.Pause):                      number { return 0; }
+//       public traverseNewLine(newLine: Alg.NewLine):                number { return 0; }
+//       public traverseCommentShort(commentShort: Alg.CommentShort): number { return 0; }
+//       public traverseCommentLong(commentLong: Alg.CommentLong):    number { return 0; }
+//     }
 
-    var depth = new Depth();
-    expect(depth.traverse(Ex.Sune)).to.equal(0);
-    expect(depth.traverse(Ex.HeadlightSwaps)).to.equal(2);
-    expect(depth.traverse(Ex.FURURFCompact)).to.equal(2);
-  });
-})
+//     var depth = new Depth();
+//     expect(depth.traverse(Ex.Sune)).to.equal(0);
+//     expect(depth.traverse(Ex.HeadlightSwaps)).to.equal(2);
+//     expect(depth.traverse(Ex.FURURFCompact)).to.equal(2);
+//   });
+// })
 
 
 describe("Object Freezing", () => {

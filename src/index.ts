@@ -17,7 +17,6 @@ export {
 } from "./algorithm";
 
 export {
-  Traversal,
   clone,
   invert,
   expand,

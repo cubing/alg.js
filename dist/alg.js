@@ -116,7 +116,6 @@ exports.NewLine = algorithm_1.NewLine;
 exports.CommentShort = algorithm_1.CommentShort;
 exports.CommentLong = algorithm_1.CommentLong;
 var traversal_1 = __webpack_require__(2);
-exports.Traversal = traversal_1.Traversal;
 exports.clone = traversal_1.clone;
 exports.invert = traversal_1.invert;
 exports.expand = traversal_1.expand;
@@ -324,407 +323,404 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var algorithm_1 = __webpack_require__(1);
 "use strict";
-var Traversal;
-(function (Traversal) {
-    function dispatch(t, algorithm, dataDown) {
-        switch (algorithm.type) {
-            case "sequence":
-                if (!(algorithm instanceof algorithm_1.Sequence)) {
-                    throw "Algorithm is not an object of type Sequence despite having `type`: ${algorithm.type}";
-                }
-                return t.traverseSequence(algorithm, dataDown);
-            case "group":
-                if (!(algorithm instanceof algorithm_1.Group)) {
-                    throw "Algorithm is not an object of type Group despite having `type`: ${algorithm.type}";
-                }
-                return t.traverseGroup(algorithm, dataDown);
-            case "blockMove":
-                if (!(algorithm instanceof algorithm_1.BlockMove)) {
-                    throw "Algorithm is not an object of type BlockMove despite having `type`: ${algorithm.type}";
-                }
-                return t.traverseBlockMove(algorithm, dataDown);
-            case "commutator":
-                if (!(algorithm instanceof algorithm_1.Commutator)) {
-                    throw "Algorithm is not an object of type Commutator despite having `type`: ${algorithm.type}";
-                }
-                return t.traverseCommutator(algorithm, dataDown);
-            case "conjugate":
-                if (!(algorithm instanceof algorithm_1.Conjugate)) {
-                    throw "Algorithm is not an object of type Conjugate despite having `type`: ${algorithm.type}";
-                }
-                return t.traverseConjugate(algorithm, dataDown);
-            case "pause":
-                if (!(algorithm instanceof algorithm_1.Pause)) {
-                    throw "Algorithm is not an object of type Pause despite having `type`: ${algorithm.type}";
-                }
-                return t.traversePause(algorithm, dataDown);
-            case "newLine":
-                if (!(algorithm instanceof algorithm_1.NewLine)) {
-                    throw "Algorithm is not an object of type NewLine despite having `type`: ${algorithm.type}";
-                }
-                return t.traverseNewLine(algorithm, dataDown);
-            case "commentShort":
-                if (!(algorithm instanceof algorithm_1.CommentShort)) {
-                    throw "Algorithm is not an object of type CommentShort despite having `type`: ${algorithm.type}";
-                }
-                return t.traverseCommentShort(algorithm, dataDown);
-            case "commentLong":
-                if (!(algorithm instanceof algorithm_1.CommentLong)) {
-                    throw "Algorithm is not an object of type CommentLong despite having `type`: ${algorithm.type}";
-                }
-                return t.traverseCommentLong(algorithm, dataDown);
-            default:
-                throw "Unknown algorithm type: " + algorithm.type;
-        }
-    }
-    var DownUp = /** @class */ (function () {
-        function DownUp() {
-        }
-        DownUp.prototype.traverse = function (algorithm, dataDown) {
-            return dispatch(this, algorithm, dataDown);
-        };
-        return DownUp;
-    }());
-    Traversal.DownUp = DownUp;
-    var Up = /** @class */ (function (_super) {
-        __extends(Up, _super);
-        function Up() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        Up.prototype.traverse = function (algorithm) {
-            return dispatch(this, algorithm, undefined);
-        };
-        return Up;
-    }(DownUp));
-    Traversal.Up = Up;
-    ;
-    var Clone = /** @class */ (function (_super) {
-        __extends(Clone, _super);
-        function Clone() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        Clone.prototype.traverseSequence = function (sequence) {
-            var _this = this;
-            return new algorithm_1.Sequence(sequence.nestedAlgs.map(function (a) { return _this.traverse(a); }));
-        };
-        Clone.prototype.traverseGroup = function (group) {
-            return new algorithm_1.Group(this.traverse(group.nestedAlg), group.amount);
-        };
-        Clone.prototype.traverseBlockMove = function (blockMove) {
-            return new algorithm_1.BlockMove(blockMove.family, blockMove.amount);
-        };
-        Clone.prototype.traverseCommutator = function (commutator) {
-            return new algorithm_1.Commutator(this.traverse(commutator.A), this.traverse(commutator.B), commutator.amount);
-        };
-        Clone.prototype.traverseConjugate = function (conjugate) {
-            return new algorithm_1.Conjugate(this.traverse(conjugate.A), this.traverse(conjugate.B), conjugate.amount);
-        };
-        Clone.prototype.traversePause = function (pause) { return pause; };
-        Clone.prototype.traverseNewLine = function (newLine) { return newLine; };
-        Clone.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
-        Clone.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
-        return Clone;
-    }(Up));
-    Traversal.Clone = Clone;
-    // TODO: Test that inverses are bijections.
-    var Invert = /** @class */ (function (_super) {
-        __extends(Invert, _super);
-        function Invert() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        Invert.prototype.traverseSequence = function (sequence) {
-            var _this = this;
-            // TODO: Handle newLines and comments correctly
-            return new algorithm_1.Sequence(sequence.nestedAlgs.slice().reverse().map(function (a) { return _this.traverse(a); }));
-        };
-        Invert.prototype.traverseGroup = function (group) {
-            return new algorithm_1.Group(this.traverse(group.nestedAlg), group.amount);
-        };
-        Invert.prototype.traverseBlockMove = function (blockMove) {
-            return new algorithm_1.BlockMove(blockMove.family, -blockMove.amount);
-        };
-        Invert.prototype.traverseCommutator = function (commutator) {
-            return new algorithm_1.Commutator(commutator.B, commutator.A, commutator.amount);
-        };
-        Invert.prototype.traverseConjugate = function (conjugate) {
-            return new algorithm_1.Conjugate(conjugate.A, this.traverse(conjugate.B), conjugate.amount);
-        };
-        Invert.prototype.traversePause = function (pause) { return pause; };
-        Invert.prototype.traverseNewLine = function (newLine) { return newLine; };
-        Invert.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
-        Invert.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
-        return Invert;
-    }(Up));
-    Traversal.Invert = Invert;
-    var Expand = /** @class */ (function (_super) {
-        __extends(Expand, _super);
-        function Expand() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        Expand.prototype.flattenSequenceOneLevel = function (algList) {
-            var flattened = [];
-            for (var _i = 0, algList_1 = algList; _i < algList_1.length; _i++) {
-                var part = algList_1[_i];
-                if (part instanceof algorithm_1.Sequence) {
-                    flattened = flattened.concat(part.nestedAlgs);
-                }
-                else {
-                    flattened.push(part);
-                }
+function dispatch(t, algorithm, dataDown) {
+    switch (algorithm.type) {
+        case "sequence":
+            if (!(algorithm instanceof algorithm_1.Sequence)) {
+                throw "Algorithm is not an object of type Sequence despite having `type`: ${algorithm.type}";
             }
-            return flattened;
-        };
-        Expand.prototype.repeat = function (algList, accordingTo) {
-            var amount = Math.abs(accordingTo.amount);
-            var amountDir = (accordingTo.amount > 0) ? 1 : -1; // Mutable
-            // TODO: Cleaner inversion
-            var once;
-            if (amountDir == -1) {
-                // TODO: Avoid casting to sequence.
-                once = (exports.invert(new algorithm_1.Sequence(algList))).nestedAlgs;
+            return t.traverseSequence(algorithm, dataDown);
+        case "group":
+            if (!(algorithm instanceof algorithm_1.Group)) {
+                throw "Algorithm is not an object of type Group despite having `type`: ${algorithm.type}";
+            }
+            return t.traverseGroup(algorithm, dataDown);
+        case "blockMove":
+            if (!(algorithm instanceof algorithm_1.BlockMove)) {
+                throw "Algorithm is not an object of type BlockMove despite having `type`: ${algorithm.type}";
+            }
+            return t.traverseBlockMove(algorithm, dataDown);
+        case "commutator":
+            if (!(algorithm instanceof algorithm_1.Commutator)) {
+                throw "Algorithm is not an object of type Commutator despite having `type`: ${algorithm.type}";
+            }
+            return t.traverseCommutator(algorithm, dataDown);
+        case "conjugate":
+            if (!(algorithm instanceof algorithm_1.Conjugate)) {
+                throw "Algorithm is not an object of type Conjugate despite having `type`: ${algorithm.type}";
+            }
+            return t.traverseConjugate(algorithm, dataDown);
+        case "pause":
+            if (!(algorithm instanceof algorithm_1.Pause)) {
+                throw "Algorithm is not an object of type Pause despite having `type`: ${algorithm.type}";
+            }
+            return t.traversePause(algorithm, dataDown);
+        case "newLine":
+            if (!(algorithm instanceof algorithm_1.NewLine)) {
+                throw "Algorithm is not an object of type NewLine despite having `type`: ${algorithm.type}";
+            }
+            return t.traverseNewLine(algorithm, dataDown);
+        case "commentShort":
+            if (!(algorithm instanceof algorithm_1.CommentShort)) {
+                throw "Algorithm is not an object of type CommentShort despite having `type`: ${algorithm.type}";
+            }
+            return t.traverseCommentShort(algorithm, dataDown);
+        case "commentLong":
+            if (!(algorithm instanceof algorithm_1.CommentLong)) {
+                throw "Algorithm is not an object of type CommentLong despite having `type`: ${algorithm.type}";
+            }
+            return t.traverseCommentLong(algorithm, dataDown);
+        default:
+            throw "Unknown algorithm type: " + algorithm.type;
+    }
+}
+var DownUp = /** @class */ (function () {
+    function DownUp() {
+    }
+    DownUp.prototype.traverse = function (algorithm, dataDown) {
+        return dispatch(this, algorithm, dataDown);
+    };
+    return DownUp;
+}());
+exports.DownUp = DownUp;
+var Up = /** @class */ (function (_super) {
+    __extends(Up, _super);
+    function Up() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Up.prototype.traverse = function (algorithm) {
+        return dispatch(this, algorithm, undefined);
+    };
+    return Up;
+}(DownUp));
+exports.Up = Up;
+;
+var Clone = /** @class */ (function (_super) {
+    __extends(Clone, _super);
+    function Clone() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Clone.prototype.traverseSequence = function (sequence) {
+        var _this = this;
+        return new algorithm_1.Sequence(sequence.nestedAlgs.map(function (a) { return _this.traverse(a); }));
+    };
+    Clone.prototype.traverseGroup = function (group) {
+        return new algorithm_1.Group(this.traverse(group.nestedAlg), group.amount);
+    };
+    Clone.prototype.traverseBlockMove = function (blockMove) {
+        return new algorithm_1.BlockMove(blockMove.family, blockMove.amount);
+    };
+    Clone.prototype.traverseCommutator = function (commutator) {
+        return new algorithm_1.Commutator(this.traverse(commutator.A), this.traverse(commutator.B), commutator.amount);
+    };
+    Clone.prototype.traverseConjugate = function (conjugate) {
+        return new algorithm_1.Conjugate(this.traverse(conjugate.A), this.traverse(conjugate.B), conjugate.amount);
+    };
+    Clone.prototype.traversePause = function (pause) { return pause; };
+    Clone.prototype.traverseNewLine = function (newLine) { return newLine; };
+    Clone.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
+    Clone.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
+    return Clone;
+}(Up));
+exports.Clone = Clone;
+// TODO: Test that inverses are bijections.
+var Invert = /** @class */ (function (_super) {
+    __extends(Invert, _super);
+    function Invert() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Invert.prototype.traverseSequence = function (sequence) {
+        var _this = this;
+        // TODO: Handle newLines and comments correctly
+        return new algorithm_1.Sequence(sequence.nestedAlgs.slice().reverse().map(function (a) { return _this.traverse(a); }));
+    };
+    Invert.prototype.traverseGroup = function (group) {
+        return new algorithm_1.Group(this.traverse(group.nestedAlg), group.amount);
+    };
+    Invert.prototype.traverseBlockMove = function (blockMove) {
+        return new algorithm_1.BlockMove(blockMove.family, -blockMove.amount);
+    };
+    Invert.prototype.traverseCommutator = function (commutator) {
+        return new algorithm_1.Commutator(commutator.B, commutator.A, commutator.amount);
+    };
+    Invert.prototype.traverseConjugate = function (conjugate) {
+        return new algorithm_1.Conjugate(conjugate.A, this.traverse(conjugate.B), conjugate.amount);
+    };
+    Invert.prototype.traversePause = function (pause) { return pause; };
+    Invert.prototype.traverseNewLine = function (newLine) { return newLine; };
+    Invert.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
+    Invert.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
+    return Invert;
+}(Up));
+exports.Invert = Invert;
+var Expand = /** @class */ (function (_super) {
+    __extends(Expand, _super);
+    function Expand() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Expand.prototype.flattenSequenceOneLevel = function (algList) {
+        var flattened = [];
+        for (var _i = 0, algList_1 = algList; _i < algList_1.length; _i++) {
+            var part = algList_1[_i];
+            if (part instanceof algorithm_1.Sequence) {
+                flattened = flattened.concat(part.nestedAlgs);
             }
             else {
-                once = algList;
+                flattened.push(part);
             }
-            var repeated = [];
-            for (var i = 0; i < amount; i++) {
-                repeated = repeated.concat(once);
-            }
-            return new algorithm_1.Sequence(repeated);
-        };
-        Expand.prototype.traverseSequence = function (sequence) {
-            var _this = this;
-            return new algorithm_1.Sequence(this.flattenSequenceOneLevel(sequence.nestedAlgs.map(function (a) { return _this.traverse(a); })));
-        };
-        Expand.prototype.traverseGroup = function (group) {
-            // TODO: Pass raw Algorithm[] to sequence.
-            return this.repeat([this.traverse(group.nestedAlg)], group);
-        };
-        Expand.prototype.traverseBlockMove = function (blockMove) {
-            return blockMove;
-        };
-        Expand.prototype.traverseCommutator = function (commutator) {
-            var expandedA = this.traverse(commutator.A);
-            var expandedB = this.traverse(commutator.B);
-            var once = [];
-            once = once.concat(expandedA, expandedB, exports.invert(expandedA), exports.invert(expandedB));
-            return this.repeat(this.flattenSequenceOneLevel(once), commutator);
-        };
-        Expand.prototype.traverseConjugate = function (conjugate) {
-            var expandedA = this.traverse(conjugate.A);
-            var expandedB = this.traverse(conjugate.B);
-            var once = [];
-            once = once.concat(expandedA, expandedB, exports.invert(expandedA));
-            return this.repeat(this.flattenSequenceOneLevel(once), conjugate);
-        };
-        Expand.prototype.traversePause = function (pause) { return pause; };
-        Expand.prototype.traverseNewLine = function (newLine) { return newLine; };
-        Expand.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
-        Expand.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
-        return Expand;
-    }(Up));
-    Traversal.Expand = Expand;
-    var CountBaseMoves = /** @class */ (function (_super) {
-        __extends(CountBaseMoves, _super);
-        function CountBaseMoves() {
-            return _super !== null && _super.apply(this, arguments) || this;
         }
-        CountBaseMoves.prototype.traverseSequence = function (sequence) {
-            var total = 0;
-            for (var _i = 0, _a = sequence.nestedAlgs; _i < _a.length; _i++) {
-                var part = _a[_i];
-                total += this.traverse(part);
-            }
-            return total;
-        };
-        CountBaseMoves.prototype.traverseGroup = function (group) {
-            return this.traverse(group.nestedAlg);
-        };
-        CountBaseMoves.prototype.traverseBlockMove = function (blockMove) {
-            return 1;
-        };
-        CountBaseMoves.prototype.traverseCommutator = function (commutator) {
-            return 2 * (this.traverse(commutator.A) + this.traverse(commutator.B));
-        };
-        CountBaseMoves.prototype.traverseConjugate = function (conjugate) {
-            return 2 * (this.traverse(conjugate.A)) + this.traverse(conjugate.B);
-        };
-        CountBaseMoves.prototype.traversePause = function (pause) { return 0; };
-        CountBaseMoves.prototype.traverseNewLine = function (newLine) { return 0; };
-        CountBaseMoves.prototype.traverseCommentShort = function (commentShort) { return 0; };
-        CountBaseMoves.prototype.traverseCommentLong = function (commentLong) { return 0; };
-        return CountBaseMoves;
-    }(Up));
-    Traversal.CountBaseMoves = CountBaseMoves;
-    var StructureEquals = /** @class */ (function (_super) {
-        __extends(StructureEquals, _super);
-        function StructureEquals() {
-            return _super !== null && _super.apply(this, arguments) || this;
+        return flattened;
+    };
+    Expand.prototype.repeat = function (algList, accordingTo) {
+        var amount = Math.abs(accordingTo.amount);
+        var amountDir = (accordingTo.amount > 0) ? 1 : -1; // Mutable
+        // TODO: Cleaner inversion
+        var once;
+        if (amountDir == -1) {
+            // TODO: Avoid casting to sequence.
+            once = (exports.invert(new algorithm_1.Sequence(algList))).nestedAlgs;
         }
-        StructureEquals.prototype.traverseSequence = function (sequence, dataDown) {
-            if (!(dataDown instanceof algorithm_1.Sequence)) {
+        else {
+            once = algList;
+        }
+        var repeated = [];
+        for (var i = 0; i < amount; i++) {
+            repeated = repeated.concat(once);
+        }
+        return new algorithm_1.Sequence(repeated);
+    };
+    Expand.prototype.traverseSequence = function (sequence) {
+        var _this = this;
+        return new algorithm_1.Sequence(this.flattenSequenceOneLevel(sequence.nestedAlgs.map(function (a) { return _this.traverse(a); })));
+    };
+    Expand.prototype.traverseGroup = function (group) {
+        // TODO: Pass raw Algorithm[] to sequence.
+        return this.repeat([this.traverse(group.nestedAlg)], group);
+    };
+    Expand.prototype.traverseBlockMove = function (blockMove) {
+        return blockMove;
+    };
+    Expand.prototype.traverseCommutator = function (commutator) {
+        var expandedA = this.traverse(commutator.A);
+        var expandedB = this.traverse(commutator.B);
+        var once = [];
+        once = once.concat(expandedA, expandedB, exports.invert(expandedA), exports.invert(expandedB));
+        return this.repeat(this.flattenSequenceOneLevel(once), commutator);
+    };
+    Expand.prototype.traverseConjugate = function (conjugate) {
+        var expandedA = this.traverse(conjugate.A);
+        var expandedB = this.traverse(conjugate.B);
+        var once = [];
+        once = once.concat(expandedA, expandedB, exports.invert(expandedA));
+        return this.repeat(this.flattenSequenceOneLevel(once), conjugate);
+    };
+    Expand.prototype.traversePause = function (pause) { return pause; };
+    Expand.prototype.traverseNewLine = function (newLine) { return newLine; };
+    Expand.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
+    Expand.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
+    return Expand;
+}(Up));
+exports.Expand = Expand;
+var CountBaseMoves = /** @class */ (function (_super) {
+    __extends(CountBaseMoves, _super);
+    function CountBaseMoves() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CountBaseMoves.prototype.traverseSequence = function (sequence) {
+        var total = 0;
+        for (var _i = 0, _a = sequence.nestedAlgs; _i < _a.length; _i++) {
+            var part = _a[_i];
+            total += this.traverse(part);
+        }
+        return total;
+    };
+    CountBaseMoves.prototype.traverseGroup = function (group) {
+        return this.traverse(group.nestedAlg);
+    };
+    CountBaseMoves.prototype.traverseBlockMove = function (blockMove) {
+        return 1;
+    };
+    CountBaseMoves.prototype.traverseCommutator = function (commutator) {
+        return 2 * (this.traverse(commutator.A) + this.traverse(commutator.B));
+    };
+    CountBaseMoves.prototype.traverseConjugate = function (conjugate) {
+        return 2 * (this.traverse(conjugate.A)) + this.traverse(conjugate.B);
+    };
+    CountBaseMoves.prototype.traversePause = function (pause) { return 0; };
+    CountBaseMoves.prototype.traverseNewLine = function (newLine) { return 0; };
+    CountBaseMoves.prototype.traverseCommentShort = function (commentShort) { return 0; };
+    CountBaseMoves.prototype.traverseCommentLong = function (commentLong) { return 0; };
+    return CountBaseMoves;
+}(Up));
+exports.CountBaseMoves = CountBaseMoves;
+var StructureEquals = /** @class */ (function (_super) {
+    __extends(StructureEquals, _super);
+    function StructureEquals() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StructureEquals.prototype.traverseSequence = function (sequence, dataDown) {
+        if (!(dataDown instanceof algorithm_1.Sequence)) {
+            return false;
+        }
+        if (sequence.nestedAlgs.length !== dataDown.nestedAlgs.length) {
+            return false;
+        }
+        for (var i = 0; i < sequence.nestedAlgs.length; i++) {
+            if (!this.traverse(sequence.nestedAlgs[i], dataDown.nestedAlgs[i])) {
                 return false;
             }
-            if (sequence.nestedAlgs.length !== dataDown.nestedAlgs.length) {
-                return false;
-            }
-            for (var i = 0; i < sequence.nestedAlgs.length; i++) {
-                if (!this.traverse(sequence.nestedAlgs[i], dataDown.nestedAlgs[i])) {
-                    return false;
-                }
-            }
-            return true;
-        };
-        StructureEquals.prototype.traverseGroup = function (group, dataDown) {
-            return (dataDown instanceof algorithm_1.Group) && this.traverse(group.nestedAlg, dataDown.nestedAlg);
-        };
-        StructureEquals.prototype.traverseBlockMove = function (blockMove, dataDown) {
-            // TODO: Handle layers.
-            return dataDown instanceof algorithm_1.BlockMove &&
-                blockMove.family === dataDown.family &&
-                blockMove.amount === dataDown.amount;
-        };
-        StructureEquals.prototype.traverseCommutator = function (commutator, dataDown) {
-            return (dataDown instanceof algorithm_1.Commutator) &&
-                this.traverse(commutator.A, dataDown.A) &&
-                this.traverse(commutator.B, dataDown.B);
-        };
-        StructureEquals.prototype.traverseConjugate = function (conjugate, dataDown) {
-            return (dataDown instanceof algorithm_1.Conjugate) &&
-                this.traverse(conjugate.A, dataDown.A) &&
-                this.traverse(conjugate.B, dataDown.B);
-        };
-        StructureEquals.prototype.traversePause = function (pause, dataDown) {
-            return dataDown instanceof algorithm_1.Pause;
-        };
-        StructureEquals.prototype.traverseNewLine = function (newLine, dataDown) {
-            return dataDown instanceof algorithm_1.NewLine;
-        };
-        StructureEquals.prototype.traverseCommentShort = function (commentShort, dataDown) {
-            return (dataDown instanceof algorithm_1.CommentShort) && (commentShort.comment == dataDown.comment);
-        };
-        StructureEquals.prototype.traverseCommentLong = function (commentLong, dataDown) {
-            return (dataDown instanceof algorithm_1.CommentShort) && (commentLong.comment == dataDown.comment);
-        };
-        return StructureEquals;
-    }(DownUp));
-    Traversal.StructureEquals = StructureEquals;
-    // TODO: Test that inverses are bijections.
-    var CoalesceMoves = /** @class */ (function (_super) {
-        __extends(CoalesceMoves, _super);
-        function CoalesceMoves() {
-            return _super !== null && _super.apply(this, arguments) || this;
         }
-        CoalesceMoves.prototype.sameBlock = function (moveA, moveB) {
-            // TODO: Handle layers
-            return moveA.family === moveB.family;
-        };
-        // TODO: Handle
-        CoalesceMoves.prototype.traverseSequence = function (sequence) {
-            var coalesced = [];
-            for (var _i = 0, _a = sequence.nestedAlgs; _i < _a.length; _i++) {
-                var part = _a[_i];
-                if (!(part instanceof algorithm_1.BlockMove)) {
-                    coalesced.push(this.traverse(part));
-                }
-                else if (coalesced.length > 0) {
-                    var last = coalesced[coalesced.length - 1];
-                    if (last instanceof algorithm_1.BlockMove &&
-                        this.sameBlock(last, part)) {
-                        // TODO: This is cube-specific. Perhaps pass the modules as DataDown?
-                        var amount = last.amount + part.amount;
-                        coalesced.pop();
-                        if (amount !== 0) {
-                            // We could modify the last element instead of creating a new one,
-                            // but this is safe against shifting coding practices.
-                            // TODO: Figure out if the shoot-in-the-foot risk
-                            // modification is worth the speed.
-                            coalesced.push(new algorithm_1.BlockMove(part.family, amount));
-                        }
-                    }
-                    else {
-                        coalesced.push(part);
+        return true;
+    };
+    StructureEquals.prototype.traverseGroup = function (group, dataDown) {
+        return (dataDown instanceof algorithm_1.Group) && this.traverse(group.nestedAlg, dataDown.nestedAlg);
+    };
+    StructureEquals.prototype.traverseBlockMove = function (blockMove, dataDown) {
+        // TODO: Handle layers.
+        return dataDown instanceof algorithm_1.BlockMove &&
+            blockMove.family === dataDown.family &&
+            blockMove.amount === dataDown.amount;
+    };
+    StructureEquals.prototype.traverseCommutator = function (commutator, dataDown) {
+        return (dataDown instanceof algorithm_1.Commutator) &&
+            this.traverse(commutator.A, dataDown.A) &&
+            this.traverse(commutator.B, dataDown.B);
+    };
+    StructureEquals.prototype.traverseConjugate = function (conjugate, dataDown) {
+        return (dataDown instanceof algorithm_1.Conjugate) &&
+            this.traverse(conjugate.A, dataDown.A) &&
+            this.traverse(conjugate.B, dataDown.B);
+    };
+    StructureEquals.prototype.traversePause = function (pause, dataDown) {
+        return dataDown instanceof algorithm_1.Pause;
+    };
+    StructureEquals.prototype.traverseNewLine = function (newLine, dataDown) {
+        return dataDown instanceof algorithm_1.NewLine;
+    };
+    StructureEquals.prototype.traverseCommentShort = function (commentShort, dataDown) {
+        return (dataDown instanceof algorithm_1.CommentShort) && (commentShort.comment == dataDown.comment);
+    };
+    StructureEquals.prototype.traverseCommentLong = function (commentLong, dataDown) {
+        return (dataDown instanceof algorithm_1.CommentShort) && (commentLong.comment == dataDown.comment);
+    };
+    return StructureEquals;
+}(DownUp));
+exports.StructureEquals = StructureEquals;
+// TODO: Test that inverses are bijections.
+var CoalesceMoves = /** @class */ (function (_super) {
+    __extends(CoalesceMoves, _super);
+    function CoalesceMoves() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CoalesceMoves.prototype.sameBlock = function (moveA, moveB) {
+        // TODO: Handle layers
+        return moveA.family === moveB.family;
+    };
+    // TODO: Handle
+    CoalesceMoves.prototype.traverseSequence = function (sequence) {
+        var coalesced = [];
+        for (var _i = 0, _a = sequence.nestedAlgs; _i < _a.length; _i++) {
+            var part = _a[_i];
+            if (!(part instanceof algorithm_1.BlockMove)) {
+                coalesced.push(this.traverse(part));
+            }
+            else if (coalesced.length > 0) {
+                var last = coalesced[coalesced.length - 1];
+                if (last instanceof algorithm_1.BlockMove &&
+                    this.sameBlock(last, part)) {
+                    // TODO: This is cube-specific. Perhaps pass the modules as DataDown?
+                    var amount = last.amount + part.amount;
+                    coalesced.pop();
+                    if (amount !== 0) {
+                        // We could modify the last element instead of creating a new one,
+                        // but this is safe against shifting coding practices.
+                        // TODO: Figure out if the shoot-in-the-foot risk
+                        // modification is worth the speed.
+                        coalesced.push(new algorithm_1.BlockMove(part.family, amount));
                     }
                 }
                 else {
                     coalesced.push(part);
                 }
             }
-            return new algorithm_1.Sequence(coalesced);
-        };
-        CoalesceMoves.prototype.traverseGroup = function (group) { return group; };
-        CoalesceMoves.prototype.traverseBlockMove = function (blockMove) { return blockMove; };
-        CoalesceMoves.prototype.traverseCommutator = function (commutator) { return commutator; };
-        CoalesceMoves.prototype.traverseConjugate = function (conjugate) { return conjugate; };
-        CoalesceMoves.prototype.traversePause = function (pause) { return pause; };
-        CoalesceMoves.prototype.traverseNewLine = function (newLine) { return newLine; };
-        CoalesceMoves.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
-        CoalesceMoves.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
-        return CoalesceMoves;
-    }(Up));
-    Traversal.CoalesceMoves = CoalesceMoves;
-    var Concat = /** @class */ (function (_super) {
-        __extends(Concat, _super);
-        function Concat() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        Concat.prototype.concatIntoSequence = function (A, B) {
-            var nestedAlgs = A.slice();
-            if (B instanceof algorithm_1.Sequence) {
-                nestedAlgs = nestedAlgs.concat(B.nestedAlgs);
-            }
             else {
-                nestedAlgs.push(B);
+                coalesced.push(part);
             }
-            return new algorithm_1.Sequence(nestedAlgs);
-        };
-        Concat.prototype.traverseSequence = function (sequence, dataDown) { return this.concatIntoSequence(sequence.nestedAlgs, dataDown); };
-        Concat.prototype.traverseGroup = function (group, dataDown) { return this.concatIntoSequence([group], dataDown); };
-        Concat.prototype.traverseBlockMove = function (BlockMove, dataDown) { return this.concatIntoSequence([BlockMove], dataDown); };
-        Concat.prototype.traverseCommutator = function (commutator, dataDown) { return this.concatIntoSequence([commutator], dataDown); };
-        Concat.prototype.traverseConjugate = function (conjugate, dataDown) { return this.concatIntoSequence([conjugate], dataDown); };
-        Concat.prototype.traversePause = function (pause, dataDown) { return this.concatIntoSequence([pause], dataDown); };
-        Concat.prototype.traverseNewLine = function (newLine, dataDown) { return this.concatIntoSequence([newLine], dataDown); };
-        Concat.prototype.traverseCommentShort = function (commentShort, dataDown) { return this.concatIntoSequence([commentShort], dataDown); };
-        Concat.prototype.traverseCommentLong = function (commentLong, dataDown) { return this.concatIntoSequence([commentLong], dataDown); };
-        return Concat;
-    }(DownUp));
-    Traversal.Concat = Concat;
-    var ToString = /** @class */ (function (_super) {
-        __extends(ToString, _super);
-        function ToString() {
-            return _super !== null && _super.apply(this, arguments) || this;
         }
-        ToString.prototype.repetitionSuffix = function (amount) {
-            var absAmount = Math.abs(amount);
-            var s = "";
-            if (absAmount !== 1) {
-                s += String(absAmount);
-            }
-            if (absAmount !== amount) {
-                s += "'";
-            }
-            return s;
-        };
-        ToString.prototype.traverseSequence = function (sequence) {
-            var _this = this;
-            return sequence.nestedAlgs.map(function (a) { return _this.traverse(a); }).join(" ");
-        };
-        ToString.prototype.traverseGroup = function (group) { return "(" + group.nestedAlg + ")" + this.repetitionSuffix(group.amount); };
-        ToString.prototype.traverseBlockMove = function (blockMove) { return blockMove.family + this.repetitionSuffix(blockMove.amount); };
-        ToString.prototype.traverseCommutator = function (commutator) { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); };
-        ToString.prototype.traverseConjugate = function (conjugate) { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); };
-        // TODO: Remove spaces between repeated pauses (in traverseSequence)
-        ToString.prototype.traversePause = function (pause) { return "."; };
-        ToString.prototype.traverseNewLine = function (newLine) { return "\n"; };
-        // TODO: Enforce being followed by a newline (or the end of the alg)?
-        ToString.prototype.traverseCommentShort = function (commentShort) { return "//" + commentShort.comment; };
-        // TODO: Sanitize `*/`
-        ToString.prototype.traverseCommentLong = function (commentLong) { return "/*" + commentLong.comment + "*/"; };
-        return ToString;
-    }(Up));
-    Traversal.ToString = ToString;
-})(Traversal = exports.Traversal || (exports.Traversal = {}));
+        return new algorithm_1.Sequence(coalesced);
+    };
+    CoalesceMoves.prototype.traverseGroup = function (group) { return group; };
+    CoalesceMoves.prototype.traverseBlockMove = function (blockMove) { return blockMove; };
+    CoalesceMoves.prototype.traverseCommutator = function (commutator) { return commutator; };
+    CoalesceMoves.prototype.traverseConjugate = function (conjugate) { return conjugate; };
+    CoalesceMoves.prototype.traversePause = function (pause) { return pause; };
+    CoalesceMoves.prototype.traverseNewLine = function (newLine) { return newLine; };
+    CoalesceMoves.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
+    CoalesceMoves.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
+    return CoalesceMoves;
+}(Up));
+exports.CoalesceMoves = CoalesceMoves;
+var Concat = /** @class */ (function (_super) {
+    __extends(Concat, _super);
+    function Concat() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Concat.prototype.concatIntoSequence = function (A, B) {
+        var nestedAlgs = A.slice();
+        if (B instanceof algorithm_1.Sequence) {
+            nestedAlgs = nestedAlgs.concat(B.nestedAlgs);
+        }
+        else {
+            nestedAlgs.push(B);
+        }
+        return new algorithm_1.Sequence(nestedAlgs);
+    };
+    Concat.prototype.traverseSequence = function (sequence, dataDown) { return this.concatIntoSequence(sequence.nestedAlgs, dataDown); };
+    Concat.prototype.traverseGroup = function (group, dataDown) { return this.concatIntoSequence([group], dataDown); };
+    Concat.prototype.traverseBlockMove = function (BlockMove, dataDown) { return this.concatIntoSequence([BlockMove], dataDown); };
+    Concat.prototype.traverseCommutator = function (commutator, dataDown) { return this.concatIntoSequence([commutator], dataDown); };
+    Concat.prototype.traverseConjugate = function (conjugate, dataDown) { return this.concatIntoSequence([conjugate], dataDown); };
+    Concat.prototype.traversePause = function (pause, dataDown) { return this.concatIntoSequence([pause], dataDown); };
+    Concat.prototype.traverseNewLine = function (newLine, dataDown) { return this.concatIntoSequence([newLine], dataDown); };
+    Concat.prototype.traverseCommentShort = function (commentShort, dataDown) { return this.concatIntoSequence([commentShort], dataDown); };
+    Concat.prototype.traverseCommentLong = function (commentLong, dataDown) { return this.concatIntoSequence([commentLong], dataDown); };
+    return Concat;
+}(DownUp));
+exports.Concat = Concat;
+var ToString = /** @class */ (function (_super) {
+    __extends(ToString, _super);
+    function ToString() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ToString.prototype.repetitionSuffix = function (amount) {
+        var absAmount = Math.abs(amount);
+        var s = "";
+        if (absAmount !== 1) {
+            s += String(absAmount);
+        }
+        if (absAmount !== amount) {
+            s += "'";
+        }
+        return s;
+    };
+    ToString.prototype.traverseSequence = function (sequence) {
+        var _this = this;
+        return sequence.nestedAlgs.map(function (a) { return _this.traverse(a); }).join(" ");
+    };
+    ToString.prototype.traverseGroup = function (group) { return "(" + group.nestedAlg + ")" + this.repetitionSuffix(group.amount); };
+    ToString.prototype.traverseBlockMove = function (blockMove) { return blockMove.family + this.repetitionSuffix(blockMove.amount); };
+    ToString.prototype.traverseCommutator = function (commutator) { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); };
+    ToString.prototype.traverseConjugate = function (conjugate) { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); };
+    // TODO: Remove spaces between repeated pauses (in traverseSequence)
+    ToString.prototype.traversePause = function (pause) { return "."; };
+    ToString.prototype.traverseNewLine = function (newLine) { return "\n"; };
+    // TODO: Enforce being followed by a newline (or the end of the alg)?
+    ToString.prototype.traverseCommentShort = function (commentShort) { return "//" + commentShort.comment; };
+    // TODO: Sanitize `*/`
+    ToString.prototype.traverseCommentLong = function (commentLong) { return "/*" + commentLong.comment + "*/"; };
+    return ToString;
+}(Up));
+exports.ToString = ToString;
 function makeDownUp(ctor) {
     var instance = new ctor();
     return instance.traverse.bind(instance);
@@ -733,14 +729,14 @@ function makeUp(ctor) {
     var instance = new ctor();
     return instance.traverse.bind(instance);
 }
-exports.clone = makeUp(Traversal.Clone);
-exports.invert = makeUp(Traversal.Invert);
-exports.expand = makeUp(Traversal.Expand);
-exports.countBaseMoves = makeUp(Traversal.CountBaseMoves);
-exports.structureEquals = makeDownUp(Traversal.StructureEquals);
-exports.coalesceMoves = makeUp(Traversal.CoalesceMoves);
-exports.concat = makeDownUp(Traversal.Concat);
-exports.algToString = makeUp(Traversal.ToString);
+exports.clone = makeUp(Clone);
+exports.invert = makeUp(Invert);
+exports.expand = makeUp(Expand);
+exports.countBaseMoves = makeUp(CountBaseMoves);
+exports.structureEquals = makeDownUp(StructureEquals);
+exports.coalesceMoves = makeUp(CoalesceMoves);
+exports.concat = makeDownUp(Concat);
+exports.algToString = makeUp(ToString);
 
 
 /***/ }),
