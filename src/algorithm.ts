@@ -18,6 +18,16 @@ export abstract class Algorithm {
   }
 }
 
+export abstract class Unit extends Algorithm {
+  // TODO: Make `amount` an optional argument in derived class constructors.
+  constructor(public amount: number) {
+    super();
+  }
+}
+
+export abstract class BaseMove extends Unit {
+}
+
 export class Sequence extends Algorithm {
   public type: string = "sequence";
   constructor(public nestedAlgs: Algorithm[]) {
@@ -26,16 +36,7 @@ export class Sequence extends Algorithm {
   }
 }
 
-export abstract class Repeatable extends Algorithm {
-  // TODO: Make `amount` an optional argument in derived class constructors.
-  constructor(public amount: number) {
-    super();
-  }
-}
-
-export type MoveFamily = string; // TODO: Convert to an enum with string mappings.
-
-export class Group extends Repeatable {
+export class Group extends Unit {
   public type: string = "group";
   constructor(public nestedAlg: Algorithm, amount: number) {
     super(amount);
@@ -43,10 +44,9 @@ export class Group extends Repeatable {
   }
 }
 
-export abstract class BaseMove extends Repeatable {
-}
+export type MoveFamily = string; // TODO: Convert to an enum with string mappings.
 
-var blockMoves: { [s: string]: boolean; } = {
+var blockMoveFamilies: { [s: string]: boolean; } = {
   "U": true,
   "L": true,
   "F": true,
@@ -56,7 +56,7 @@ var blockMoves: { [s: string]: boolean; } = {
 }
 
 function validateBlockMove(family: string): boolean {
-  return blockMoves[family] === true;
+  return blockMoveFamilies[family] === true;
 }
 
 // TODO: Handle layers
@@ -71,7 +71,7 @@ export class BlockMove extends BaseMove {
   }
 }
 
-export class Commutator extends Repeatable {
+export class Commutator extends Unit {
   public type: string = "commutator";
   constructor(public A: Algorithm, public B: Algorithm, amount: number) {
     super(amount);
@@ -79,7 +79,7 @@ export class Commutator extends Repeatable {
   }
 }
 
-export class Conjugate extends Repeatable {
+export class Conjugate extends Unit {
   public type: string = "conjugate";
   constructor(public A: Algorithm, public B: Algorithm, amount: number) {
     super(amount);

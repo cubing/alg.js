@@ -103,19 +103,7 @@ return /******/ (function(modules) { // webpackBootstrap
 // TODO Figure out if we can create a default global easily.
 // export as namespace Alg;
 Object.defineProperty(exports, "__esModule", { value: true });
-var algorithm_1 = __webpack_require__(1);
-exports.Algorithm = algorithm_1.Algorithm;
-exports.Repeatable = algorithm_1.Repeatable;
-exports.Sequence = algorithm_1.Sequence;
-exports.Group = algorithm_1.Group;
-exports.BaseMove = algorithm_1.BaseMove;
-exports.Commutator = algorithm_1.Commutator;
-exports.Conjugate = algorithm_1.Conjugate;
-exports.Pause = algorithm_1.Pause;
-exports.NewLine = algorithm_1.NewLine;
-exports.CommentShort = algorithm_1.CommentShort;
-exports.CommentLong = algorithm_1.CommentLong;
-var traversal_1 = __webpack_require__(2);
+var traversal_1 = __webpack_require__(1);
 exports.invert = traversal_1.invert;
 exports.expand = traversal_1.expand;
 exports.structureEquals = traversal_1.structureEquals;
@@ -144,181 +132,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var Algorithm = /** @class */ (function () {
-    function Algorithm() {
-    }
-    // TODO: Figure out if we can statically enforce that all Algorithm subclasses
-    // are frozen after initial construction.
-    Algorithm.prototype.freeze = function () {
-        Object.freeze(this);
-    };
-    return Algorithm;
-}());
-exports.Algorithm = Algorithm;
-var Sequence = /** @class */ (function (_super) {
-    __extends(Sequence, _super);
-    function Sequence(nestedAlgs) {
-        var _this = _super.call(this) || this;
-        _this.nestedAlgs = nestedAlgs;
-        _this.type = "sequence";
-        _this.freeze();
-        return _this;
-    }
-    return Sequence;
-}(Algorithm));
-exports.Sequence = Sequence;
-var Repeatable = /** @class */ (function (_super) {
-    __extends(Repeatable, _super);
-    // TODO: Make `amount` an optional argument in derived class constructors.
-    function Repeatable(amount) {
-        var _this = _super.call(this) || this;
-        _this.amount = amount;
-        return _this;
-    }
-    return Repeatable;
-}(Algorithm));
-exports.Repeatable = Repeatable;
-// Group is is like a Sequence, but is enclosed in parentheses when
-// written.
-var Group = /** @class */ (function (_super) {
-    __extends(Group, _super);
-    function Group(nestedAlg, amount) {
-        var _this = _super.call(this, amount) || this;
-        _this.nestedAlg = nestedAlg;
-        _this.type = "group";
-        _this.freeze();
-        return _this;
-    }
-    return Group;
-}(Repeatable));
-exports.Group = Group;
-var BaseMove = /** @class */ (function (_super) {
-    __extends(BaseMove, _super);
-    function BaseMove() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return BaseMove;
-}(Repeatable));
-exports.BaseMove = BaseMove;
-var blockMoves = {
-    "U": true,
-    "L": true,
-    "F": true,
-    "R": true,
-    "B": true,
-    "D": true
-};
-function validateBlockMove(family) {
-    return blockMoves[family] === true;
-}
-// TODO: Handle layers
-var BlockMove = /** @class */ (function (_super) {
-    __extends(BlockMove, _super);
-    function BlockMove(family, amount) {
-        var _this = _super.call(this, amount) || this;
-        _this.family = family;
-        _this.type = "blockMove";
-        if (!validateBlockMove(family)) {
-            throw "Invalid block move family: " + family;
-        }
-        _this.freeze();
-        return _this;
-    }
-    return BlockMove;
-}(BaseMove));
-exports.BlockMove = BlockMove;
-var Commutator = /** @class */ (function (_super) {
-    __extends(Commutator, _super);
-    function Commutator(A, B, amount) {
-        var _this = _super.call(this, amount) || this;
-        _this.A = A;
-        _this.B = B;
-        _this.type = "commutator";
-        _this.freeze();
-        return _this;
-    }
-    return Commutator;
-}(Repeatable));
-exports.Commutator = Commutator;
-var Conjugate = /** @class */ (function (_super) {
-    __extends(Conjugate, _super);
-    function Conjugate(A, B, amount) {
-        var _this = _super.call(this, amount) || this;
-        _this.A = A;
-        _this.B = B;
-        _this.type = "conjugate";
-        _this.freeze();
-        return _this;
-    }
-    return Conjugate;
-}(Repeatable));
-exports.Conjugate = Conjugate;
-var Pause = /** @class */ (function (_super) {
-    __extends(Pause, _super);
-    function Pause() {
-        var _this = _super.call(this) || this;
-        _this.type = "pause";
-        _this.freeze();
-        return _this;
-    }
-    return Pause;
-}(Algorithm));
-exports.Pause = Pause;
-var NewLine = /** @class */ (function (_super) {
-    __extends(NewLine, _super);
-    function NewLine() {
-        var _this = _super.call(this) || this;
-        _this.type = "newLine";
-        _this.freeze();
-        return _this;
-    }
-    return NewLine;
-}(Algorithm));
-exports.NewLine = NewLine;
-var CommentShort = /** @class */ (function (_super) {
-    __extends(CommentShort, _super);
-    function CommentShort(comment) {
-        var _this = _super.call(this) || this;
-        _this.comment = comment;
-        _this.type = "commentShort";
-        _this.freeze();
-        return _this;
-    }
-    return CommentShort;
-}(Algorithm));
-exports.CommentShort = CommentShort;
-var CommentLong = /** @class */ (function (_super) {
-    __extends(CommentLong, _super);
-    function CommentLong(comment) {
-        var _this = _super.call(this) || this;
-        _this.comment = comment;
-        _this.type = "commentLong";
-        _this.freeze();
-        return _this;
-    }
-    return CommentLong;
-}(Algorithm));
-exports.CommentLong = CommentLong;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-var algorithm_1 = __webpack_require__(1);
+var algorithm_1 = __webpack_require__(2);
 "use strict";
 function dispatch(t, algorithm, dataDown) {
     switch (algorithm.type) {
@@ -667,13 +481,185 @@ exports.algToString = makeUp(ToString);
 
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var Algorithm = /** @class */ (function () {
+    function Algorithm() {
+    }
+    // TODO: Figure out if we can statically enforce that all Algorithm subclasses
+    // are frozen after initial construction.
+    Algorithm.prototype.freeze = function () {
+        Object.freeze(this);
+    };
+    return Algorithm;
+}());
+exports.Algorithm = Algorithm;
+var Unit = /** @class */ (function (_super) {
+    __extends(Unit, _super);
+    // TODO: Make `amount` an optional argument in derived class constructors.
+    function Unit(amount) {
+        var _this = _super.call(this) || this;
+        _this.amount = amount;
+        return _this;
+    }
+    return Unit;
+}(Algorithm));
+exports.Unit = Unit;
+var BaseMove = /** @class */ (function (_super) {
+    __extends(BaseMove, _super);
+    function BaseMove() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return BaseMove;
+}(Unit));
+exports.BaseMove = BaseMove;
+var Sequence = /** @class */ (function (_super) {
+    __extends(Sequence, _super);
+    function Sequence(nestedAlgs) {
+        var _this = _super.call(this) || this;
+        _this.nestedAlgs = nestedAlgs;
+        _this.type = "sequence";
+        _this.freeze();
+        return _this;
+    }
+    return Sequence;
+}(Algorithm));
+exports.Sequence = Sequence;
+var Group = /** @class */ (function (_super) {
+    __extends(Group, _super);
+    function Group(nestedAlg, amount) {
+        var _this = _super.call(this, amount) || this;
+        _this.nestedAlg = nestedAlg;
+        _this.type = "group";
+        _this.freeze();
+        return _this;
+    }
+    return Group;
+}(Unit));
+exports.Group = Group;
+var blockMoveFamilies = {
+    "U": true,
+    "L": true,
+    "F": true,
+    "R": true,
+    "B": true,
+    "D": true
+};
+function validateBlockMove(family) {
+    return blockMoveFamilies[family] === true;
+}
+// TODO: Handle layers
+var BlockMove = /** @class */ (function (_super) {
+    __extends(BlockMove, _super);
+    function BlockMove(family, amount) {
+        var _this = _super.call(this, amount) || this;
+        _this.family = family;
+        _this.type = "blockMove";
+        if (!validateBlockMove(family)) {
+            throw "Invalid block move family: " + family;
+        }
+        _this.freeze();
+        return _this;
+    }
+    return BlockMove;
+}(BaseMove));
+exports.BlockMove = BlockMove;
+var Commutator = /** @class */ (function (_super) {
+    __extends(Commutator, _super);
+    function Commutator(A, B, amount) {
+        var _this = _super.call(this, amount) || this;
+        _this.A = A;
+        _this.B = B;
+        _this.type = "commutator";
+        _this.freeze();
+        return _this;
+    }
+    return Commutator;
+}(Unit));
+exports.Commutator = Commutator;
+var Conjugate = /** @class */ (function (_super) {
+    __extends(Conjugate, _super);
+    function Conjugate(A, B, amount) {
+        var _this = _super.call(this, amount) || this;
+        _this.A = A;
+        _this.B = B;
+        _this.type = "conjugate";
+        _this.freeze();
+        return _this;
+    }
+    return Conjugate;
+}(Unit));
+exports.Conjugate = Conjugate;
+var Pause = /** @class */ (function (_super) {
+    __extends(Pause, _super);
+    function Pause() {
+        var _this = _super.call(this) || this;
+        _this.type = "pause";
+        _this.freeze();
+        return _this;
+    }
+    return Pause;
+}(Algorithm));
+exports.Pause = Pause;
+var NewLine = /** @class */ (function (_super) {
+    __extends(NewLine, _super);
+    function NewLine() {
+        var _this = _super.call(this) || this;
+        _this.type = "newLine";
+        _this.freeze();
+        return _this;
+    }
+    return NewLine;
+}(Algorithm));
+exports.NewLine = NewLine;
+var CommentShort = /** @class */ (function (_super) {
+    __extends(CommentShort, _super);
+    function CommentShort(comment) {
+        var _this = _super.call(this) || this;
+        _this.comment = comment;
+        _this.type = "commentShort";
+        _this.freeze();
+        return _this;
+    }
+    return CommentShort;
+}(Algorithm));
+exports.CommentShort = CommentShort;
+var CommentLong = /** @class */ (function (_super) {
+    __extends(CommentLong, _super);
+    function CommentLong(comment) {
+        var _this = _super.call(this) || this;
+        _this.comment = comment;
+        _this.type = "commentLong";
+        _this.freeze();
+        return _this;
+    }
+    return CommentLong;
+}(Algorithm));
+exports.CommentLong = CommentLong;
+
+
+/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var algorithm_1 = __webpack_require__(1);
+var algorithm_1 = __webpack_require__(2);
 "use strict";
 var Example;
 (function (Example) {
@@ -777,7 +763,7 @@ var Example;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var algorithm_1 = __webpack_require__(1);
+var algorithm_1 = __webpack_require__(2);
 "use strict";
 // TODO: Implement using Traversal?
 function fromJSON(json) {

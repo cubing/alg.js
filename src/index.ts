@@ -1,13 +1,14 @@
 // TODO Figure out if we can create a default global easily.
 // export as namespace Alg;
 
-export {
+import {
   Algorithm,
-  Repeatable,
-  MoveFamily,
+  Unit,
+  BaseMove,
   Sequence,
   Group,
-  BaseMove,
+  MoveFamily,
+  BlockMove,
   Commutator,
   Conjugate,
   Pause,

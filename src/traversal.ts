@@ -1,4 +1,18 @@
-import {Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong, Repeatable} from "./algorithm"
+import {
+  Algorithm,
+  Unit,
+  BaseMove,
+  Sequence,
+  Group,
+  MoveFamily,
+  BlockMove,
+  Commutator,
+  Conjugate,
+  Pause,
+  NewLine,
+  CommentShort,
+  CommentLong
+} from "./algorithm";
 
 "use strict";
 
@@ -124,7 +138,7 @@ export class Expand extends Up<Algorithm> {
     return flattened;
   }
 
-  private repeat(algList: Algorithm[], accordingTo: Repeatable): Sequence {
+  private repeat(algList: Algorithm[], accordingTo: Unit): Sequence {
     var amount = Math.abs(accordingTo.amount);
     var amountDir = (accordingTo.amount > 0) ? 1 : -1; // Mutable
 

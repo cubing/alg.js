@@ -1,4 +1,4 @@
-import { Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong } from "./algorithm";
+import { Algorithm, Sequence, Group, BlockMove, Commutator, Conjugate, Pause, NewLine, CommentShort, CommentLong } from "./algorithm";
 export declare abstract class DownUp<DataDown, DataUp> {
     traverse(algorithm: Algorithm, dataDown: DataDown): DataUp;
     abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;

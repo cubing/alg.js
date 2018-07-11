@@ -2,35 +2,35 @@ export declare abstract class Algorithm {
     abstract readonly type: string;
     protected freeze(): void;
 }
+export declare abstract class Unit extends Algorithm {
+    amount: number;
+    constructor(amount: number);
+}
+export declare abstract class BaseMove extends Unit {
+}
 export declare class Sequence extends Algorithm {
     nestedAlgs: Algorithm[];
     type: string;
     constructor(nestedAlgs: Algorithm[]);
 }
-export declare abstract class Repeatable extends Algorithm {
-    amount: number;
-    constructor(amount: number);
-}
-export declare type MoveFamily = string;
-export declare class Group extends Repeatable {
+export declare class Group extends Unit {
     nestedAlg: Algorithm;
     type: string;
     constructor(nestedAlg: Algorithm, amount: number);
 }
-export declare abstract class BaseMove extends Repeatable {
-}
+export declare type MoveFamily = string;
 export declare class BlockMove extends BaseMove {
     family: MoveFamily;
     type: string;
     constructor(family: MoveFamily, amount: number);
 }
-export declare class Commutator extends Repeatable {
+export declare class Commutator extends Unit {
     A: Algorithm;
     B: Algorithm;
     type: string;
     constructor(A: Algorithm, B: Algorithm, amount: number);
 }
-export declare class Conjugate extends Repeatable {
+export declare class Conjugate extends Unit {
     A: Algorithm;
     B: Algorithm;
     type: string;
