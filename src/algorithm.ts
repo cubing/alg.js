@@ -16,14 +16,16 @@ export abstract class Algorithm {
   }
 }
 
-export abstract class Unit extends Algorithm {
+export abstract class Unit extends Algorithm {}
+
+export abstract class UnitWithAmount extends Unit {
   // TODO: Make `amount` an optional argument in derived class constructors.
   constructor(public amount: number) {
     super();
   }
 }
 
-export abstract class BaseMove extends Unit {
+export abstract class BaseMove extends UnitWithAmount {
 }
 
 export class Sequence extends Algorithm {
@@ -39,7 +41,7 @@ export class Sequence extends Algorithm {
   }
 }
 
-export class Group extends Unit {
+export class Group extends UnitWithAmount {
   public type: string = "group";
   constructor(public nestedAlg: Algorithm, amount: number) {
     super(amount);
@@ -74,7 +76,7 @@ export class BlockMove extends BaseMove {
   }
 }
 
-export class Commutator extends Unit {
+export class Commutator extends UnitWithAmount {
   public type: string = "commutator";
   constructor(public A: Algorithm, public B: Algorithm, amount: number) {
     super(amount);
@@ -82,7 +84,7 @@ export class Commutator extends Unit {
   }
 }
 
-export class Conjugate extends Unit {
+export class Conjugate extends UnitWithAmount {
   public type: string = "conjugate";
   constructor(public A: Algorithm, public B: Algorithm, amount: number) {
     super(amount);
@@ -90,7 +92,7 @@ export class Conjugate extends Unit {
   }
 }
 
-export class Pause extends Algorithm {
+export class Pause extends Unit {
   public type: string = "pause";
   constructor() {
     super();

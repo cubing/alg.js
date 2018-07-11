@@ -3,17 +3,19 @@ export declare abstract class Algorithm {
     protected freeze(): void;
 }
 export declare abstract class Unit extends Algorithm {
+}
+export declare abstract class UnitWithAmount extends Unit {
     amount: number;
     constructor(amount: number);
 }
-export declare abstract class BaseMove extends Unit {
+export declare abstract class BaseMove extends UnitWithAmount {
 }
 export declare class Sequence extends Algorithm {
     nestedAlgs: Unit[];
     type: string;
     constructor(nestedAlgs: Unit[]);
 }
-export declare class Group extends Unit {
+export declare class Group extends UnitWithAmount {
     nestedAlg: Algorithm;
     type: string;
     constructor(nestedAlg: Algorithm, amount: number);
@@ -24,19 +26,19 @@ export declare class BlockMove extends BaseMove {
     type: string;
     constructor(family: MoveFamily, amount: number);
 }
-export declare class Commutator extends Unit {
+export declare class Commutator extends UnitWithAmount {
     A: Algorithm;
     B: Algorithm;
     type: string;
     constructor(A: Algorithm, B: Algorithm, amount: number);
 }
-export declare class Conjugate extends Unit {
+export declare class Conjugate extends UnitWithAmount {
     A: Algorithm;
     B: Algorithm;
     type: string;
     constructor(A: Algorithm, B: Algorithm, amount: number);
 }
-export declare class Pause extends Algorithm {
+export declare class Pause extends Unit {
     type: string;
     constructor();
 }

@@ -525,22 +525,30 @@ var Algorithm = /** @class */ (function () {
 exports.Algorithm = Algorithm;
 var Unit = /** @class */ (function (_super) {
     __extends(Unit, _super);
-    // TODO: Make `amount` an optional argument in derived class constructors.
-    function Unit(amount) {
-        var _this = _super.call(this) || this;
-        _this.amount = amount;
-        return _this;
+    function Unit() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     return Unit;
 }(Algorithm));
 exports.Unit = Unit;
+var UnitWithAmount = /** @class */ (function (_super) {
+    __extends(UnitWithAmount, _super);
+    // TODO: Make `amount` an optional argument in derived class constructors.
+    function UnitWithAmount(amount) {
+        var _this = _super.call(this) || this;
+        _this.amount = amount;
+        return _this;
+    }
+    return UnitWithAmount;
+}(Unit));
+exports.UnitWithAmount = UnitWithAmount;
 var BaseMove = /** @class */ (function (_super) {
     __extends(BaseMove, _super);
     function BaseMove() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     return BaseMove;
-}(Unit));
+}(UnitWithAmount));
 exports.BaseMove = BaseMove;
 var Sequence = /** @class */ (function (_super) {
     __extends(Sequence, _super);
@@ -570,7 +578,7 @@ var Group = /** @class */ (function (_super) {
         return _this;
     }
     return Group;
-}(Unit));
+}(UnitWithAmount));
 exports.Group = Group;
 var blockMoveFamilies = {
     "U": true,
@@ -610,7 +618,7 @@ var Commutator = /** @class */ (function (_super) {
         return _this;
     }
     return Commutator;
-}(Unit));
+}(UnitWithAmount));
 exports.Commutator = Commutator;
 var Conjugate = /** @class */ (function (_super) {
     __extends(Conjugate, _super);
@@ -623,7 +631,7 @@ var Conjugate = /** @class */ (function (_super) {
         return _this;
     }
     return Conjugate;
-}(Unit));
+}(UnitWithAmount));
 exports.Conjugate = Conjugate;
 var Pause = /** @class */ (function (_super) {
     __extends(Pause, _super);
@@ -634,7 +642,7 @@ var Pause = /** @class */ (function (_super) {
         return _this;
     }
     return Pause;
-}(Algorithm));
+}(Unit));
 exports.Pause = Pause;
 var NewLine = /** @class */ (function (_super) {
     __extends(NewLine, _super);

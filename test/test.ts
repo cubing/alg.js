@@ -103,6 +103,11 @@ describe("Parser", () => {
     e(parse("R U R' U R U2' R'"), Ex.Sune).to.be.true;
   });
 
+  it("should parse ...", () => {
+    const p = new Alg.Pause();
+    e(parse("..."), new Alg.Sequence([p, p, p])).to.be.true;
+  });
+
   it("should round-trip algs through a string", () => {
     e(parse(algToString(Ex.SuneCommutator)), Ex.SuneCommutator).to.be.true;
     e(parse(algToString(Ex.Niklas)), Ex.Niklas).to.be.true;

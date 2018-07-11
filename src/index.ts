@@ -1,6 +1,7 @@
 import {
   Algorithm,
   Unit,
+  UnitWithAmount,
   BaseMove,
   Sequence,
   Group,

@@ -1,6 +1,7 @@
 import {
   Algorithm,
   Unit,
+  UnitWithAmount,
   BaseMove,
   Sequence,
   Group,
@@ -154,7 +155,7 @@ export class Expand extends Up<Algorithm> {
     return flattened;
   }
 
-  private repeat(algList: Unit[], accordingTo: Unit): Sequence {
+  private repeat(algList: Unit[], accordingTo: UnitWithAmount): Sequence {
     var amount = Math.abs(accordingTo.amount);
     var amountDir = (accordingTo.amount > 0) ? 1 : -1; // Mutable
 
