@@ -9,6 +9,7 @@ import {
   algToString
 } from "../src/traversal"
 import {fromJSON} from "../src/json"
+import {parse} from "../src/parser"
 
 import { expect } from "chai";
 import "mocha";
@@ -94,5 +95,27 @@ describe("Object Freezing", () => {
         e = err;
       }
       expect(e instanceof TypeError).to.be.true;
+  });
+});
+
+describe("Parser", () => {
+  it("should parse a Sune", () => {
+    e(parse("R U R' U R U2' R'"), Ex.Sune).to.be.true;
+  });
+
+  it("should round-trip algs through a string", () => {
+    e(parse(algToString(Ex.SuneCommutator)), Ex.SuneCommutator).to.be.true;
+    e(parse(algToString(Ex.Niklas)), Ex.Niklas).to.be.true;
+    e(parse(algToString(Ex.FURURFCompact)), Ex.FURURFCompact).to.be.true;
+    e(parse(algToString(Ex.APermCompact)), Ex.APermCompact).to.be.true;
+    e(parse(algToString(Ex.TPerm)), Ex.TPerm).to.be.true;
+    e(parse(algToString(Ex.HeadlightSwaps)), Ex.HeadlightSwaps).to.be.true;
+  });
+
+  it("should round-trip all alg types through a string", () => {
+    // Update this based on the length of AllAlgTypes.
+    for (var a of Ex.AllAlgTypes) {
+      e(parse(algToString(a)), a).to.be.true;
+    }
   });
 });

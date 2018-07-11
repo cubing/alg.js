@@ -258,7 +258,7 @@ export class StructureEquals extends DownUp<Algorithm, boolean> {
     return (dataDown instanceof CommentShort) && (commentShort.comment == dataDown.comment);
   }
   public traverseCommentLong(commentLong: CommentLong, dataDown: Algorithm): boolean {
-    return (dataDown instanceof CommentShort) && (commentLong.comment == dataDown.comment);
+    return (dataDown instanceof CommentLong) && (commentLong.comment == dataDown.comment);
   }
 }
 
@@ -342,7 +342,7 @@ export class ToString extends Up<string> {
     return s;
   }
   public traverseSequence(     sequence:     Sequence,     ): string { return sequence.nestedAlgs.map(a => this.traverse(a)).join(" "); }
-  public traverseGroup(        group:        Group,        ): string { return "(" + group.nestedAlg + ")" + this.repetitionSuffix(group.amount); }
+  public traverseGroup(        group:        Group,        ): string { return "(" + this.traverse(group.nestedAlg) + ")" + this.repetitionSuffix(group.amount); }
   public traverseBlockMove(    blockMove:    BlockMove,    ): string { return blockMove.family + this.repetitionSuffix(blockMove.amount); }
   public traverseCommutator(   commutator:   Commutator,   ): string { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); }
   public traverseConjugate(    conjugate:    Conjugate,    ): string { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); }

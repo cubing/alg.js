@@ -61,6 +61,6 @@ export function fromJSON(json: AlgorithmJSON): Algorithm {
       if (!json.comment) { throw "Missing comment" }
       return new CommentLong(json.comment);
     default:
-      throw "Unknown alg type.";
+      throw `Unknown alg type: ${json.type}`;
   }
 }

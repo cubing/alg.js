@@ -100,8 +100,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 "use strict";
 
-// TODO Figure out if we can create a default global easily.
-// export as namespace Alg;
 Object.defineProperty(exports, "__esModule", { value: true });
 var traversal_1 = __webpack_require__(1);
 exports.invert = traversal_1.invert;
@@ -133,7 +131,6 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var algorithm_1 = __webpack_require__(2);
-"use strict";
 function dispatch(t, algorithm, dataDown) {
     switch (algorithm.type) {
         case "sequence":
@@ -370,7 +367,7 @@ var StructureEquals = /** @class */ (function (_super) {
         return (dataDown instanceof algorithm_1.CommentShort) && (commentShort.comment == dataDown.comment);
     };
     StructureEquals.prototype.traverseCommentLong = function (commentLong, dataDown) {
-        return (dataDown instanceof algorithm_1.CommentShort) && (commentLong.comment == dataDown.comment);
+        return (dataDown instanceof algorithm_1.CommentLong) && (commentLong.comment == dataDown.comment);
     };
     return StructureEquals;
 }(DownUp));
@@ -469,7 +466,7 @@ var ToString = /** @class */ (function (_super) {
         var _this = this;
         return sequence.nestedAlgs.map(function (a) { return _this.traverse(a); }).join(" ");
     };
-    ToString.prototype.traverseGroup = function (group) { return "(" + group.nestedAlg + ")" + this.repetitionSuffix(group.amount); };
+    ToString.prototype.traverseGroup = function (group) { return "(" + this.traverse(group.nestedAlg) + ")" + this.repetitionSuffix(group.amount); };
     ToString.prototype.traverseBlockMove = function (blockMove) { return blockMove.family + this.repetitionSuffix(blockMove.amount); };
     ToString.prototype.traverseCommutator = function (commutator) { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); };
     ToString.prototype.traverseConjugate = function (conjugate) { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); };
@@ -674,6 +671,8 @@ var CommentLong = /** @class */ (function (_super) {
     return CommentLong;
 }(Algorithm));
 exports.CommentLong = CommentLong;
+// TODO
+// export class TimeStamp extends Algorithm implements Algorithm
 
 
 /***/ }),
@@ -684,7 +683,6 @@ exports.CommentLong = CommentLong;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var algorithm_1 = __webpack_require__(2);
-"use strict";
 var Example;
 (function (Example) {
     Example.Sune = new algorithm_1.Sequence([
@@ -788,7 +786,6 @@ var Example;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var algorithm_1 = __webpack_require__(2);
-"use strict";
 // TODO: Implement using Traversal?
 function fromJSON(json) {
     var _this = this;
@@ -852,7 +849,7 @@ function fromJSON(json) {
             }
             return new algorithm_1.CommentLong(json.comment);
         default:
-            throw "Unknown alg type.";
+            throw "Unknown alg type: " + json.type;
     }
 }
 exports.fromJSON = fromJSON;
