@@ -16,20 +16,6 @@ export abstract class Algorithm {
   protected freeze() {
     Object.freeze(this);
   }
-
-  // clone():           Algorithm { return clone(this);           }
-  // invert():          Algorithm { return invert(this);          }
-  // expand():          Algorithm { return expand(this);          }
-  // countBaseMoves():  number    { return countBaseMoves(this);  }
-  // coalesceMoves():   Algorithm { return coalesceMoves(this);   }
-  // toString():        string    { return algToString(this);     }
-
-  // structureEquals(nestedAlg: Algorithm): boolean {
-  //   return structureEquals(this, nestedAlg);
-  // }
-  // concat(nestedAlg: Algorithm): Sequence {
-  //   return concat(this, nestedAlg);
-  // }
 }
 
 export class Sequence extends Algorithm {
@@ -38,8 +24,6 @@ export class Sequence extends Algorithm {
     super();
     this.freeze();
   }
-
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export abstract class Repeatable extends Algorithm {
@@ -51,16 +35,12 @@ export abstract class Repeatable extends Algorithm {
 
 export type MoveFamily = string; // TODO: Convert to an enum with string mappings.
 
-// Group is is like a Sequence, but is enclosed in parentheses when
-// written.
 export class Group extends Repeatable {
   public type: string = "group";
   constructor(public nestedAlg: Algorithm, amount: number) {
     super(amount);
     this.freeze();
   }
-
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export abstract class BaseMove extends Repeatable {
@@ -89,8 +69,6 @@ export class BlockMove extends BaseMove {
     }
     this.freeze();
   }
-
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class Commutator extends Repeatable {
@@ -99,8 +77,6 @@ export class Commutator extends Repeatable {
     super(amount);
     this.freeze();
   }
-
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class Conjugate extends Repeatable {
@@ -109,8 +85,6 @@ export class Conjugate extends Repeatable {
     super(amount);
     this.freeze();
   }
-
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class Pause extends Algorithm {
@@ -119,8 +93,6 @@ export class Pause extends Algorithm {
     super();
     this.freeze();
   }
-
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class NewLine extends Algorithm {
@@ -129,8 +101,6 @@ export class NewLine extends Algorithm {
     super();
     this.freeze();
   }
-
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class CommentShort extends Algorithm {
@@ -139,8 +109,6 @@ export class CommentShort extends Algorithm {
     super();
     this.freeze();
   }
-
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class CommentLong extends Algorithm {
@@ -149,8 +117,6 @@ export class CommentLong extends Algorithm {
     super();
     this.freeze();
   }
-
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 // TODO
