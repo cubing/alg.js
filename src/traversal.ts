@@ -275,7 +275,7 @@ export class CoalesceBaseMoves extends Up<Algorithm> {
     var coalesced: Unit[] = [];
     for (var part of sequence.nestedAlgs) {
       if (!(part instanceof BlockMove)) {
-        coalesced.push(<Unit>this.traverse(part));
+        coalesced.push(this.traverseIntoUnit(part));
       } else if (coalesced.length > 0) {
         var last = coalesced[coalesced.length-1];
         if (last instanceof BlockMove &&
