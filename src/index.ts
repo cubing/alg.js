@@ -17,13 +17,10 @@ export {
 } from "./algorithm";
 
 export {
-  clone,
   invert,
   expand,
-  countBaseMoves,
   structureEquals,
-  coalesceMoves,
-  concat,
+  coalesceBaseMoves,
   algToString
 } from "./traversal";
 

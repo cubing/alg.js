@@ -2,13 +2,10 @@ import * as Alg from "../src/algorithm"
 import {BlockMove as BM} from "../src/algorithm"
 import {Example as Ex} from "../src/example"
 import {
-  clone,
   invert,
   expand,
-  countBaseMoves,
   structureEquals,
-  coalesceMoves,
-  concat,
+  coalesceBaseMoves,
   algToString
 } from "../src/traversal"
 import {fromJSON} from "../src/json"
@@ -21,16 +18,10 @@ var UU = new Alg.Sequence([new BM("U", 1), new BM("U", 1)]);
 var U2 = new Alg.Sequence([new BM("U", 2)]);
 var R  = new Alg.Sequence([new BM("R", 1)]);
 
-describe("toString", () => {
+describe("algToString()", () => {
   it("should convert Sune to string", () => {
     expect(algToString(Ex.Sune)).to.equal("R U R' U R U2' R'");
-    // TODO: re-enable this if we restore chaining to the Algorithm class.
-    // expect(String(Ex.Sune)).to.equal("R U R' U R U2' R'");
   });
-
-  // it("should convert E Perm to string", () => {
-  //   expect(algToString(Ex.EPerm)).to.equal("x' [[R: U'], D] [[R: U], D] x");
-  // });
 
   it("should convert U U to string", () => {
     expect(algToString(UU)).to.equal("U U");
@@ -41,104 +32,49 @@ var e = function(a1: Alg.Algorithm, a2: Alg.Algorithm) {
   return expect(structureEquals(a1, a2));
 }
 
-describe("Traversal", () => {
-  it("should correctly traverse using CountBaseMoves", () => {
-    expect(countBaseMoves(Ex.Sune)).to.equal(7);
-
-    expect(countBaseMoves(Ex.Sune)).to.equal(7);
-  });
- 
-  it("should correctly traverse using StructureEquals", () => {
-    e(Ex.FURURFCompact, Ex.FURURFMoves).to.be.false;
-    e(Ex.FURURFMoves, Ex.FURURFCompact).to.be.false;
-    e(Ex.FURURFMoves, Ex.FURURFMoves).to.be.true;
-    e(Ex.FURURFCompact, Ex.FURURFCompact).to.be.true;
-  });
- 
-  it("should correctly traverse using Expand", () => {
-    e(expand(Ex.FURURFCompact), Ex.FURURFMoves).to.be.true;
-    e(expand(Ex.Sune), Ex.Sune).to.be.true;
-    e(expand(Ex.SuneCommutator), Ex.Sune).to.be.false;
-    e(expand(Ex.FURURFCompact), expand(Ex.SuneCommutator)).to.be.false;
-  });
-
-  it("should correctly traverse using Invert", () => {
+describe("invert()", () => {
+  it("should correctly invert", () => {
     e(invert(Ex.Sune), Ex.AntiSune).to.be.true;
     e(invert(invert(Ex.Sune)), Ex.Sune).to.be.true;
     e(invert(invert(Ex.Sune)), Ex.AntiSune).to.be.false;
   });
 });
 
-describe("Coalesce", () => {
-  it("should coalesce U U to U2", () => {
-    e(coalesceMoves(UU), U2).to.be.true;
-    expect(algToString(coalesceMoves(UU))).to.equal("U2");
-  });
-
-  it("should coalesce expanded commutator Sune corectly", () => {
-    e(coalesceMoves(expand(Ex.SuneCommutator)), Ex.Sune).to.be.true;
+describe("expand()", () => {
+  it("should correctly expand", () => {
+    e(expand(Ex.FURURFCompact), Ex.FURURFMoves).to.be.true;
+    e(expand(Ex.Sune), Ex.Sune).to.be.true;
+    e(expand(Ex.SuneCommutator), Ex.Sune).to.be.false;
+    e(expand(Ex.FURURFCompact), expand(Ex.SuneCommutator)).to.be.false;
   });
 });
 
-describe("Concat", () => {
-  it("should concat U U corectly", () => {
-    e(concat(U, U), UU).to.be.true;
+describe("structureEquals", () => {
+  it("should correctly compare", () => {
+    e(Ex.FURURFCompact, Ex.FURURFMoves).to.be.false;
+    e(Ex.FURURFMoves, Ex.FURURFCompact).to.be.false;
+    e(Ex.FURURFMoves, Ex.FURURFMoves).to.be.true;
+    e(Ex.FURURFCompact, Ex.FURURFCompact).to.be.true;
+  });
+});
+
+describe("coalesceBaseMoves()", () => {
+  it("should coalesce U U to U2", () => {
+    e(coalesceBaseMoves(UU), U2).to.be.true;
+    expect(algToString(coalesceBaseMoves(UU))).to.equal("U2");
   });
 
-  it("should be associative", () => {
-    e(concat(concat(U, R), U),
-      concat(U, concat(R, U))).to.be.true;
-  });
-
-  it("should build a Sune correctly", () => {
-    e(concat(concat(concat(concat(concat(concat(
-      R, U), invert(R)), U), R), invert(U2)), invert(R)),
-      Ex.Sune).to.be.true;
+  it("should coalesce expanded commutator Sune corectly", () => {
+    e(coalesceBaseMoves(expand(Ex.SuneCommutator)), Ex.Sune).to.be.true;
   });
 });
 
 describe("JSON", () => {
-  it("should round-trip an alg through JSON", () => {
+  it("should round-trip an alg through JSON stringification", () => {
     e(fromJSON(JSON.parse(JSON.stringify(Ex.FURURFCompact))),
       Ex.FURURFCompact).to.be.true;
   });
 });
-
-// describe("Custom Traversal", () => {
-//   it("should be able to calculate alg depth", () => {
-//     class Depth extends Traversal.Up<number> {
-//       public traverseSequence(sequence: Alg.Sequence): number {
-//         var max = 0;
-//         for (var part of sequence.nestedAlgs) {
-//           max = Math.max(max, this.traverse(part));
-//         }
-//         return max;
-//       }
-//       public traverseGroup(group: Alg.Group): number {
-//         return 1 + this.traverse(group.nestedAlg);
-//       }
-//       public traverseBlockMove(blockMove: Alg.BaseMove): number {
-//         return 0;
-//       }
-//       public traverseCommutator(commutator: Alg.Commutator): number {
-//         return 1 + Math.max(this.traverse(commutator.A), this.traverse(commutator.B));
-//       }
-//       public traverseConjugate(conjugate: Alg.Conjugate): number {
-//         return 1 + Math.max(this.traverse(conjugate.A), this.traverse(conjugate.B));
-//       }
-//       public traversePause(pause: Alg.Pause):                      number { return 0; }
-//       public traverseNewLine(newLine: Alg.NewLine):                number { return 0; }
-//       public traverseCommentShort(commentShort: Alg.CommentShort): number { return 0; }
-//       public traverseCommentLong(commentLong: Alg.CommentLong):    number { return 0; }
-//     }
-
-//     var depth = new Depth();
-//     expect(depth.traverse(Ex.Sune)).to.equal(0);
-//     expect(depth.traverse(Ex.HeadlightSwaps)).to.equal(2);
-//     expect(depth.traverse(Ex.FURURFCompact)).to.equal(2);
-//   });
-// })
-
 
 describe("Object Freezing", () => {
   it("should freeze all example alg types", () => {

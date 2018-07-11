@@ -1,12 +1,9 @@
 import {
-  clone,
   invert,
   expand,
-  countBaseMoves,
-  coalesceMoves,
-  algToString,
   structureEquals,
-  concat
+  coalesceBaseMoves,
+  algToString
 } from "./traversal"
 
 "use strict";

@@ -87,28 +87,6 @@ export abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
   public abstract traverseCommentLong(commentLong: CommentLong): DataUp;
 };
 
-export class Clone extends Up<Algorithm> {
-  public traverseSequence(sequence: Sequence): Sequence {
-    return new Sequence(sequence.nestedAlgs.map(a => this.traverse(a)));
-  }
-  public traverseGroup(group: Group): Algorithm {
-    return new Group(this.traverse(group.nestedAlg), group.amount);
-  }
-  public traverseBlockMove(blockMove: BlockMove): Algorithm {
-    return new BlockMove(blockMove.family, blockMove.amount);
-  }
-  public traverseCommutator(commutator: Commutator): Algorithm {
-    return new Commutator(this.traverse(commutator.A), this.traverse(commutator.B), commutator.amount);
-  }
-  public traverseConjugate(conjugate: Conjugate): Algorithm {
-    return new Conjugate(this.traverse(conjugate.A), this.traverse(conjugate.B), conjugate.amount);
-  }
-  public traversePause(pause: Pause):                      Algorithm { return pause; }
-  public traverseNewLine(newLine: NewLine):                Algorithm { return newLine; }
-  public traverseCommentShort(commentShort: CommentShort): Algorithm { return commentShort; }
-  public traverseCommentLong(commentLong: CommentLong):    Algorithm { return commentLong; }
-}
-
 // TODO: Test that inverses are bijections.
 export class Invert extends Up<Algorithm> {
   public traverseSequence(sequence: Sequence): Sequence {
@@ -206,32 +184,6 @@ export class Expand extends Up<Algorithm> {
   public traverseCommentLong(commentLong: CommentLong):    Algorithm { return commentLong; }
 }
 
-export class CountBaseMoves extends Up<number> {
-  public traverseSequence(sequence: Sequence): number {
-    var total = 0;
-    for (var part of sequence.nestedAlgs) {
-      total += this.traverse(part);
-    }
-    return total;
-  }
-  public traverseGroup(group: Group): number {
-    return this.traverse(group.nestedAlg);
-  }
-  public traverseBlockMove(blockMove: BlockMove): number {
-    return 1;
-  }
-  public traverseCommutator(commutator: Commutator): number {
-    return 2*(this.traverse(commutator.A) + this.traverse(commutator.B));
-  }
-  public traverseConjugate(conjugate: Conjugate): number {
-    return 2*(this.traverse(conjugate.A)) + this.traverse(conjugate.B);
-  }
-  public traversePause(pause: Pause):                      number { return 0; }
-  public traverseNewLine(newLine: NewLine):                number { return 0; }
-  public traverseCommentShort(commentShort: CommentShort): number { return 0; }
-  public traverseCommentLong(commentLong: CommentLong):    number { return 0; }
-}
-
 export class StructureEquals extends DownUp<Algorithm, boolean> {
   public traverseSequence(sequence: Sequence, dataDown: Algorithm): boolean {
     if (!(dataDown instanceof Sequence)) {
@@ -281,7 +233,7 @@ export class StructureEquals extends DownUp<Algorithm, boolean> {
 }
 
 // TODO: Test that inverses are bijections.
-export class CoalesceMoves extends Up<Algorithm> {
+export class CoalesceBaseMoves extends Up<Algorithm> {
   private sameBlock(moveA: BlockMove, moveB: BlockMove): boolean {
     // TODO: Handle layers
     return moveA.family === moveB.family;
@@ -326,26 +278,26 @@ export class CoalesceMoves extends Up<Algorithm> {
   public traverseCommentLong(commentLong: CommentLong):    Algorithm { return commentLong; }
 }
 
-export class Concat extends DownUp<Algorithm, Sequence> {
-  private concatIntoSequence(A: Algorithm[], B: Algorithm): Sequence {
-    var nestedAlgs: Algorithm[] = A.slice();
-    if (B instanceof Sequence) {
-      nestedAlgs = nestedAlgs.concat(B.nestedAlgs)
-    } else {
-      nestedAlgs.push(B);
-    }
-    return new Sequence(nestedAlgs)
-  }
-  public traverseSequence(     sequence:     Sequence,     dataDown: Algorithm): Sequence {return this.concatIntoSequence(sequence.nestedAlgs, dataDown); }
-  public traverseGroup(        group:        Group,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([group]          , dataDown); }
-  public traverseBlockMove(    BlockMove:    BlockMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([BlockMove]      , dataDown); }
-  public traverseCommutator(   commutator:   Commutator,   dataDown: Algorithm): Sequence {return this.concatIntoSequence([commutator]     , dataDown); }
-  public traverseConjugate(    conjugate:    Conjugate,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([conjugate]      , dataDown); }
-  public traversePause(        pause:        Pause,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([pause]          , dataDown); }
-  public traverseNewLine(      newLine:      NewLine,      dataDown: Algorithm): Sequence {return this.concatIntoSequence([newLine]        , dataDown); }
-  public traverseCommentShort( commentShort: CommentShort, dataDown: Algorithm): Sequence {return this.concatIntoSequence([commentShort]   , dataDown); }
-  public traverseCommentLong(  commentLong:  CommentLong,  dataDown: Algorithm): Sequence {return this.concatIntoSequence([commentLong]    , dataDown); }
-}
+// export class Concat extends DownUp<Algorithm, Sequence> {
+//   private concatIntoSequence(A: Algorithm[], B: Algorithm): Sequence {
+//     var nestedAlgs: Algorithm[] = A.slice();
+//     if (B instanceof Sequence) {
+//       nestedAlgs = nestedAlgs.concat(B.nestedAlgs)
+//     } else {
+//       nestedAlgs.push(B);
+//     }
+//     return new Sequence(nestedAlgs)
+//   }
+//   public traverseSequence(     sequence:     Sequence,     dataDown: Algorithm): Sequence {return this.concatIntoSequence(sequence.nestedAlgs, dataDown); }
+//   public traverseGroup(        group:        Group,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([group]          , dataDown); }
+//   public traverseBlockMove(    BlockMove:    BlockMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([BlockMove]      , dataDown); }
+//   public traverseCommutator(   commutator:   Commutator,   dataDown: Algorithm): Sequence {return this.concatIntoSequence([commutator]     , dataDown); }
+//   public traverseConjugate(    conjugate:    Conjugate,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([conjugate]      , dataDown); }
+//   public traversePause(        pause:        Pause,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([pause]          , dataDown); }
+//   public traverseNewLine(      newLine:      NewLine,      dataDown: Algorithm): Sequence {return this.concatIntoSequence([newLine]        , dataDown); }
+//   public traverseCommentShort( commentShort: CommentShort, dataDown: Algorithm): Sequence {return this.concatIntoSequence([commentShort]   , dataDown); }
+//   public traverseCommentLong(  commentLong:  CommentLong,  dataDown: Algorithm): Sequence {return this.concatIntoSequence([commentLong]    , dataDown); }
+// }
 
 export class ToString extends Up<string> {
   private repetitionSuffix(amount: number): string {
@@ -387,11 +339,8 @@ function makeUp<DataUp>(
   return instance.traverse.bind(instance);
 }
 
-export const clone           = makeUp(Clone);
-export const invert          = makeUp(Invert);
-export const expand          = makeUp(Expand);
-export const countBaseMoves  = makeUp(CountBaseMoves);
-export const structureEquals = makeDownUp(StructureEquals);
-export const coalesceMoves   = makeUp(CoalesceMoves);
-export const concat          = makeDownUp(Concat);
-export const algToString     = makeUp(ToString);
+export const invert            = makeUp(Invert);
+export const expand            = makeUp(Expand);
+export const structureEquals   = makeDownUp(StructureEquals);
+export const coalesceBaseMoves = makeUp(CoalesceBaseMoves);
+export const algToString       = makeUp(ToString);

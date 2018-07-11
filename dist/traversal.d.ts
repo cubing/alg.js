@@ -23,17 +23,6 @@ export declare abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
     abstract traverseCommentShort(commentShort: CommentShort): DataUp;
     abstract traverseCommentLong(commentLong: CommentLong): DataUp;
 }
-export declare class Clone extends Up<Algorithm> {
-    traverseSequence(sequence: Sequence): Sequence;
-    traverseGroup(group: Group): Algorithm;
-    traverseBlockMove(blockMove: BlockMove): Algorithm;
-    traverseCommutator(commutator: Commutator): Algorithm;
-    traverseConjugate(conjugate: Conjugate): Algorithm;
-    traversePause(pause: Pause): Algorithm;
-    traverseNewLine(newLine: NewLine): Algorithm;
-    traverseCommentShort(commentShort: CommentShort): Algorithm;
-    traverseCommentLong(commentLong: CommentLong): Algorithm;
-}
 export declare class Invert extends Up<Algorithm> {
     traverseSequence(sequence: Sequence): Sequence;
     traverseGroup(group: Group): Algorithm;
@@ -58,17 +47,6 @@ export declare class Expand extends Up<Algorithm> {
     traverseCommentShort(commentShort: CommentShort): Algorithm;
     traverseCommentLong(commentLong: CommentLong): Algorithm;
 }
-export declare class CountBaseMoves extends Up<number> {
-    traverseSequence(sequence: Sequence): number;
-    traverseGroup(group: Group): number;
-    traverseBlockMove(blockMove: BlockMove): number;
-    traverseCommutator(commutator: Commutator): number;
-    traverseConjugate(conjugate: Conjugate): number;
-    traversePause(pause: Pause): number;
-    traverseNewLine(newLine: NewLine): number;
-    traverseCommentShort(commentShort: CommentShort): number;
-    traverseCommentLong(commentLong: CommentLong): number;
-}
 export declare class StructureEquals extends DownUp<Algorithm, boolean> {
     traverseSequence(sequence: Sequence, dataDown: Algorithm): boolean;
     traverseGroup(group: Group, dataDown: Algorithm): boolean;
@@ -80,7 +58,7 @@ export declare class StructureEquals extends DownUp<Algorithm, boolean> {
     traverseCommentShort(commentShort: CommentShort, dataDown: Algorithm): boolean;
     traverseCommentLong(commentLong: CommentLong, dataDown: Algorithm): boolean;
 }
-export declare class CoalesceMoves extends Up<Algorithm> {
+export declare class CoalesceBaseMoves extends Up<Algorithm> {
     private sameBlock;
     traverseSequence(sequence: Sequence): Sequence;
     traverseGroup(group: Group): Algorithm;
@@ -91,18 +69,6 @@ export declare class CoalesceMoves extends Up<Algorithm> {
     traverseNewLine(newLine: NewLine): Algorithm;
     traverseCommentShort(commentShort: CommentShort): Algorithm;
     traverseCommentLong(commentLong: CommentLong): Algorithm;
-}
-export declare class Concat extends DownUp<Algorithm, Sequence> {
-    private concatIntoSequence;
-    traverseSequence(sequence: Sequence, dataDown: Algorithm): Sequence;
-    traverseGroup(group: Group, dataDown: Algorithm): Sequence;
-    traverseBlockMove(BlockMove: BlockMove, dataDown: Algorithm): Sequence;
-    traverseCommutator(commutator: Commutator, dataDown: Algorithm): Sequence;
-    traverseConjugate(conjugate: Conjugate, dataDown: Algorithm): Sequence;
-    traversePause(pause: Pause, dataDown: Algorithm): Sequence;
-    traverseNewLine(newLine: NewLine, dataDown: Algorithm): Sequence;
-    traverseCommentShort(commentShort: CommentShort, dataDown: Algorithm): Sequence;
-    traverseCommentLong(commentLong: CommentLong, dataDown: Algorithm): Sequence;
 }
 export declare class ToString extends Up<string> {
     private repetitionSuffix;
@@ -116,11 +82,8 @@ export declare class ToString extends Up<string> {
     traverseCommentShort(commentShort: CommentShort): string;
     traverseCommentLong(commentLong: CommentLong): string;
 }
-export declare const clone: (a: Algorithm) => Algorithm;
 export declare const invert: (a: Algorithm) => Algorithm;
 export declare const expand: (a: Algorithm) => Algorithm;
-export declare const countBaseMoves: (a: Algorithm) => number;
 export declare const structureEquals: (a: Algorithm, dataDown: Algorithm) => boolean;
-export declare const coalesceMoves: (a: Algorithm) => Algorithm;
-export declare const concat: (a: Algorithm, dataDown: Algorithm) => Sequence;
+export declare const coalesceBaseMoves: (a: Algorithm) => Algorithm;
 export declare const algToString: (a: Algorithm) => string;

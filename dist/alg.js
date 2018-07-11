@@ -116,13 +116,10 @@ exports.NewLine = algorithm_1.NewLine;
 exports.CommentShort = algorithm_1.CommentShort;
 exports.CommentLong = algorithm_1.CommentLong;
 var traversal_1 = __webpack_require__(2);
-exports.clone = traversal_1.clone;
 exports.invert = traversal_1.invert;
 exports.expand = traversal_1.expand;
-exports.countBaseMoves = traversal_1.countBaseMoves;
 exports.structureEquals = traversal_1.structureEquals;
-exports.coalesceMoves = traversal_1.coalesceMoves;
-exports.concat = traversal_1.concat;
+exports.coalesceBaseMoves = traversal_1.coalesceBaseMoves;
 exports.algToString = traversal_1.algToString;
 var example_1 = __webpack_require__(3);
 exports.Example = example_1.Example;
@@ -395,34 +392,6 @@ var Up = /** @class */ (function (_super) {
 }(DownUp));
 exports.Up = Up;
 ;
-var Clone = /** @class */ (function (_super) {
-    __extends(Clone, _super);
-    function Clone() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Clone.prototype.traverseSequence = function (sequence) {
-        var _this = this;
-        return new algorithm_1.Sequence(sequence.nestedAlgs.map(function (a) { return _this.traverse(a); }));
-    };
-    Clone.prototype.traverseGroup = function (group) {
-        return new algorithm_1.Group(this.traverse(group.nestedAlg), group.amount);
-    };
-    Clone.prototype.traverseBlockMove = function (blockMove) {
-        return new algorithm_1.BlockMove(blockMove.family, blockMove.amount);
-    };
-    Clone.prototype.traverseCommutator = function (commutator) {
-        return new algorithm_1.Commutator(this.traverse(commutator.A), this.traverse(commutator.B), commutator.amount);
-    };
-    Clone.prototype.traverseConjugate = function (conjugate) {
-        return new algorithm_1.Conjugate(this.traverse(conjugate.A), this.traverse(conjugate.B), conjugate.amount);
-    };
-    Clone.prototype.traversePause = function (pause) { return pause; };
-    Clone.prototype.traverseNewLine = function (newLine) { return newLine; };
-    Clone.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
-    Clone.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
-    return Clone;
-}(Up));
-exports.Clone = Clone;
 // TODO: Test that inverses are bijections.
 var Invert = /** @class */ (function (_super) {
     __extends(Invert, _super);
@@ -521,38 +490,6 @@ var Expand = /** @class */ (function (_super) {
     return Expand;
 }(Up));
 exports.Expand = Expand;
-var CountBaseMoves = /** @class */ (function (_super) {
-    __extends(CountBaseMoves, _super);
-    function CountBaseMoves() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    CountBaseMoves.prototype.traverseSequence = function (sequence) {
-        var total = 0;
-        for (var _i = 0, _a = sequence.nestedAlgs; _i < _a.length; _i++) {
-            var part = _a[_i];
-            total += this.traverse(part);
-        }
-        return total;
-    };
-    CountBaseMoves.prototype.traverseGroup = function (group) {
-        return this.traverse(group.nestedAlg);
-    };
-    CountBaseMoves.prototype.traverseBlockMove = function (blockMove) {
-        return 1;
-    };
-    CountBaseMoves.prototype.traverseCommutator = function (commutator) {
-        return 2 * (this.traverse(commutator.A) + this.traverse(commutator.B));
-    };
-    CountBaseMoves.prototype.traverseConjugate = function (conjugate) {
-        return 2 * (this.traverse(conjugate.A)) + this.traverse(conjugate.B);
-    };
-    CountBaseMoves.prototype.traversePause = function (pause) { return 0; };
-    CountBaseMoves.prototype.traverseNewLine = function (newLine) { return 0; };
-    CountBaseMoves.prototype.traverseCommentShort = function (commentShort) { return 0; };
-    CountBaseMoves.prototype.traverseCommentLong = function (commentLong) { return 0; };
-    return CountBaseMoves;
-}(Up));
-exports.CountBaseMoves = CountBaseMoves;
 var StructureEquals = /** @class */ (function (_super) {
     __extends(StructureEquals, _super);
     function StructureEquals() {
@@ -607,17 +544,17 @@ var StructureEquals = /** @class */ (function (_super) {
 }(DownUp));
 exports.StructureEquals = StructureEquals;
 // TODO: Test that inverses are bijections.
-var CoalesceMoves = /** @class */ (function (_super) {
-    __extends(CoalesceMoves, _super);
-    function CoalesceMoves() {
+var CoalesceBaseMoves = /** @class */ (function (_super) {
+    __extends(CoalesceBaseMoves, _super);
+    function CoalesceBaseMoves() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    CoalesceMoves.prototype.sameBlock = function (moveA, moveB) {
+    CoalesceBaseMoves.prototype.sameBlock = function (moveA, moveB) {
         // TODO: Handle layers
         return moveA.family === moveB.family;
     };
     // TODO: Handle
-    CoalesceMoves.prototype.traverseSequence = function (sequence) {
+    CoalesceBaseMoves.prototype.traverseSequence = function (sequence) {
         var coalesced = [];
         for (var _i = 0, _a = sequence.nestedAlgs; _i < _a.length; _i++) {
             var part = _a[_i];
@@ -649,44 +586,37 @@ var CoalesceMoves = /** @class */ (function (_super) {
         }
         return new algorithm_1.Sequence(coalesced);
     };
-    CoalesceMoves.prototype.traverseGroup = function (group) { return group; };
-    CoalesceMoves.prototype.traverseBlockMove = function (blockMove) { return blockMove; };
-    CoalesceMoves.prototype.traverseCommutator = function (commutator) { return commutator; };
-    CoalesceMoves.prototype.traverseConjugate = function (conjugate) { return conjugate; };
-    CoalesceMoves.prototype.traversePause = function (pause) { return pause; };
-    CoalesceMoves.prototype.traverseNewLine = function (newLine) { return newLine; };
-    CoalesceMoves.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
-    CoalesceMoves.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
-    return CoalesceMoves;
+    CoalesceBaseMoves.prototype.traverseGroup = function (group) { return group; };
+    CoalesceBaseMoves.prototype.traverseBlockMove = function (blockMove) { return blockMove; };
+    CoalesceBaseMoves.prototype.traverseCommutator = function (commutator) { return commutator; };
+    CoalesceBaseMoves.prototype.traverseConjugate = function (conjugate) { return conjugate; };
+    CoalesceBaseMoves.prototype.traversePause = function (pause) { return pause; };
+    CoalesceBaseMoves.prototype.traverseNewLine = function (newLine) { return newLine; };
+    CoalesceBaseMoves.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
+    CoalesceBaseMoves.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
+    return CoalesceBaseMoves;
 }(Up));
-exports.CoalesceMoves = CoalesceMoves;
-var Concat = /** @class */ (function (_super) {
-    __extends(Concat, _super);
-    function Concat() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Concat.prototype.concatIntoSequence = function (A, B) {
-        var nestedAlgs = A.slice();
-        if (B instanceof algorithm_1.Sequence) {
-            nestedAlgs = nestedAlgs.concat(B.nestedAlgs);
-        }
-        else {
-            nestedAlgs.push(B);
-        }
-        return new algorithm_1.Sequence(nestedAlgs);
-    };
-    Concat.prototype.traverseSequence = function (sequence, dataDown) { return this.concatIntoSequence(sequence.nestedAlgs, dataDown); };
-    Concat.prototype.traverseGroup = function (group, dataDown) { return this.concatIntoSequence([group], dataDown); };
-    Concat.prototype.traverseBlockMove = function (BlockMove, dataDown) { return this.concatIntoSequence([BlockMove], dataDown); };
-    Concat.prototype.traverseCommutator = function (commutator, dataDown) { return this.concatIntoSequence([commutator], dataDown); };
-    Concat.prototype.traverseConjugate = function (conjugate, dataDown) { return this.concatIntoSequence([conjugate], dataDown); };
-    Concat.prototype.traversePause = function (pause, dataDown) { return this.concatIntoSequence([pause], dataDown); };
-    Concat.prototype.traverseNewLine = function (newLine, dataDown) { return this.concatIntoSequence([newLine], dataDown); };
-    Concat.prototype.traverseCommentShort = function (commentShort, dataDown) { return this.concatIntoSequence([commentShort], dataDown); };
-    Concat.prototype.traverseCommentLong = function (commentLong, dataDown) { return this.concatIntoSequence([commentLong], dataDown); };
-    return Concat;
-}(DownUp));
-exports.Concat = Concat;
+exports.CoalesceBaseMoves = CoalesceBaseMoves;
+// export class Concat extends DownUp<Algorithm, Sequence> {
+//   private concatIntoSequence(A: Algorithm[], B: Algorithm): Sequence {
+//     var nestedAlgs: Algorithm[] = A.slice();
+//     if (B instanceof Sequence) {
+//       nestedAlgs = nestedAlgs.concat(B.nestedAlgs)
+//     } else {
+//       nestedAlgs.push(B);
+//     }
+//     return new Sequence(nestedAlgs)
+//   }
+//   public traverseSequence(     sequence:     Sequence,     dataDown: Algorithm): Sequence {return this.concatIntoSequence(sequence.nestedAlgs, dataDown); }
+//   public traverseGroup(        group:        Group,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([group]          , dataDown); }
+//   public traverseBlockMove(    BlockMove:    BlockMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([BlockMove]      , dataDown); }
+//   public traverseCommutator(   commutator:   Commutator,   dataDown: Algorithm): Sequence {return this.concatIntoSequence([commutator]     , dataDown); }
+//   public traverseConjugate(    conjugate:    Conjugate,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([conjugate]      , dataDown); }
+//   public traversePause(        pause:        Pause,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([pause]          , dataDown); }
+//   public traverseNewLine(      newLine:      NewLine,      dataDown: Algorithm): Sequence {return this.concatIntoSequence([newLine]        , dataDown); }
+//   public traverseCommentShort( commentShort: CommentShort, dataDown: Algorithm): Sequence {return this.concatIntoSequence([commentShort]   , dataDown); }
+//   public traverseCommentLong(  commentLong:  CommentLong,  dataDown: Algorithm): Sequence {return this.concatIntoSequence([commentLong]    , dataDown); }
+// }
 var ToString = /** @class */ (function (_super) {
     __extends(ToString, _super);
     function ToString() {
@@ -729,13 +659,10 @@ function makeUp(ctor) {
     var instance = new ctor();
     return instance.traverse.bind(instance);
 }
-exports.clone = makeUp(Clone);
 exports.invert = makeUp(Invert);
 exports.expand = makeUp(Expand);
-exports.countBaseMoves = makeUp(CountBaseMoves);
 exports.structureEquals = makeDownUp(StructureEquals);
-exports.coalesceMoves = makeUp(CoalesceMoves);
-exports.concat = makeDownUp(Concat);
+exports.coalesceBaseMoves = makeUp(CoalesceBaseMoves);
 exports.algToString = makeUp(ToString);
 
 
