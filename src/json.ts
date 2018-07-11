@@ -1,4 +1,4 @@
-import {Algorithm, Sequence, Rotation, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong} from "./algorithm"
+import {Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong} from "./algorithm"
 
 "use strict";
 
@@ -23,10 +23,6 @@ export function fromJSON(json: AlgorithmJSON): Algorithm {
       if (!json.nestedAlg) { throw "Missing nestedAlg" }
       if (!json.amount) { throw "Missing amount" }
       return new Group(this.fromJSON(json.nestedAlg), json.amount);
-    case "rotation":
-      if (!json.family) { throw "Missing family" }
-      if (!json.amount) { throw "Missing amount" }
-      return new Rotation(json.family, json.amount);
     case "blockMove":
       // TODO: Handle layers
       if (!json.family) { throw "Missing family" }

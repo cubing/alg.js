@@ -1,4 +1,4 @@
-import {Algorithm, Sequence, Rotation, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong, Repeatable} from "./algorithm"
+import {Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong, Repeatable} from "./algorithm"
 
 "use strict";
 
@@ -12,7 +12,6 @@ export namespace Traversal {
     public abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
     public abstract traverseGroup(group: Group, dataDown: DataDown): DataUp;
     public abstract traverseBlockMove(blockMove: BlockMove, dataDown: DataDown): DataUp;
-    public abstract traverseRotation(rotation: Rotation, dataDown: DataDown): DataUp;
     public abstract traverseCommutator(commutator: Commutator, dataDown: DataDown): DataUp;
     public abstract traverseConjugate(conjugate: Conjugate, dataDown: DataDown): DataUp;
     public abstract traversePause(pause: Pause, dataDown: DataDown): DataUp;
@@ -29,7 +28,6 @@ export namespace Traversal {
     public abstract traverseSequence(sequence: Sequence): DataUp;
     public abstract traverseGroup(group: Group): DataUp;
     public abstract traverseBlockMove(blockMove: BlockMove): DataUp;
-    public abstract traverseRotation(rotation: Rotation): DataUp;
     public abstract traverseCommutator(commutator: Commutator): DataUp;
     public abstract traverseConjugate(conjugate: Conjugate): DataUp;
     public abstract traversePause(pause: Pause): DataUp;
@@ -44,9 +42,6 @@ export namespace Traversal {
     }
     public traverseGroup(group: Group): Algorithm {
       return new Group(this.traverse(group.nestedAlg), group.amount);
-    }
-    public traverseRotation(rotation: Rotation): Algorithm {
-      return new Rotation(rotation.family, rotation.amount);
     }
     public traverseBlockMove(blockMove: BlockMove): Algorithm {
       return new BlockMove(blockMove.family, blockMove.amount);
@@ -71,9 +66,6 @@ export namespace Traversal {
     }
     public traverseGroup(group: Group): Algorithm {
       return new Group(this.traverse(group.nestedAlg), group.amount);
-    }
-    public traverseRotation(rotation: Rotation): Algorithm {
-      return new Rotation(rotation.family, -rotation.amount);
     }
     public traverseBlockMove(blockMove: BlockMove): Algorithm {
       return new BlockMove(blockMove.family, -blockMove.amount);
@@ -131,9 +123,6 @@ export namespace Traversal {
       // TODO: Pass raw Algorithm[] to sequence.
       return this.repeat([this.traverse(group.nestedAlg)], group);
     }
-    public traverseRotation(rotation: Rotation): Algorithm {
-      return rotation;
-    }
     public traverseBlockMove(blockMove: BlockMove): Algorithm {
       return blockMove;
     }
@@ -177,9 +166,6 @@ export namespace Traversal {
     public traverseGroup(group: Group): number {
       return this.traverse(group.nestedAlg);
     }
-    public traverseRotation(rotation: Rotation): number {
-      return 1;
-    }
     public traverseBlockMove(blockMove: BlockMove): number {
       return 1;
     }
@@ -212,12 +198,6 @@ export namespace Traversal {
     }
     public traverseGroup(group: Group, dataDown: Algorithm): boolean {
       return (dataDown instanceof Group) && this.traverse(group.nestedAlg, dataDown.nestedAlg);
-    }
-    public traverseRotation(rotation: Rotation, dataDown: Algorithm): boolean {
-      // TODO: Handle layers.
-      return dataDown instanceof Rotation &&
-             rotation.family === dataDown.family &&
-             rotation.amount === dataDown.amount;
     }
     public traverseBlockMove(blockMove: BlockMove, dataDown: Algorithm): boolean {
       // TODO: Handle layers.
@@ -286,7 +266,6 @@ export namespace Traversal {
       return new Sequence(coalesced);
     }
     public traverseGroup(group: Group):                      Algorithm { return group; }
-    public traverseRotation(rotation: Rotation):            Algorithm { return rotation; }
     public traverseBlockMove(blockMove: BlockMove):          Algorithm { return blockMove; }
     public traverseCommutator(commutator: Commutator):       Algorithm { return commutator; }
     public traverseConjugate(conjugate: Conjugate):          Algorithm { return conjugate; }
@@ -308,7 +287,6 @@ export namespace Traversal {
     }
     public traverseSequence(     sequence:     Sequence,     dataDown: Algorithm): Sequence {return this.concatIntoSequence(sequence.nestedAlgs, dataDown); }
     public traverseGroup(        group:        Group,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([group]          , dataDown); }
-    public traverseRotation(     Rotation:     Rotation,     dataDown: Algorithm): Sequence {return this.concatIntoSequence([Rotation]       , dataDown); }
     public traverseBlockMove(    BlockMove:    BlockMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([BlockMove]      , dataDown); }
     public traverseCommutator(   commutator:   Commutator,   dataDown: Algorithm): Sequence {return this.concatIntoSequence([commutator]     , dataDown); }
     public traverseConjugate(    conjugate:    Conjugate,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([conjugate]      , dataDown); }
@@ -332,7 +310,6 @@ export namespace Traversal {
     }
     public traverseSequence(     sequence:     Sequence,     ): string { return sequence.nestedAlgs.map(a => this.traverse(a)).join(" "); }
     public traverseGroup(        group:        Group,        ): string { return "(" + group.nestedAlg + ")" + this.repetitionSuffix(group.amount); }
-    public traverseRotation(     rotation:     Rotation,     ): string { return rotation.family + this.repetitionSuffix(rotation.amount); }
     public traverseBlockMove(    blockMove:    BlockMove,    ): string { return blockMove.family + this.repetitionSuffix(blockMove.amount); }
     public traverseCommutator(   commutator:   Commutator,   ): string { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); }
     public traverseConjugate(    conjugate:    Conjugate,    ): string { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); }

@@ -1,4 +1,4 @@
-import {Algorithm, Sequence, Rotation, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong} from "./algorithm"
+import {Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong} from "./algorithm"
 
 "use strict";
 
@@ -49,20 +49,20 @@ export namespace Example {
     new BlockMove("U", 1)
   ]);
 
-  export const EPerm: Sequence = new Sequence([
-    new Rotation("x", -1),
-    new Commutator(
-      new Conjugate(new BlockMove("R", 1), new BlockMove("U", -1), 1),
-      new BlockMove("D", 1),
-      1
-    ),
-    new Commutator(
-      new Conjugate(new BlockMove("R", 1), new BlockMove("U", 1), 1),
-      new BlockMove("D", 1),
-      1
-    ),
-    new Rotation("x", 1)
-  ]);
+  // export const EPerm: Sequence = new Sequence([
+  //   new Rotation("x", -1),
+  //   new Commutator(
+  //     new Conjugate(new BlockMove("R", 1), new BlockMove("U", -1), 1),
+  //     new BlockMove("D", 1),
+  //     1
+  //   ),
+  //   new Commutator(
+  //     new Conjugate(new BlockMove("R", 1), new BlockMove("U", 1), 1),
+  //     new BlockMove("D", 1),
+  //     1
+  //   ),
+  //   new Rotation("x", 1)
+  // ]);
 
   export const FURURFCompact: Algorithm = new Conjugate(
     new BlockMove("F",  1),
@@ -129,7 +129,7 @@ export namespace Example {
   export const AllAlgTypes: Algorithm[] = [
     new Sequence([new BlockMove("R", 1), new BlockMove("U", -1)]),
     new Group(new BlockMove("F", 1), 2),
-    new Rotation("y", -1),
+    // new Rotation("y", -1),
     new BlockMove("R", 2),
     new Commutator(new BlockMove("R", 2), new BlockMove("U", 2), 2),
     new Conjugate(new BlockMove("L", 2), new BlockMove("D", -1), 2),

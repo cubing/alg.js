@@ -73,26 +73,27 @@ export class Group extends Repeatable {
 export abstract class BaseMove extends Repeatable {
 }
 
-export class Rotation extends BaseMove {
-  public type: string = "rotation";
-  constructor(public family: MoveFamily, amount: number) {
-    super(amount);
-    this.freeze();
-  }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseRotation(this, dataDown);
-  }
+var blockMoves: { [s: string]: boolean; } = {
+  "U": true,
+  "L": true,
+  "F": true,
+  "R": true,
+  "B": true,
+  "D": true
 }
 
+function validateBlockMove(family: string): boolean {
+  return blockMoves[family] === true;
+}
+
+// TODO: Handle layers
 export class BlockMove extends BaseMove {
   public type: string = "blockMove";
-  // TODO: Typesafe layer types?
-  public layer?: number;
-  public startLayer?: number;
-  public endLayer?: number;
-  // TODO: Handle layers in constructor
   constructor(public family: MoveFamily, amount: number) {
     super(amount);
+    if (!validateBlockMove(family)) {
+      throw `Invalid block move family: ${family}`;
+    }
     this.freeze();
   }
   dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {

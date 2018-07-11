@@ -23,18 +23,9 @@ export declare class Group extends Repeatable {
 }
 export declare abstract class BaseMove extends Repeatable {
 }
-export declare class Rotation extends BaseMove {
-    family: MoveFamily;
-    type: string;
-    constructor(family: MoveFamily, amount: number);
-    dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp;
-}
 export declare class BlockMove extends BaseMove {
     family: MoveFamily;
     type: string;
-    layer?: number;
-    startLayer?: number;
-    endLayer?: number;
     constructor(family: MoveFamily, amount: number);
     dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp;
 }

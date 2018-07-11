@@ -4,7 +4,6 @@ export declare namespace Example {
     const AntiSune: Sequence;
     const SuneCommutator: Algorithm;
     const Niklas: Sequence;
-    const EPerm: Sequence;
     const FURURFCompact: Algorithm;
     const APermCompact: Algorithm;
     const FURURFMoves: Algorithm;
