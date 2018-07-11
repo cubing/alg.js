@@ -142,38 +142,6 @@ describe("Custom Traversal", () => {
     expect(depth.traverse(Ex.HeadlightSwaps)).to.equal(2);
     expect(depth.traverse(Ex.FURURFCompact)).to.equal(2);
   });
-
-  it("should be able to clone an alg with a new alg type", () => {
-    class ConfabAwareClone extends Traversal.Clone  {
-      public traverseConfabulator(confabulator: Confabulator): Alg.Algorithm {
-        return new Alg.Commutator(clone(confabulator.A), clone(confabulator.A), 3);
-
-      }
-    }
-
-    class Confabulator extends Alg.Algorithm {
-      public type: string = "confabulator";
-      constructor(public A: Alg.Algorithm) {
-        super();
-        this.freeze();
-      }
-      dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-        // TODO: can we do this without breaking the type system?
-        return (t as any).traverseConfabulator(this, dataDown);
-      }
-    }
-
-    // TODO: Figure out how to add definitions to existing traversals like ToString.
-
-    var h = new ConfabAwareClone();
-    var t = h.traverse(new Alg.Group(new Confabulator(new Alg.BlockMove("R", 1)), 2));
-    // console.log();
-    var t2 = new Alg.Group(new Alg.Commutator(new Alg.BlockMove("R", 1), new Alg.BlockMove("R", 1), 3), 2);
-    e(t, t2).to.be.true;
-
-    // TODO: Fix stringification.
-    // expect(algToString(t)).to.equal("([R, R]3)2");
-  });
 })
 
 

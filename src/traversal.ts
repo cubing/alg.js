@@ -3,11 +3,64 @@ import {Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, New
 "use strict";
 
 export namespace Traversal {
-  export abstract class DownUp<DataDown, DataUp> {
-    // Immediate subclasses should overwrite this.
-    public traverse(algorithm: Algorithm, dataDown: DataDown): DataUp {
-      return algorithm.dispatch(this, dataDown);
+
+  function dispatch<DataDown, DataUp>(t: DownUp<DataDown, DataUp>, algorithm: Algorithm, dataDown: DataDown): DataUp {
+    switch (algorithm.type) {
+      case "sequence":
+        if (!(algorithm instanceof Sequence)) {
+          throw "Algorithm is not an object of type Sequence despite having `type`: ${algorithm.type}"
+        }
+        return t.traverseSequence(<Sequence >algorithm, dataDown);
+      case "group":
+        if (!(algorithm instanceof Group)) {
+          throw "Algorithm is not an object of type Group despite having `type`: ${algorithm.type}"
+        }
+        return t.traverseGroup(<Group >algorithm, dataDown);
+      case "blockMove":
+        if (!(algorithm instanceof BlockMove)) {
+          throw "Algorithm is not an object of type BlockMove despite having `type`: ${algorithm.type}"
+        }
+        return t.traverseBlockMove(<BlockMove >algorithm, dataDown);
+      case "commutator":
+        if (!(algorithm instanceof Commutator)) {
+          throw "Algorithm is not an object of type Commutator despite having `type`: ${algorithm.type}"
+        }
+        return t.traverseCommutator (<Commutator>algorithm, dataDown);
+      case "conjugate":
+        if (!(algorithm instanceof Conjugate)) {
+          throw "Algorithm is not an object of type Conjugate despite having `type`: ${algorithm.type}"
+        }
+        return t.traverseConjugate(<Conjugate >algorithm, dataDown);
+      case "pause":
+        if (!(algorithm instanceof Pause)) {
+          throw "Algorithm is not an object of type Pause despite having `type`: ${algorithm.type}"
+        }
+        return t.traversePause(<Pause>algorithm, dataDown);
+      case "newLine":
+        if (!(algorithm instanceof NewLine)) {
+          throw "Algorithm is not an object of type NewLine despite having `type`: ${algorithm.type}"
+        }
+        return t.traverseNewLine(<NewLine >algorithm, dataDown);
+      case "commentShort":
+        if (!(algorithm instanceof CommentShort)) {
+          throw "Algorithm is not an object of type CommentShort despite having `type`: ${algorithm.type}"
+        }
+        return t.traverseCommentShort (<CommentShort>algorithm, dataDown);
+      case "commentLong":
+        if (!(algorithm instanceof CommentLong)) {
+          throw "Algorithm is not an object of type CommentLong despite having `type`: ${algorithm.type}"
+        }
+        return t.traverseCommentLong (<CommentLong>algorithm, dataDown);
+      default: 
+        throw `Unknown algorithm type: ${algorithm.type}`
     }
+  }
+
+  export abstract class DownUp<DataDown, DataUp> {
+    public traverse(algorithm: Algorithm, dataDown: DataDown): DataUp {
+      return dispatch(this, algorithm, dataDown);
+    }
+    // Immediate subclasses should overwrite this.
 
     public abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
     public abstract traverseGroup(group: Group, dataDown: DataDown): DataUp;
@@ -22,7 +75,7 @@ export namespace Traversal {
 
   export abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
     public traverse(algorithm: Algorithm): DataUp {
-      return algorithm.dispatch(this, undefined);
+      return dispatch<undefined, DataUp>(this, algorithm, undefined);
     }
 
     public abstract traverseSequence(sequence: Sequence): DataUp;

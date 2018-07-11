@@ -14,7 +14,6 @@ import {
 
 export abstract class Algorithm {
   public readonly abstract type: string
-  abstract dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp;
 
   // TODO: Figure out if we can statically enforce that all Algorithm subclasses
   // are frozen after initial construction.
@@ -43,9 +42,8 @@ export class Sequence extends Algorithm {
     super();
     this.freeze();
   }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseSequence(this, dataDown);
-  }
+
+  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export abstract class Repeatable extends Algorithm {
@@ -65,9 +63,8 @@ export class Group extends Repeatable {
     super(amount);
     this.freeze();
   }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseGroup(this, dataDown);
-  }
+
+  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export abstract class BaseMove extends Repeatable {
@@ -96,9 +93,8 @@ export class BlockMove extends BaseMove {
     }
     this.freeze();
   }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseBlockMove(this, dataDown);
-  }
+
+  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class Commutator extends Repeatable {
@@ -107,9 +103,8 @@ export class Commutator extends Repeatable {
     super(amount);
     this.freeze();
   }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseCommutator(this, dataDown);
-  }
+
+  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class Conjugate extends Repeatable {
@@ -118,9 +113,8 @@ export class Conjugate extends Repeatable {
     super(amount);
     this.freeze();
   }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseConjugate(this, dataDown);
-  }
+
+  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class Pause extends Algorithm {
@@ -129,9 +123,8 @@ export class Pause extends Algorithm {
     super();
     this.freeze();
   }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traversePause(this, dataDown);
-  }
+
+  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class NewLine extends Algorithm {
@@ -140,9 +133,8 @@ export class NewLine extends Algorithm {
     super();
     this.freeze();
   }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseNewLine(this, dataDown);
-  }
+
+  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class CommentShort extends Algorithm {
@@ -151,9 +143,8 @@ export class CommentShort extends Algorithm {
     super();
     this.freeze();
   }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseCommentShort(this, dataDown);
-  }
+
+  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 export class CommentLong extends Algorithm {
@@ -162,9 +153,8 @@ export class CommentLong extends Algorithm {
     super();
     this.freeze();
   }
-  dispatch<DataDown, DataUp>(t: Traversal.DownUp<DataDown, DataUp>, dataDown: DataDown): DataUp {
-    return t.traverseCommentLong(this, dataDown);
-  }
+
+  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
 }
 
 // TODO

@@ -168,9 +168,6 @@ var Sequence = /** @class */ (function (_super) {
         _this.freeze();
         return _this;
     }
-    Sequence.prototype.dispatch = function (t, dataDown) {
-        return t.traverseSequence(this, dataDown);
-    };
     return Sequence;
 }(Algorithm));
 exports.Sequence = Sequence;
@@ -196,9 +193,6 @@ var Group = /** @class */ (function (_super) {
         _this.freeze();
         return _this;
     }
-    Group.prototype.dispatch = function (t, dataDown) {
-        return t.traverseGroup(this, dataDown);
-    };
     return Group;
 }(Repeatable));
 exports.Group = Group;
@@ -234,9 +228,6 @@ var BlockMove = /** @class */ (function (_super) {
         _this.freeze();
         return _this;
     }
-    BlockMove.prototype.dispatch = function (t, dataDown) {
-        return t.traverseBlockMove(this, dataDown);
-    };
     return BlockMove;
 }(BaseMove));
 exports.BlockMove = BlockMove;
@@ -250,9 +241,6 @@ var Commutator = /** @class */ (function (_super) {
         _this.freeze();
         return _this;
     }
-    Commutator.prototype.dispatch = function (t, dataDown) {
-        return t.traverseCommutator(this, dataDown);
-    };
     return Commutator;
 }(Repeatable));
 exports.Commutator = Commutator;
@@ -266,9 +254,6 @@ var Conjugate = /** @class */ (function (_super) {
         _this.freeze();
         return _this;
     }
-    Conjugate.prototype.dispatch = function (t, dataDown) {
-        return t.traverseConjugate(this, dataDown);
-    };
     return Conjugate;
 }(Repeatable));
 exports.Conjugate = Conjugate;
@@ -280,9 +265,6 @@ var Pause = /** @class */ (function (_super) {
         _this.freeze();
         return _this;
     }
-    Pause.prototype.dispatch = function (t, dataDown) {
-        return t.traversePause(this, dataDown);
-    };
     return Pause;
 }(Algorithm));
 exports.Pause = Pause;
@@ -294,9 +276,6 @@ var NewLine = /** @class */ (function (_super) {
         _this.freeze();
         return _this;
     }
-    NewLine.prototype.dispatch = function (t, dataDown) {
-        return t.traverseNewLine(this, dataDown);
-    };
     return NewLine;
 }(Algorithm));
 exports.NewLine = NewLine;
@@ -309,9 +288,6 @@ var CommentShort = /** @class */ (function (_super) {
         _this.freeze();
         return _this;
     }
-    CommentShort.prototype.dispatch = function (t, dataDown) {
-        return t.traverseCommentShort(this, dataDown);
-    };
     return CommentShort;
 }(Algorithm));
 exports.CommentShort = CommentShort;
@@ -324,9 +300,6 @@ var CommentLong = /** @class */ (function (_super) {
         _this.freeze();
         return _this;
     }
-    CommentLong.prototype.dispatch = function (t, dataDown) {
-        return t.traverseCommentLong(this, dataDown);
-    };
     return CommentLong;
 }(Algorithm));
 exports.CommentLong = CommentLong;
@@ -353,12 +326,62 @@ var algorithm_1 = __webpack_require__(1);
 "use strict";
 var Traversal;
 (function (Traversal) {
+    function dispatch(t, algorithm, dataDown) {
+        switch (algorithm.type) {
+            case "sequence":
+                if (!(algorithm instanceof algorithm_1.Sequence)) {
+                    throw "Algorithm is not an object of type Sequence despite having `type`: ${algorithm.type}";
+                }
+                return t.traverseSequence(algorithm, dataDown);
+            case "group":
+                if (!(algorithm instanceof algorithm_1.Group)) {
+                    throw "Algorithm is not an object of type Group despite having `type`: ${algorithm.type}";
+                }
+                return t.traverseGroup(algorithm, dataDown);
+            case "blockMove":
+                if (!(algorithm instanceof algorithm_1.BlockMove)) {
+                    throw "Algorithm is not an object of type BlockMove despite having `type`: ${algorithm.type}";
+                }
+                return t.traverseBlockMove(algorithm, dataDown);
+            case "commutator":
+                if (!(algorithm instanceof algorithm_1.Commutator)) {
+                    throw "Algorithm is not an object of type Commutator despite having `type`: ${algorithm.type}";
+                }
+                return t.traverseCommutator(algorithm, dataDown);
+            case "conjugate":
+                if (!(algorithm instanceof algorithm_1.Conjugate)) {
+                    throw "Algorithm is not an object of type Conjugate despite having `type`: ${algorithm.type}";
+                }
+                return t.traverseConjugate(algorithm, dataDown);
+            case "pause":
+                if (!(algorithm instanceof algorithm_1.Pause)) {
+                    throw "Algorithm is not an object of type Pause despite having `type`: ${algorithm.type}";
+                }
+                return t.traversePause(algorithm, dataDown);
+            case "newLine":
+                if (!(algorithm instanceof algorithm_1.NewLine)) {
+                    throw "Algorithm is not an object of type NewLine despite having `type`: ${algorithm.type}";
+                }
+                return t.traverseNewLine(algorithm, dataDown);
+            case "commentShort":
+                if (!(algorithm instanceof algorithm_1.CommentShort)) {
+                    throw "Algorithm is not an object of type CommentShort despite having `type`: ${algorithm.type}";
+                }
+                return t.traverseCommentShort(algorithm, dataDown);
+            case "commentLong":
+                if (!(algorithm instanceof algorithm_1.CommentLong)) {
+                    throw "Algorithm is not an object of type CommentLong despite having `type`: ${algorithm.type}";
+                }
+                return t.traverseCommentLong(algorithm, dataDown);
+            default:
+                throw "Unknown algorithm type: " + algorithm.type;
+        }
+    }
     var DownUp = /** @class */ (function () {
         function DownUp() {
         }
-        // Immediate subclasses should overwrite this.
         DownUp.prototype.traverse = function (algorithm, dataDown) {
-            return algorithm.dispatch(this, dataDown);
+            return dispatch(this, algorithm, dataDown);
         };
         return DownUp;
     }());
@@ -369,7 +392,7 @@ var Traversal;
             return _super !== null && _super.apply(this, arguments) || this;
         }
         Up.prototype.traverse = function (algorithm) {
-            return algorithm.dispatch(this, undefined);
+            return dispatch(this, algorithm, undefined);
         };
         return Up;
     }(DownUp));
