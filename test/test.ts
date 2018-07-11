@@ -43,6 +43,10 @@ describe("BlockMove", () => {
   it("should throw an error for an invalid family", () => {
     expect(() => new Alg.BlockMove("Q", 1)).to.throw(/Invalid block move family/);
   });
+
+  it("should have a default amount of 1", () => {
+    expect(new Alg.BlockMove("R", 1).amount).to.equal(1);
+  });
 });
 
 var e = function(a1: Alg.Algorithm, a2: Alg.Algorithm) {
@@ -150,6 +154,11 @@ describe("Parser", () => {
   it("should parse ...", () => {
     const p = new Alg.Pause();
     e(parse("..."), new Alg.Sequence([p, p, p])).to.be.true;
+  });
+
+  // TODO: Should these be parsed differently?
+  it("should parse R and R1 as the same (for now)", () => {
+    e(parse("R"), parse("R1")).to.be.true;
   });
 
   it("should round-trip algs through a string", () => {
