@@ -15,7 +15,7 @@ import {
   CommentLong
 } from "./algorithm";
 
-function dispatch<DataDown, DataUp>(t: DownUp<DataDown, DataUp>, algorithm: Algorithm, dataDown: DataDown): DataUp {
+function dispatch<DataDown, DataUp>(t: TraversalDownUp<DataDown, DataUp>, algorithm: Algorithm, dataDown: DataDown): DataUp {
   switch (algorithm.type) {
     case "sequence":
       if (!(algorithm instanceof Sequence)) {
@@ -67,7 +67,7 @@ function dispatch<DataDown, DataUp>(t: DownUp<DataDown, DataUp>, algorithm: Algo
   }
 }
 
-export abstract class DownUp<DataDown, DataUp> {
+export abstract class TraversalDownUp<DataDown, DataUp> {
   // Immediate subclasses should overwrite this.
   public traverse(algorithm: Algorithm, dataDown: DataDown): DataUp {
     return dispatch(this, algorithm, dataDown);
@@ -92,7 +92,7 @@ export abstract class DownUp<DataDown, DataUp> {
   public abstract traverseCommentLong(commentLong: CommentLong, dataDown: DataDown): DataUp;
 }
 
-export abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
+export abstract class TraversalUp<DataUp> extends TraversalDownUp<undefined, DataUp> {
   public traverse(algorithm: Algorithm): DataUp {
     return dispatch<undefined, DataUp>(this, algorithm, undefined);
   }
@@ -117,7 +117,7 @@ export abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
 };
 
 // TODO: Test that inverses are bijections.
-export class Invert extends Up<Algorithm> {
+export class Invert extends TraversalUp<Algorithm> {
   public traverseSequence(sequence: Sequence): Sequence {
     // TODO: Handle newLines and comments correctly
     return new Sequence(sequence.nestedAlgs.slice().reverse().map(a => this.traverseIntoUnit(a)));
@@ -140,7 +140,7 @@ export class Invert extends Up<Algorithm> {
   public traverseCommentLong(commentLong: CommentLong):    Algorithm { return commentLong; }
 }
 
-export class Expand extends Up<Algorithm> {
+export class Expand extends TraversalUp<Algorithm> {
   private flattenSequenceOneLevel(algList: Algorithm[]): Unit[] {
     var flattened: Unit[] = [];
     for (var part of algList) {
@@ -215,7 +215,7 @@ export class Expand extends Up<Algorithm> {
   public traverseCommentLong(commentLong: CommentLong):    Algorithm { return commentLong; }
 }
 
-export class StructureEquals extends DownUp<Algorithm, boolean> {
+export class StructureEquals extends TraversalDownUp<Algorithm, boolean> {
   public traverseSequence(sequence: Sequence, dataDown: Algorithm): boolean {
     if (!(dataDown instanceof Sequence)) {
       return false;
@@ -264,7 +264,7 @@ export class StructureEquals extends DownUp<Algorithm, boolean> {
 }
 
 // TODO: Test that inverses are bijections.
-export class CoalesceBaseMoves extends Up<Algorithm> {
+export class CoalesceBaseMoves extends TraversalUp<Algorithm> {
   private sameBlock(moveA: BlockMove, moveB: BlockMove): boolean {
     // TODO: Handle layers
     return moveA.family === moveB.family;
@@ -309,7 +309,7 @@ export class CoalesceBaseMoves extends Up<Algorithm> {
   public traverseCommentLong(commentLong: CommentLong):    Algorithm { return commentLong; }
 }
 
-// export class Concat extends DownUp<Algorithm, Sequence> {
+// export class Concat extends TraversalDownUp<Algorithm, Sequence> {
 //   private concatIntoSequence(A: Algorithm[], B: Algorithm): Sequence {
 //     var nestedAlgs: Algorithm[] = A.slice();
 //     if (B instanceof Sequence) {
@@ -330,7 +330,7 @@ export class CoalesceBaseMoves extends Up<Algorithm> {
 //   public traverseCommentLong(  commentLong:  CommentLong,  dataDown: Algorithm): Sequence {return this.concatIntoSequence([commentLong]    , dataDown); }
 // }
 
-export class ToString extends Up<string> {
+export class ToString extends TraversalUp<string> {
   private repetitionSuffix(amount: number): string {
     var absAmount = Math.abs(amount);
     var s = "";
@@ -373,14 +373,14 @@ export class ToString extends Up<string> {
 }
 
 function makeDownUp<DataDown, DataUp>(
-  ctor: { new(): DownUp<DataDown, DataUp> }
+  ctor: { new(): TraversalDownUp<DataDown, DataUp> }
  ): (a: Algorithm, dataDown: DataDown) => DataUp {
   var instance = new ctor();
   return instance.traverse.bind(instance);
 }
 
 function makeUp<DataUp>(
-  ctor: { new(): Up<DataUp> }
+  ctor: { new(): TraversalUp<DataUp> }
  ): (a: Algorithm) => DataUp {
   var instance = new ctor();
   return instance.traverse.bind(instance);

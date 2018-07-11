@@ -116,6 +116,8 @@ exports.NewLine = algorithm_1.NewLine;
 exports.CommentShort = algorithm_1.CommentShort;
 exports.CommentLong = algorithm_1.CommentLong;
 var traversal_1 = __webpack_require__(2);
+exports.TraversalDownUp = traversal_1.TraversalDownUp;
+exports.TraversalUp = traversal_1.TraversalUp;
 exports.invert = traversal_1.invert;
 exports.expand = traversal_1.expand;
 exports.structureEquals = traversal_1.structureEquals;
@@ -387,41 +389,41 @@ function dispatch(t, algorithm, dataDown) {
             throw "Unknown algorithm type: " + algorithm.type;
     }
 }
-var DownUp = /** @class */ (function () {
-    function DownUp() {
+var TraversalDownUp = /** @class */ (function () {
+    function TraversalDownUp() {
     }
     // Immediate subclasses should overwrite this.
-    DownUp.prototype.traverse = function (algorithm, dataDown) {
+    TraversalDownUp.prototype.traverse = function (algorithm, dataDown) {
         return dispatch(this, algorithm, dataDown);
     };
-    DownUp.prototype.traverseIntoUnit = function (algorithm, dataDown) {
+    TraversalDownUp.prototype.traverseIntoUnit = function (algorithm, dataDown) {
         var out = this.traverse(algorithm, dataDown);
         if (!(out instanceof algorithm_1.Unit)) {
             throw "Traversal did not produce a unit as expected.";
         }
         return out;
     };
-    return DownUp;
+    return TraversalDownUp;
 }());
-exports.DownUp = DownUp;
-var Up = /** @class */ (function (_super) {
-    __extends(Up, _super);
-    function Up() {
+exports.TraversalDownUp = TraversalDownUp;
+var TraversalUp = /** @class */ (function (_super) {
+    __extends(TraversalUp, _super);
+    function TraversalUp() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Up.prototype.traverse = function (algorithm) {
+    TraversalUp.prototype.traverse = function (algorithm) {
         return dispatch(this, algorithm, undefined);
     };
-    Up.prototype.traverseIntoUnit = function (algorithm) {
+    TraversalUp.prototype.traverseIntoUnit = function (algorithm) {
         var out = this.traverse(algorithm);
         if (!(out instanceof algorithm_1.Unit)) {
             throw "Traversal did not produce a unit as expected.";
         }
         return out;
     };
-    return Up;
-}(DownUp));
-exports.Up = Up;
+    return TraversalUp;
+}(TraversalDownUp));
+exports.TraversalUp = TraversalUp;
 ;
 // TODO: Test that inverses are bijections.
 var Invert = /** @class */ (function (_super) {
@@ -451,7 +453,7 @@ var Invert = /** @class */ (function (_super) {
     Invert.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
     Invert.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
     return Invert;
-}(Up));
+}(TraversalUp));
 exports.Invert = Invert;
 var Expand = /** @class */ (function (_super) {
     __extends(Expand, _super);
@@ -522,7 +524,7 @@ var Expand = /** @class */ (function (_super) {
     Expand.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
     Expand.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
     return Expand;
-}(Up));
+}(TraversalUp));
 exports.Expand = Expand;
 var StructureEquals = /** @class */ (function (_super) {
     __extends(StructureEquals, _super);
@@ -575,7 +577,7 @@ var StructureEquals = /** @class */ (function (_super) {
         return (dataDown instanceof algorithm_1.CommentLong) && (commentLong.comment == dataDown.comment);
     };
     return StructureEquals;
-}(DownUp));
+}(TraversalDownUp));
 exports.StructureEquals = StructureEquals;
 // TODO: Test that inverses are bijections.
 var CoalesceBaseMoves = /** @class */ (function (_super) {
@@ -629,9 +631,9 @@ var CoalesceBaseMoves = /** @class */ (function (_super) {
     CoalesceBaseMoves.prototype.traverseCommentShort = function (commentShort) { return commentShort; };
     CoalesceBaseMoves.prototype.traverseCommentLong = function (commentLong) { return commentLong; };
     return CoalesceBaseMoves;
-}(Up));
+}(TraversalUp));
 exports.CoalesceBaseMoves = CoalesceBaseMoves;
-// export class Concat extends DownUp<Algorithm, Sequence> {
+// export class Concat extends TraversalDownUp<Algorithm, Sequence> {
 //   private concatIntoSequence(A: Algorithm[], B: Algorithm): Sequence {
 //     var nestedAlgs: Algorithm[] = A.slice();
 //     if (B instanceof Sequence) {
@@ -694,7 +696,7 @@ var ToString = /** @class */ (function (_super) {
     // TODO: Sanitize `*/`
     ToString.prototype.traverseCommentLong = function (commentLong) { return "/*" + commentLong.comment + "*/"; };
     return ToString;
-}(Up));
+}(TraversalUp));
 exports.ToString = ToString;
 function makeDownUp(ctor) {
     var instance = new ctor();

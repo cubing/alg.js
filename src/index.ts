@@ -16,6 +16,8 @@ export {
 } from "./algorithm";
 
 export {
+  TraversalDownUp,
+  TraversalUp,
   invert,
   expand,
   structureEquals,

@@ -1,5 +1,5 @@
 import { Algorithm, Unit, Sequence, Group, BlockMove, Commutator, Conjugate, Pause, NewLine, CommentShort, CommentLong } from "./algorithm";
-export declare abstract class DownUp<DataDown, DataUp> {
+export declare abstract class TraversalDownUp<DataDown, DataUp> {
     traverse(algorithm: Algorithm, dataDown: DataDown): DataUp;
     traverseIntoUnit(algorithm: Algorithm, dataDown: DataDown): Unit;
     abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
@@ -12,7 +12,7 @@ export declare abstract class DownUp<DataDown, DataUp> {
     abstract traverseCommentShort(commentShort: CommentShort, dataDown: DataDown): DataUp;
     abstract traverseCommentLong(commentLong: CommentLong, dataDown: DataDown): DataUp;
 }
-export declare abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
+export declare abstract class TraversalUp<DataUp> extends TraversalDownUp<undefined, DataUp> {
     traverse(algorithm: Algorithm): DataUp;
     traverseIntoUnit(algorithm: Algorithm): Unit;
     abstract traverseSequence(sequence: Sequence): DataUp;
@@ -25,7 +25,7 @@ export declare abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
     abstract traverseCommentShort(commentShort: CommentShort): DataUp;
     abstract traverseCommentLong(commentLong: CommentLong): DataUp;
 }
-export declare class Invert extends Up<Algorithm> {
+export declare class Invert extends TraversalUp<Algorithm> {
     traverseSequence(sequence: Sequence): Sequence;
     traverseGroup(group: Group): Algorithm;
     traverseBlockMove(blockMove: BlockMove): Algorithm;
@@ -36,7 +36,7 @@ export declare class Invert extends Up<Algorithm> {
     traverseCommentShort(commentShort: CommentShort): Algorithm;
     traverseCommentLong(commentLong: CommentLong): Algorithm;
 }
-export declare class Expand extends Up<Algorithm> {
+export declare class Expand extends TraversalUp<Algorithm> {
     private flattenSequenceOneLevel;
     private repeat;
     traverseSequence(sequence: Sequence): Sequence;
@@ -49,7 +49,7 @@ export declare class Expand extends Up<Algorithm> {
     traverseCommentShort(commentShort: CommentShort): Algorithm;
     traverseCommentLong(commentLong: CommentLong): Algorithm;
 }
-export declare class StructureEquals extends DownUp<Algorithm, boolean> {
+export declare class StructureEquals extends TraversalDownUp<Algorithm, boolean> {
     traverseSequence(sequence: Sequence, dataDown: Algorithm): boolean;
     traverseGroup(group: Group, dataDown: Algorithm): boolean;
     traverseBlockMove(blockMove: BlockMove, dataDown: Algorithm): boolean;
@@ -60,7 +60,7 @@ export declare class StructureEquals extends DownUp<Algorithm, boolean> {
     traverseCommentShort(commentShort: CommentShort, dataDown: Algorithm): boolean;
     traverseCommentLong(commentLong: CommentLong, dataDown: Algorithm): boolean;
 }
-export declare class CoalesceBaseMoves extends Up<Algorithm> {
+export declare class CoalesceBaseMoves extends TraversalUp<Algorithm> {
     private sameBlock;
     traverseSequence(sequence: Sequence): Sequence;
     traverseGroup(group: Group): Algorithm;
@@ -72,7 +72,7 @@ export declare class CoalesceBaseMoves extends Up<Algorithm> {
     traverseCommentShort(commentShort: CommentShort): Algorithm;
     traverseCommentLong(commentLong: CommentLong): Algorithm;
 }
-export declare class ToString extends Up<string> {
+export declare class ToString extends TraversalUp<string> {
     private repetitionSuffix;
     private spaceBetween;
     traverseSequence(sequence: Sequence): string;
