@@ -135,47 +135,47 @@ function dispatch(t, algorithm, dataDown) {
     switch (algorithm.type) {
         case "sequence":
             if (!(algorithm instanceof algorithm_1.Sequence)) {
-                throw "Algorithm is not an object of type Sequence despite having `type`: ${algorithm.type}";
+                throw "Algorithm is not an object of type Sequence despite having \"type\": \"" + algorithm.type + "\"";
             }
             return t.traverseSequence(algorithm, dataDown);
         case "group":
             if (!(algorithm instanceof algorithm_1.Group)) {
-                throw "Algorithm is not an object of type Group despite having `type`: ${algorithm.type}";
+                throw "Algorithm is not an object of type Group despite having \"type\": \"" + algorithm.type + "\"";
             }
             return t.traverseGroup(algorithm, dataDown);
         case "blockMove":
             if (!(algorithm instanceof algorithm_1.BlockMove)) {
-                throw "Algorithm is not an object of type BlockMove despite having `type`: ${algorithm.type}";
+                throw "Algorithm is not an object of type BlockMove despite having \"type\": \"" + algorithm.type + "\"";
             }
             return t.traverseBlockMove(algorithm, dataDown);
         case "commutator":
             if (!(algorithm instanceof algorithm_1.Commutator)) {
-                throw "Algorithm is not an object of type Commutator despite having `type`: ${algorithm.type}";
+                throw "Algorithm is not an object of type Commutator despite having \"type\": \"" + algorithm.type + "\"";
             }
             return t.traverseCommutator(algorithm, dataDown);
         case "conjugate":
             if (!(algorithm instanceof algorithm_1.Conjugate)) {
-                throw "Algorithm is not an object of type Conjugate despite having `type`: ${algorithm.type}";
+                throw "Algorithm is not an object of type Conjugate despite having \"type\": \"" + algorithm.type + "\"";
             }
             return t.traverseConjugate(algorithm, dataDown);
         case "pause":
             if (!(algorithm instanceof algorithm_1.Pause)) {
-                throw "Algorithm is not an object of type Pause despite having `type`: ${algorithm.type}";
+                throw "Algorithm is not an object of type Pause despite having \"type\": \"" + algorithm.type + "\"";
             }
             return t.traversePause(algorithm, dataDown);
         case "newLine":
             if (!(algorithm instanceof algorithm_1.NewLine)) {
-                throw "Algorithm is not an object of type NewLine despite having `type`: ${algorithm.type}";
+                throw "Algorithm is not an object of type NewLine despite having \"type\": \"" + algorithm.type + "\"";
             }
             return t.traverseNewLine(algorithm, dataDown);
         case "commentShort":
             if (!(algorithm instanceof algorithm_1.CommentShort)) {
-                throw "Algorithm is not an object of type CommentShort despite having `type`: ${algorithm.type}";
+                throw "Algorithm is not an object of type CommentShort despite having \"type\": \"" + algorithm.type + "\"";
             }
             return t.traverseCommentShort(algorithm, dataDown);
         case "commentLong":
             if (!(algorithm instanceof algorithm_1.CommentLong)) {
-                throw "Algorithm is not an object of type CommentLong despite having `type`: ${algorithm.type}";
+                throw "Algorithm is not an object of type CommentLong despite having \"type\": \"" + algorithm.type + "\"";
             }
             return t.traverseCommentLong(algorithm, dataDown);
         default:

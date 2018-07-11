@@ -19,6 +19,16 @@ var UU = new Alg.Sequence([new BlockMove("U", 1), new BlockMove("U", 1)]);
 var U2 = new Alg.Sequence([new BlockMove("U", 2)]);
 var R  = new Alg.Sequence([new BlockMove("R", 1)]);
 
+describe("Algorithm", () => {
+  class PauseSubClass extends Alg.Pause {
+    public type: string = "fakePause";
+  }
+
+  it("cannot subclass directly", () => {
+    expect(() => new PauseSubClass()).to.throw();
+  });
+});
+
 describe("Sequence", () => {
   it("should throw an error for an empty sequence", () => {
     expect(() => new Alg.Sequence([])).to.throw(/cannot be empty/);
@@ -56,6 +66,16 @@ describe("algToString()", () => {
 var e = function(a1: Alg.Algorithm, a2: Alg.Algorithm) {
   return expect(structureEquals(a1, a2));
 }
+
+describe("Traversal", () => {
+  class FakePause extends Alg.Unit {
+    public type: string = "pause";
+  }
+
+  it("cannot subclass directly", () => {
+    expect(() => algToString(new FakePause())).to.throw(/Algorithm is not an object of type Pause despite having "type": "pause"/);
+  });
+});
 
 describe("invert()", () => {
   it("should correctly invert", () => {
