@@ -74,6 +74,7 @@ export declare class CoalesceBaseMoves extends Up<Algorithm> {
 }
 export declare class ToString extends Up<string> {
     private repetitionSuffix;
+    private spaceBetween;
     traverseSequence(sequence: Sequence): string;
     traverseGroup(group: Group): string;
     traverseBlockMove(blockMove: BlockMove): string;

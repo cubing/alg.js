@@ -138,6 +138,14 @@ export namespace Example {
   );
 
 
+  export const TriplePause: Algorithm = new Sequence([
+      new Pause(),
+      new Pause(),
+      new Pause(),
+    ]
+  );
+
+
   export const AllAlgTypes: Algorithm[] = [
     new Sequence([new BlockMove("R", 1), new BlockMove("U", -1)]),
     new Group(new BlockMove("F", 1), 2),

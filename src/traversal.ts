@@ -342,18 +342,34 @@ export class ToString extends Up<string> {
     }
     return s;
   }
-  public traverseSequence(     sequence:     Sequence,     ): string { return sequence.nestedAlgs.map(a => this.traverse(a)).join(" "); }
-  public traverseGroup(        group:        Group,        ): string { return "(" + this.traverse(group.nestedAlg) + ")" + this.repetitionSuffix(group.amount); }
-  public traverseBlockMove(    blockMove:    BlockMove,    ): string { return blockMove.family + this.repetitionSuffix(blockMove.amount); }
-  public traverseCommutator(   commutator:   Commutator,   ): string { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); }
-  public traverseConjugate(    conjugate:    Conjugate,    ): string { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); }
+
+  private spaceBetween(u1: Unit, u2: Unit): string {
+    if (u1 instanceof Pause && u2 instanceof Pause) {
+      return ""
+    }
+    return " "
+  }
+
+  public traverseSequence(sequence: Sequence): string {
+    var output = "";
+    output += this.traverse(sequence.nestedAlgs[0]);
+    for (var i = 1; i < sequence.nestedAlgs.length; i++) {
+      output += this.spaceBetween(sequence.nestedAlgs[i-1], sequence.nestedAlgs[i]);
+      output += this.traverse(sequence.nestedAlgs[i]);
+    }
+    return output;
+  }
+  public traverseGroup(        group:        Group       ): string { return "(" + this.traverse(group.nestedAlg) + ")" + this.repetitionSuffix(group.amount); }
+  public traverseBlockMove(    blockMove:    BlockMove   ): string { return blockMove.family + this.repetitionSuffix(blockMove.amount); }
+  public traverseCommutator(   commutator:   Commutator  ): string { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); }
+  public traverseConjugate(    conjugate:    Conjugate   ): string { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); }
   // TODO: Remove spaces between repeated pauses (in traverseSequence)
-  public traversePause(        pause:        Pause,        ): string { return "."; }
-  public traverseNewLine(      newLine:      NewLine,      ): string { return "\n"; }
+  public traversePause(        pause:        Pause       ): string { return "."; }
+  public traverseNewLine(      newLine:      NewLine     ): string { return "\n"; }
   // TODO: Enforce being followed by a newline (or the end of the alg)?
-  public traverseCommentShort( commentShort: CommentShort, ): string { return "//" + commentShort.comment; }
+  public traverseCommentShort( commentShort: CommentShort): string { return "//" + commentShort.comment; }
     // TODO: Sanitize `*/`
-  public traverseCommentLong(  commentLong:  CommentLong,  ): string { return "/*" + commentLong.comment + "*/"; }
+  public traverseCommentLong(  commentLong:  CommentLong ): string { return "/*" + commentLong.comment + "*/"; }
 }
 
 function makeDownUp<DataDown, DataUp>(

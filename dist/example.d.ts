@@ -9,5 +9,6 @@ export declare namespace Example {
     const FURURFMoves: Algorithm;
     const TPerm: Algorithm;
     const HeadlightSwaps: Algorithm;
+    const TriplePause: Algorithm;
     const AllAlgTypes: Algorithm[];
 }

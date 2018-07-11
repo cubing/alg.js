@@ -47,6 +47,10 @@ describe("algToString()", () => {
   it("should convert U U to string", () => {
     expect(algToString(UU)).to.equal("U U");
   });
+
+  it("should triple pause to ... (without spaces)", () => {
+    expect(algToString(Ex.TriplePause)).to.equal("...");
+  });
 });
 
 var e = function(a1: Alg.Algorithm, a2: Alg.Algorithm) {
@@ -135,6 +139,7 @@ describe("Parser", () => {
     e(parse(algToString(Ex.APermCompact)), Ex.APermCompact).to.be.true;
     e(parse(algToString(Ex.TPerm)), Ex.TPerm).to.be.true;
     e(parse(algToString(Ex.HeadlightSwaps)), Ex.HeadlightSwaps).to.be.true;
+    e(parse(algToString(Ex.TriplePause)), Ex.TriplePause).to.be.true;
   });
 
   it("should round-trip all alg types through a string", () => {

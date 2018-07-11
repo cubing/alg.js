@@ -462,9 +462,20 @@ var ToString = /** @class */ (function (_super) {
         }
         return s;
     };
+    ToString.prototype.spaceBetween = function (u1, u2) {
+        if (u1 instanceof algorithm_1.Pause && u2 instanceof algorithm_1.Pause) {
+            return "";
+        }
+        return " ";
+    };
     ToString.prototype.traverseSequence = function (sequence) {
-        var _this = this;
-        return sequence.nestedAlgs.map(function (a) { return _this.traverse(a); }).join(" ");
+        var output = "";
+        output += this.traverse(sequence.nestedAlgs[0]);
+        for (var i = 1; i < sequence.nestedAlgs.length; i++) {
+            output += this.spaceBetween(sequence.nestedAlgs[i - 1], sequence.nestedAlgs[i]);
+            output += this.traverse(sequence.nestedAlgs[i]);
+        }
+        return output;
     };
     ToString.prototype.traverseGroup = function (group) { return "(" + this.traverse(group.nestedAlg) + ")" + this.repetitionSuffix(group.amount); };
     ToString.prototype.traverseBlockMove = function (blockMove) { return blockMove.family + this.repetitionSuffix(blockMove.amount); };
@@ -556,6 +567,9 @@ var Sequence = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.nestedAlgs = nestedAlgs;
         _this.type = "sequence";
+        if (nestedAlgs.length == 0) {
+            throw "A sequence cannot be empty.";
+        }
         for (var _i = 0, nestedAlgs_1 = nestedAlgs; _i < nestedAlgs_1.length; _i++) {
             var n = nestedAlgs_1[_i];
             if (!(n instanceof Unit)) {
@@ -771,6 +785,11 @@ var Example;
         new algorithm_1.BlockMove("F", -1)
     ]);
     Example.HeadlightSwaps = new algorithm_1.Conjugate(new algorithm_1.BlockMove("F", 1), new algorithm_1.Commutator(new algorithm_1.BlockMove("R", 1), new algorithm_1.BlockMove("U", 1), 3), 1);
+    Example.TriplePause = new algorithm_1.Sequence([
+        new algorithm_1.Pause(),
+        new algorithm_1.Pause(),
+        new algorithm_1.Pause(),
+    ]);
     Example.AllAlgTypes = [
         new algorithm_1.Sequence([new algorithm_1.BlockMove("R", 1), new algorithm_1.BlockMove("U", -1)]),
         new algorithm_1.Group(new algorithm_1.BlockMove("F", 1), 2),
