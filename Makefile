@@ -9,7 +9,7 @@ dev: src/jison_parser/index.js
 	${NODE_BIN}/webpack-cli --watch
 
 .PHONY: test
-test:
+test: dist
 	${NODE_BIN}/mocha -r ts-node/register test/*.ts
 
 ./node_modules/.bin/jison:
