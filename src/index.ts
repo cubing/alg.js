@@ -1,6 +1,3 @@
-// TODO Figure out if we can create a default global easily.
-// export as namespace Alg;
-
 import {
   Algorithm,
   Unit,
