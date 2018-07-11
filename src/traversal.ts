@@ -69,10 +69,18 @@ function dispatch<DataDown, DataUp>(t: DownUp<DataDown, DataUp>, algorithm: Algo
 }
 
 export abstract class DownUp<DataDown, DataUp> {
+  // Immediate subclasses should overwrite this.
   public traverse(algorithm: Algorithm, dataDown: DataDown): DataUp {
     return dispatch(this, algorithm, dataDown);
   }
-  // Immediate subclasses should overwrite this.
+
+  public traverseIntoUnit(algorithm: Algorithm, dataDown: DataDown): Unit {
+    var out = this.traverse(algorithm, dataDown);
+    if (!(out instanceof Unit)) {
+      throw "Traversal did not produce a unit as expected."
+    }
+    return <Unit>out;
+  }
 
   public abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
   public abstract traverseGroup(group: Group, dataDown: DataDown): DataUp;
@@ -90,6 +98,14 @@ export abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
     return dispatch<undefined, DataUp>(this, algorithm, undefined);
   }
 
+  public traverseIntoUnit(algorithm: Algorithm): Unit {
+    var out = this.traverse(algorithm);
+    if (!(out instanceof Unit)) {
+      throw "Traversal did not produce a unit as expected."
+    }
+    return <Unit>out;
+  }
+
   public abstract traverseSequence(sequence: Sequence): DataUp;
   public abstract traverseGroup(group: Group): DataUp;
   public abstract traverseBlockMove(blockMove: BlockMove): DataUp;
@@ -105,7 +121,7 @@ export abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
 export class Invert extends Up<Algorithm> {
   public traverseSequence(sequence: Sequence): Sequence {
     // TODO: Handle newLines and comments correctly
-    return new Sequence(sequence.nestedAlgs.slice().reverse().map(a => this.traverse(a)));
+    return new Sequence(sequence.nestedAlgs.slice().reverse().map(a => this.traverseIntoUnit(a)));
   }
   public traverseGroup(group: Group): Algorithm {
     return new Group(this.traverse(group.nestedAlg), group.amount);
@@ -126,24 +142,26 @@ export class Invert extends Up<Algorithm> {
 }
 
 export class Expand extends Up<Algorithm> {
-  private flattenSequenceOneLevel(algList: Algorithm[]): Algorithm[] {
-    var flattened: Algorithm[] = [];
+  private flattenSequenceOneLevel(algList: Algorithm[]): Unit[] {
+    var flattened: Unit[] = [];
     for (var part of algList) {
       if (part instanceof Sequence) {
         flattened = flattened.concat(part.nestedAlgs);
-      } else {
+      } else if (part instanceof Unit) {
         flattened.push(part)
+      } else {
+        throw "expand() encountered an internal error. Did you pass in a valid Algorithm?"
       }
     }
     return flattened;
   }
 
-  private repeat(algList: Algorithm[], accordingTo: Unit): Sequence {
+  private repeat(algList: Unit[], accordingTo: Unit): Sequence {
     var amount = Math.abs(accordingTo.amount);
     var amountDir = (accordingTo.amount > 0) ? 1 : -1; // Mutable
 
     // TODO: Cleaner inversion
-    var once: Algorithm[];
+    var once: Unit[];
     if (amountDir == -1) {
       // TODO: Avoid casting to sequence.
       once = (<Sequence>(invert(new Sequence(algList)))).nestedAlgs;
@@ -151,7 +169,7 @@ export class Expand extends Up<Algorithm> {
       once = algList;
     }
 
-    var repeated: Algorithm[] = [];
+    var repeated: Unit[] = [];
     for (var i = 0; i < amount; i++) {
       repeated = repeated.concat(once);
     }
@@ -164,7 +182,7 @@ export class Expand extends Up<Algorithm> {
   }
   public traverseGroup(group: Group): Algorithm {
     // TODO: Pass raw Algorithm[] to sequence.
-    return this.repeat([this.traverse(group.nestedAlg)], group);
+    return this.repeat([this.traverseIntoUnit(group.nestedAlg)], group);
   }
   public traverseBlockMove(blockMove: BlockMove): Algorithm {
     return blockMove;
@@ -255,10 +273,10 @@ export class CoalesceBaseMoves extends Up<Algorithm> {
 
   // TODO: Handle
   public traverseSequence(sequence: Sequence): Sequence {
-    var coalesced: Algorithm[] = [];
+    var coalesced: Unit[] = [];
     for (var part of sequence.nestedAlgs) {
       if (!(part instanceof BlockMove)) {
-        coalesced.push(this.traverse(part));
+        coalesced.push(<Unit>this.traverse(part));
       } else if (coalesced.length > 0) {
         var last = coalesced[coalesced.length-1];
         if (last instanceof BlockMove &&

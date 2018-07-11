@@ -30,8 +30,13 @@ export abstract class BaseMove extends Unit {
 
 export class Sequence extends Algorithm {
   public type: string = "sequence";
-  constructor(public nestedAlgs: Algorithm[]) {
+  constructor(public nestedAlgs: Unit[]) {
     super();
+    for (var n of nestedAlgs) {
+      if (!(n instanceof Unit)) {
+        throw "A Sequence can only contain `Unit`s."
+      }
+    }
     this.freeze();
   }
 }

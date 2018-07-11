@@ -9,9 +9,9 @@ export declare abstract class Unit extends Algorithm {
 export declare abstract class BaseMove extends Unit {
 }
 export declare class Sequence extends Algorithm {
-    nestedAlgs: Algorithm[];
+    nestedAlgs: Unit[];
     type: string;
-    constructor(nestedAlgs: Algorithm[]);
+    constructor(nestedAlgs: Unit[]);
 }
 export declare class Group extends Unit {
     nestedAlg: Algorithm;

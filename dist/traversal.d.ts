@@ -1,6 +1,7 @@
-import { Algorithm, Sequence, Group, BlockMove, Commutator, Conjugate, Pause, NewLine, CommentShort, CommentLong } from "./algorithm";
+import { Algorithm, Unit, Sequence, Group, BlockMove, Commutator, Conjugate, Pause, NewLine, CommentShort, CommentLong } from "./algorithm";
 export declare abstract class DownUp<DataDown, DataUp> {
     traverse(algorithm: Algorithm, dataDown: DataDown): DataUp;
+    traverseIntoUnit(algorithm: Algorithm, dataDown: DataDown): Unit;
     abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
     abstract traverseGroup(group: Group, dataDown: DataDown): DataUp;
     abstract traverseBlockMove(blockMove: BlockMove, dataDown: DataDown): DataUp;
@@ -13,6 +14,7 @@ export declare abstract class DownUp<DataDown, DataUp> {
 }
 export declare abstract class Up<DataUp> extends DownUp<undefined, DataUp> {
     traverse(algorithm: Algorithm): DataUp;
+    traverseIntoUnit(algorithm: Algorithm): Unit;
     abstract traverseSequence(sequence: Sequence): DataUp;
     abstract traverseGroup(group: Group): DataUp;
     abstract traverseBlockMove(blockMove: BlockMove): DataUp;

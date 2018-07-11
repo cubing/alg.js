@@ -188,8 +188,16 @@ function dispatch(t, algorithm, dataDown) {
 var DownUp = /** @class */ (function () {
     function DownUp() {
     }
+    // Immediate subclasses should overwrite this.
     DownUp.prototype.traverse = function (algorithm, dataDown) {
         return dispatch(this, algorithm, dataDown);
+    };
+    DownUp.prototype.traverseIntoUnit = function (algorithm, dataDown) {
+        var out = this.traverse(algorithm, dataDown);
+        if (!(out instanceof algorithm_1.Unit)) {
+            throw "Traversal did not produce a unit as expected.";
+        }
+        return out;
     };
     return DownUp;
 }());
@@ -201,6 +209,13 @@ var Up = /** @class */ (function (_super) {
     }
     Up.prototype.traverse = function (algorithm) {
         return dispatch(this, algorithm, undefined);
+    };
+    Up.prototype.traverseIntoUnit = function (algorithm) {
+        var out = this.traverse(algorithm);
+        if (!(out instanceof algorithm_1.Unit)) {
+            throw "Traversal did not produce a unit as expected.";
+        }
+        return out;
     };
     return Up;
 }(DownUp));
@@ -215,7 +230,7 @@ var Invert = /** @class */ (function (_super) {
     Invert.prototype.traverseSequence = function (sequence) {
         var _this = this;
         // TODO: Handle newLines and comments correctly
-        return new algorithm_1.Sequence(sequence.nestedAlgs.slice().reverse().map(function (a) { return _this.traverse(a); }));
+        return new algorithm_1.Sequence(sequence.nestedAlgs.slice().reverse().map(function (a) { return _this.traverseIntoUnit(a); }));
     };
     Invert.prototype.traverseGroup = function (group) {
         return new algorithm_1.Group(this.traverse(group.nestedAlg), group.amount);
@@ -248,8 +263,11 @@ var Expand = /** @class */ (function (_super) {
             if (part instanceof algorithm_1.Sequence) {
                 flattened = flattened.concat(part.nestedAlgs);
             }
-            else {
+            else if (part instanceof algorithm_1.Unit) {
                 flattened.push(part);
+            }
+            else {
+                throw "expand() encountered an internal error. Did you pass in a valid Algorithm?";
             }
         }
         return flattened;
@@ -278,7 +296,7 @@ var Expand = /** @class */ (function (_super) {
     };
     Expand.prototype.traverseGroup = function (group) {
         // TODO: Pass raw Algorithm[] to sequence.
-        return this.repeat([this.traverse(group.nestedAlg)], group);
+        return this.repeat([this.traverseIntoUnit(group.nestedAlg)], group);
     };
     Expand.prototype.traverseBlockMove = function (blockMove) {
         return blockMove;
@@ -533,6 +551,12 @@ var Sequence = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.nestedAlgs = nestedAlgs;
         _this.type = "sequence";
+        for (var _i = 0, nestedAlgs_1 = nestedAlgs; _i < nestedAlgs_1.length; _i++) {
+            var n = nestedAlgs_1[_i];
+            if (!(n instanceof Unit)) {
+                throw "A Sequence can only contain `Unit`s.";
+            }
+        }
         _this.freeze();
         return _this;
     }
