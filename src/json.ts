@@ -1,4 +1,18 @@
-import {Algorithm, Sequence, BlockMove, Commutator, Group, Conjugate, Pause, NewLine, CommentShort, CommentLong} from "./algorithm"
+import {
+  Algorithm,
+  Unit,
+  BaseMove,
+  Sequence,
+  Group,
+  MoveFamily,
+  BlockMove,
+  Commutator,
+  Conjugate,
+  Pause,
+  NewLine,
+  CommentShort,
+  CommentLong
+} from "./algorithm";
 
 export interface AlgorithmJSON {
   type: string;
