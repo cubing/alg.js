@@ -1,6 +1,5 @@
 const path = require("path");
-
-const lib_name = "alg";
+const lib_name = require("./package.json").name;
 
 module.exports = {
   entry: "./src/index.ts",
