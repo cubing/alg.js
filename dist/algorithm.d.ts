@@ -16,9 +16,9 @@ export declare class Sequence extends Algorithm {
     constructor(nestedAlgs: Unit[]);
 }
 export declare class Group extends UnitWithAmount {
-    nestedAlg: Algorithm;
+    nestedAlg: Unit | Sequence;
     type: string;
-    constructor(nestedAlg: Algorithm, amount: number);
+    constructor(nestedAlg: Unit | Sequence, amount: number);
 }
 export declare type MoveFamily = string;
 export declare class BlockMove extends BaseMove {
