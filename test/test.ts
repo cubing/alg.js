@@ -1,5 +1,5 @@
 import * as Alg from "../src/algorithm"
-import {BlockMove as BM} from "../src/algorithm"
+import {BlockMove} from "../src/algorithm"
 import {Example as Ex} from "../src/example"
 import {
   invert,
@@ -14,10 +14,10 @@ import {parse} from "../src/parser"
 import { expect } from "chai";
 import "mocha";
 
-var U  = new BM("U", 1);
-var UU = new Alg.Sequence([new BM("U", 1), new BM("U", 1)]);
-var U2 = new Alg.Sequence([new BM("U", 2)]);
-var R  = new Alg.Sequence([new BM("R", 1)]);
+var U  = new BlockMove("U", 1);
+var UU = new Alg.Sequence([new BlockMove("U", 1), new BlockMove("U", 1)]);
+var U2 = new Alg.Sequence([new BlockMove("U", 2)]);
+var R  = new Alg.Sequence([new BlockMove("R", 1)]);
 
 describe("algToString()", () => {
   it("should convert Sune to string", () => {
