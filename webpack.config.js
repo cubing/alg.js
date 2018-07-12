@@ -6,6 +6,7 @@ var PROD = JSON.parse(process.env.PROD || false);
 module.exports = {
   entry: "./src/index.ts",
   mode: PROD ? "production" : "none",
+  devtool: "source-map",
   module: {
     rules: [
       {
