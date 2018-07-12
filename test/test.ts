@@ -1,5 +1,18 @@
-import * as Alg from "../src/algorithm"
-import {BlockMove} from "../src/algorithm"
+import {
+  Algorithm,
+  Unit,
+  BaseMove,
+  Sequence,
+  Group,
+  MoveFamily,
+  BlockMove,
+  Commutator,
+  Conjugate,
+  Pause,
+  NewLine,
+  CommentShort,
+  CommentLong
+} from "../src/algorithm";
 import {Example as Ex} from "../src/example"
 import {
   invert,
@@ -12,15 +25,14 @@ import {fromJSON} from "../src/json"
 import {parse} from "../src/parser"
 
 import { expect } from "chai";
-import "mocha";
 
 var U  = new BlockMove("U", 1);
-var UU = new Alg.Sequence([new BlockMove("U", 1), new BlockMove("U", 1)]);
-var U2 = new Alg.Sequence([new BlockMove("U", 2)]);
-var R  = new Alg.Sequence([new BlockMove("R", 1)]);
+var UU = new Sequence([new BlockMove("U", 1), new BlockMove("U", 1)]);
+var U2 = new Sequence([new BlockMove("U", 2)]);
+var R  = new Sequence([new BlockMove("R", 1)]);
 
 describe("Algorithm", () => {
-  class PauseSubClass extends Alg.Pause {
+  class PauseSubClass extends Pause {
     public type: string = "fakePause";
   }
 
@@ -31,25 +43,25 @@ describe("Algorithm", () => {
 
 describe("Sequence", () => {
   it("should throw an error for an empty sequence", () => {
-    expect(() => new Alg.Sequence([])).to.throw(/cannot be empty/);
+    expect(() => new Sequence([])).to.throw(/cannot be empty/);
   });
 
   it("should throw an error for a nested sequence", () => {
-    expect(() => new Alg.Sequence([new Alg.Sequence([new Alg.BlockMove("R", 1)])])).to.throw(/can only contain/);
+    expect(() => new Sequence([new Sequence([new BlockMove("R", 1)])])).to.throw(/can only contain/);
   });
 });
 
 describe("BlockMove", () => {
   it("should throw an error for an invalid family", () => {
-    expect(() => new Alg.BlockMove("Q", 1)).to.throw(/Invalid block move family/);
+    expect(() => new BlockMove("Q", 1)).to.throw(/Invalid block move family/);
   });
 
   it("should have a default amount of 1", () => {
-    expect(new Alg.BlockMove("R", 1).amount).to.equal(1);
+    expect(new BlockMove("R", 1).amount).to.equal(1);
   });
 });
 
-var e = function(a1: Alg.Algorithm, a2: Alg.Algorithm) {
+var e = function(a1: Algorithm, a2: Algorithm) {
   return expect(structureEquals(a1, a2));
 }
 
@@ -67,12 +79,12 @@ describe("algToString()", () => {
   });
 });
 
-var e = function(a1: Alg.Algorithm, a2: Alg.Algorithm) {
+var e = function(a1: Algorithm, a2: Algorithm) {
   return expect(structureEquals(a1, a2));
 }
 
 describe("Traversal", () => {
-  class FakePause extends Alg.Unit {
+  class FakePause extends Unit {
     public type: string = "pause";
   }
 
@@ -135,7 +147,7 @@ describe("Object Freezing", () => {
   });
 
   it("should not be possible to modify a BaseMove", () => {
-      var b = new Alg.BlockMove("R", 4);
+      var b = new BlockMove("R", 4);
       var e: any;
       try {
         b.amount = 2;
@@ -152,8 +164,8 @@ describe("Parser", () => {
   });
 
   it("should parse ...", () => {
-    const p = new Alg.Pause();
-    e(parse("..."), new Alg.Sequence([p, p, p])).to.be.true;
+    const p = new Pause();
+    e(parse("..."), new Sequence([p, p, p])).to.be.true;
   });
 
   // TODO: Should these be parsed differently?
