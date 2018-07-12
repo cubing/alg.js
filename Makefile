@@ -25,4 +25,6 @@ src/jison_parser/index.js: ./node_modules/.bin/jison src/jison_parser/index.jiso
 
 .PHONY: dist-for-git
 dist-for-git: dist
+	@echo "Current branch must be \`release\`."
+	test "release" = `git rev-parse --abbrev-ref HEAD`
 	git stage -f dist/*.js dist/*d.ts
