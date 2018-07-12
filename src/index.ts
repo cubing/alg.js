@@ -27,7 +27,7 @@ export {
 
 export {
   Example
- } from "./example"
+} from "./example"
 
 export {
   AlgorithmJSON,
