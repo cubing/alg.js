@@ -30,11 +30,11 @@ export function fromJSON(json: AlgorithmJSON): Algorithm {
   switch (json.type) {
     case "sequence":
       if (!json.nestedAlgs) { throw "Missing nestedAlgs" }
-      return new Sequence(json.nestedAlgs.map(j => this.fromJSON(j)));
+      return new Sequence(json.nestedAlgs.map(j => fromJSON(j)));
     case "group":
       if (!json.nestedAlg) { throw "Missing nestedAlg" }
       if (!json.amount) { throw "Missing amount" }
-      return new Group(this.fromJSON(json.nestedAlg), json.amount);
+      return new Group(fromJSON(json.nestedAlg), json.amount);
     case "blockMove":
       // TODO: Handle layers
       if (!json.family) { throw "Missing family" }
@@ -44,12 +44,12 @@ export function fromJSON(json: AlgorithmJSON): Algorithm {
       if (!json.A) { throw "Missing A" }
       if (!json.B) { throw "Missing B" }
       if (!json.amount) { throw "Missing amount" }
-      return new Commutator(this.fromJSON(json.A), this.fromJSON(json.B), json.amount);
+      return new Commutator(fromJSON(json.A), fromJSON(json.B), json.amount);
     case "conjugate":
       if (!json.A) { throw "Missing A" }
       if (!json.B) { throw "Missing B" }
       if (!json.amount) { throw "Missing amount" }
-      return new Conjugate(this.fromJSON(json.A), this.fromJSON(json.B), json.amount);
+      return new Conjugate(fromJSON(json.A), fromJSON(json.B), json.amount);
     case "pause":
       return new Pause();
     case "newLine":
