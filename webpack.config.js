@@ -1,9 +1,11 @@
 const path = require("path");
 const lib_name = require("./package.json").name;
 
+var PROD = JSON.parse(process.env.PROD || false);
+
 module.exports = {
   entry: "./src/index.ts",
-  mode: "none",
+  mode: PROD ? "production" : "none",
   module: {
     rules: [
       {
