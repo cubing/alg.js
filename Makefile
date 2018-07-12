@@ -22,3 +22,7 @@ src/jison_parser/index.js: ./node_modules/.bin/jison src/jison_parser/index.jiso
 	# We have to create a backup file and then delete it because the `-i` flag for
 	# `sed` behaves differently on macOS.
 	rm $@.bak
+
+clean:
+	rm src/jison_parser/index.js
+	rm -rf ./dist
