@@ -18,5 +18,8 @@
     "typescript": "^2.9.2",
     "webpack": "^4.12.2",
     "webpack-cli": "^3.0.8"
+  },
+  "scripts": {
+    "prepublish": "make dist"
   }
 }

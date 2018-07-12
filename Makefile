@@ -22,17 +22,3 @@ src/jison_parser/index.js: ./node_modules/.bin/jison src/jison_parser/index.jiso
 	# We have to create a backup file and then delete it because the `-i` flag for
 	# `sed` behaves differently on macOS.
 	rm $@.bak
-
-.PHONY: dist-for-git
-dist-for-git: dist
-	@echo "Current branch must be \`release\`."
-	test "release" = `git rev-parse --abbrev-ref HEAD`
-	git stage -f dist/*.js dist/*d.ts
-
-.PHONY: publish
-publish: dist-for-git
-	@echo "Current branch must be \`release\`."
-	test "release" = `git rev-parse --abbrev-ref HEAD`
-	@echo "Testing for uncommitted files."
-	test -z "`git status --porcelain`"
-	yarn publish
