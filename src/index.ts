@@ -25,6 +25,15 @@ export {
   algToString
 } from "./traversal";
 
-export {Example} from "./example"
+export {
+  Example
+ } from "./example"
 
-export {AlgorithmJSON, fromJSON} from "./json"
+export {
+  AlgorithmJSON,
+  fromJSON
+} from "./json"
+
+export {
+  parse
+ } from "./parser"
