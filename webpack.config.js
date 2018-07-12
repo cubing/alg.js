@@ -1,6 +1,7 @@
 const path = require("path");
 const webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const WebpackNotifierPlugin = require("webpack-notifier");
 
 const lib_name = require("./package.json").name;
 
@@ -10,7 +11,9 @@ module.exports = {
   entry: "./src/index.ts",
   mode: "none",
   devtool: "source-map",
-  plugins: [],
+  plugins: [
+    new WebpackNotifierPlugin({alwaysNotify: true})
+  ],
   module: {
     rules: [
       {
