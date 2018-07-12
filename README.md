@@ -1,6 +1,6 @@
 # `alg.js`
 
-A library for parsing and transforming puzzle algorithms ("algs")
+A library for parsing and transforming puzzle algorithms ("algs").
 
 # Usage
 
