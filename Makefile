@@ -2,7 +2,7 @@ NODE_BIN = ./node_modules/.bin
 
 .PHONY: dist
 dist: src/jison_parser/index.js
-	${NODE_BIN}/webpack-cli
+	env PROD=true ${NODE_BIN}/webpack-cli
 
 .PHONY: dev
 dev: src/jison_parser/index.js
@@ -22,3 +22,7 @@ src/jison_parser/index.js: ./node_modules/.bin/jison src/jison_parser/index.jiso
 	# We have to create a backup file and then delete it because the `-i` flag for
 	# `sed` behaves differently on macOS.
 	rm $@.bak
+
+.PHONY: dist-for-git
+dist-for-git: dist
+	git stage -f dist/*.js dist/*d.ts
