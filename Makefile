@@ -28,3 +28,11 @@ dist-for-git: dist
 	@echo "Current branch must be \`release\`."
 	test "release" = `git rev-parse --abbrev-ref HEAD`
 	git stage -f dist/*.js dist/*d.ts
+
+.PHONY: publish
+publish: dist-for-git
+	@echo "Current branch must be \`release\`."
+	test "release" = `git rev-parse --abbrev-ref HEAD`
+	@echo "Testing for uncommitted files."
+	test -z "`git status --porcelain`"
+	yarn publish
