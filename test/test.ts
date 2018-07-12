@@ -62,7 +62,7 @@ describe("algToString()", () => {
     expect(algToString(UU)).to.equal("U U");
   });
 
-  it("should triple pause to ... (without spaces)", () => {
+  it("should convert triple pause to ... (without spaces)", () => {
     expect(algToString(Ex.TriplePause)).to.equal("...");
   });
 });
