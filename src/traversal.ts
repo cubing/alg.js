@@ -181,7 +181,7 @@ export class Expand extends TraversalUp<Algorithm> {
   }
   public traverseGroup(group: Group): Algorithm {
     // TODO: Pass raw Algorithm[] to sequence.
-    return this.repeat([this.traverseIntoUnit(group.nestedAlg)], group);
+    return this.repeat(this.flattenSequenceOneLevel([this.traverse(group.nestedAlg)]), group);
   }
   public traverseBlockMove(blockMove: BlockMove): Algorithm {
     return blockMove;

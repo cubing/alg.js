@@ -108,6 +108,10 @@ describe("expand()", () => {
     e(expand(Ex.SuneCommutator), Ex.Sune).to.be.false;
     e(expand(Ex.FURURFCompact), expand(Ex.SuneCommutator)).to.be.false;
   });
+
+  it("should correctly expand a group with two units", () => {
+    e(expand(parse("(R U)2")), expand(parse("R U R U"))).to.be.true;
+  });
 });
 
 describe("structureEquals", () => {
