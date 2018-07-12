@@ -18,4 +18,7 @@ test: dist
 src/jison_parser/index.js: ./node_modules/.bin/jison src/jison_parser/index.jison
 	$^ -o $@
 	# Remove exports.main, since it attempts to import `fs`.
-	sed -i "" "/exports\.main.*/,/^}$$/d" $@
+	sed -i.bak "/exports\.main.*/,/^}$$/d" $@
+	# We have to create a backup file and then delete it because the `-i` flag for
+	# `sed` behaves differently on macOS.
+	rm $@.bak
