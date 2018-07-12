@@ -150,6 +150,11 @@ describe("Object Freezing", () => {
     }
   });
 
+  it("should freeze `nestedAlgs` list on Sequence", () => {
+    // Update this based on the length of AllAlgTypes.
+    expect(Object.isFrozen(new Sequence([new BlockMove("R", 1)]).nestedAlgs)).to.be.true;
+  });
+
   it("should not be possible to modify a BaseMove", () => {
       var b = new BlockMove("R", 4);
       var e: any;

@@ -40,6 +40,7 @@ export class Sequence extends Algorithm {
         throw "A Sequence can only contain `Unit`s."
       }
     }
+    Object.freeze(this.nestedAlgs);
     this.freeze();
   }
 }
