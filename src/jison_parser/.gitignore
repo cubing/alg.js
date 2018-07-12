@@ -1,0 +1,2 @@
+# In case `make` fails and leaves the backup file lying around.
+/*.bak
