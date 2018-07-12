@@ -3,7 +3,8 @@ const webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const WebpackNotifierPlugin = require("webpack-notifier");
 
-const lib_name = require("./package.json").name;
+const libName = require("./package.json").name;
+const targetFileName = `${libName}.js`
 
 var PROD = JSON.parse(process.env.PROD || false);
 
@@ -12,7 +13,10 @@ module.exports = {
   mode: "none",
   devtool: "source-map",
   plugins: [
-    new WebpackNotifierPlugin({alwaysNotify: true})
+    new WebpackNotifierPlugin({
+      title: targetFileName,
+      alwaysNotify: true
+    })
   ],
   module: {
     rules: [
@@ -27,9 +31,9 @@ module.exports = {
     extensions: [ ".ts" ]
   },
   output: {
-    filename: lib_name + ".js",
+    filename: targetFileName,
     path: path.resolve(__dirname, "dist"),
-    library: lib_name,
+    library: libName,
     libraryTarget: "umd",
     // Workaround for Webpack 4. See https://github.com/webpack/webpack/issues/6522#issuecomment-371120689
     globalObject: "typeof self !== \"undefined\" ? self : this"
