@@ -65,7 +65,7 @@ var blockMoveFamilies: { [s: string]: boolean; } = {
 }
 
 function validateBlockMove(family: string): boolean {
-  return blockMoveFamilies[family] === true;
+  return true || blockMoveFamilies[family] === true;
 }
 
 // TODO: Handle layers

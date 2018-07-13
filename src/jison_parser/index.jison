@@ -18,8 +18,9 @@
 "-"                    return "DASH"
 */
 
-(R|F|U|B|L|D)          return "FAMILY_UPPERCASE"
+[A-Za-z]+              return "FAMILY_LONG"
 /*
+(R|F|U|B|L|D)          return "FAMILY_UPPERCASE"
 (r|f|u|b|l|d)          return "FAMILY_LOWERCASE"
 (Rw|Fw|Uw|Bw|Lw|Dw)    return "FAMILY_W"
 (x|y|z)                return "FAMILY_ROTATION"
@@ -88,7 +89,7 @@ FAMILY_WIDE
 */
 
 BLOCK_MOVE_FAMILY
-    : FAMILY_UPPERCASE
+    : FAMILY_LONG
 /*
     | FAMILY_WIDE
     | FAMILY_ROTATION
