@@ -21,6 +21,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.jison$/,
+        use: "./loaders/jison-loader.js"
+      },
+      {
         test: /\.ts$/,
         use: "ts-loader",
         exclude: /node_modules/
@@ -28,7 +32,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: [ ".ts" ]
+    extensions: [ ".ts", ".jison" ]
   },
   output: {
     filename: targetFileName,

@@ -1,28 +1,16 @@
 NODE_BIN = ./node_modules/.bin
 
 .PHONY: dist
-dist: src/jison_parser/index.js
+dist:
 	env PROD=true ${NODE_BIN}/webpack-cli
 
 .PHONY: dev
-dev: src/jison_parser/index.js
+dev:
 	${NODE_BIN}/webpack-cli --watch
 
 .PHONY: test
 test: dist
 	${NODE_BIN}/mocha -r ts-node/register test/*.ts
 
-./node_modules/.bin/jison:
-	@echo "Run `yarn install` to run jison."
-
-src/jison_parser/index.js: ./node_modules/.bin/jison src/jison_parser/index.jison
-	$^ -o $@
-	# Remove exports.main, since it attempts to import `fs`.
-	sed -i.bak "/exports\.main.*/,/^}$$/d" $@
-	# We have to create a backup file and then delete it because the `-i` flag for
-	# `sed` behaves differently on macOS.
-	rm $@.bak
-
 clean:
-	rm src/jison_parser/index.js
 	rm -rf ./dist
