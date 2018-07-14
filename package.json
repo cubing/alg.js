@@ -9,6 +9,9 @@
   "main": "./dist/alg.js",
   "types": "./dist/index.d.ts",
   "dependencies": {},
+  "externalsForWebpack": [
+    "alg"
+  ],
   "devDependencies": {
     "@types/chai": "^4.1.4",
     "@types/mocha": "^5.2.3",
