@@ -19,8 +19,8 @@ export abstract class Algorithm {
 export abstract class Unit extends Algorithm {}
 
 export abstract class UnitWithAmount extends Unit {
-  // TODO: Make `amount` an optional argument in derived class constructors.
-  constructor(public amount: number) {
+  // TODO: Allow `amount` to be `undefined`, to distinguish between R and R1?
+  constructor(public amount: number = 1) {
     super();
   }
 }
@@ -47,7 +47,7 @@ export class Sequence extends Algorithm {
 
 export class Group extends UnitWithAmount {
   public type: string = "group";
-  constructor(public nestedAlg: Unit | Sequence, amount: number) {
+  constructor(public nestedAlg: Unit | Sequence, amount?: number) {
     super(amount);
     this.freeze();
   }
@@ -71,7 +71,7 @@ function validateBlockMove(family: string): boolean {
 // TODO: Handle layers
 export class BlockMove extends BaseMove {
   public type: string = "blockMove";
-  constructor(public family: MoveFamily, amount: number) {
+  constructor(public family: MoveFamily, amount?: number) {
     super(amount);
     if (!validateBlockMove(family)) {
       throw `Invalid block move family: ${family}`;
@@ -82,7 +82,7 @@ export class BlockMove extends BaseMove {
 
 export class Commutator extends UnitWithAmount {
   public type: string = "commutator";
-  constructor(public A: Algorithm, public B: Algorithm, amount: number) {
+  constructor(public A: Algorithm, public B: Algorithm, amount?: number) {
     super(amount);
     this.freeze();
   }
@@ -90,7 +90,7 @@ export class Commutator extends UnitWithAmount {
 
 export class Conjugate extends UnitWithAmount {
   public type: string = "conjugate";
-  constructor(public A: Algorithm, public B: Algorithm, amount: number) {
+  constructor(public A: Algorithm, public B: Algorithm, amount?: number) {
     super(amount);
     this.freeze();
   }

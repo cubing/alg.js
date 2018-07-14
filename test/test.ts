@@ -31,6 +31,10 @@ var UU = new Sequence([new BlockMove("U", 1), new BlockMove("U", 1)]);
 var U2 = new Sequence([new BlockMove("U", 2)]);
 var R  = new Sequence([new BlockMove("R", 1)]);
 
+var e = function(a1: Algorithm, a2: Algorithm) {
+  return expect(structureEquals(a1, a2));
+}
+
 describe("Algorithm", () => {
   class PauseSubClass extends Pause {
     public type: string = "fakePause";
@@ -52,6 +56,10 @@ describe("Sequence", () => {
 });
 
 describe("BlockMove", () => {
+  it("should support a default amount of 1.", () => {
+    e(new BlockMove("U"), new BlockMove("U", 1)).to.be.true;
+  });
+
   it("should throw an error for an invalid family", () => {
     expect(() => new BlockMove("Q", 1)).to.throw(/Invalid block move family/);
   });
@@ -60,10 +68,6 @@ describe("BlockMove", () => {
     expect(new BlockMove("R", 1).amount).to.equal(1);
   });
 });
-
-var e = function(a1: Algorithm, a2: Algorithm) {
-  return expect(structureEquals(a1, a2));
-}
 
 describe("algToString()", () => {
   it("should convert Sune to string", () => {
