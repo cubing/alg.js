@@ -4,6 +4,8 @@
   "description": "A library for parsing and transforming puzzle algorithms (\"algs\").",
   "author": "Lucas Garron <code@garron.net> (https://garron.net/)",
   "license": "MIT",
+  "repository": "github:cubing/alg.js",
+  "bugs": {"url" : "https://github.com/cubing/alg.js/issues"},
   "main": "./dist/alg.js",
   "types": "./dist/index.d.ts",
   "dependencies": {},
