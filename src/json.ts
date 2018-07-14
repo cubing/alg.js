@@ -1,5 +1,5 @@
 import {
-  Algorithm,
+  AlgPart,
   Unit,
   BaseMove,
   Sequence,
@@ -15,29 +15,35 @@ import {
 } from "./algorithm";
 
 // TODO: Turn this into a union.
-export interface AlgorithmJSON {
+export interface AlgJSON {
   type: string;
-  nestedAlg?: AlgorithmJSON;
-  nestedAlgs?: AlgorithmJSON[];
+  nestedSequence?: AlgJSON;
+  nestedUnits?: AlgJSON[];
   innerLayer?: number;
   outerLayer?: number;
   family?: string;
   amount?: number;
-  A?: AlgorithmJSON;
-  B?: AlgorithmJSON;
+  A?: AlgJSON;
+  B?: AlgJSON;
   comment?: string;
 }
 
-// TODO: Implement using Traversal?
-export function fromJSON(json: AlgorithmJSON): Algorithm {
+export function fromJSON(json:AlgJSON): Sequence {
+  if (json.type !== "sequence") {
+    throw `Expected Sequence while parsing, got: ${json.type}`
+  }
+  if (!json.nestedUnits) { throw "Missing nestedUnits" }
+  return new Sequence(json.nestedUnits.map(j => unitFromJSON(j)));
+}
+
+export function unitFromJSON(json: AlgJSON): AlgPart {
   switch (json.type) {
     case "sequence":
-      if (!json.nestedAlgs) { throw "Missing nestedAlgs" }
-      return new Sequence(json.nestedAlgs.map(j => fromJSON(j)));
+      throw `Expected AlgPart while parsing, got \`Sequence\`.`
     case "group":
-      if (!json.nestedAlg) { throw "Missing nestedAlg" }
+      if (!json.nestedSequence) { throw "Missing nestedSequence" }
       if (!json.amount) { throw "Missing amount" }
-      return new Group(fromJSON(json.nestedAlg), json.amount);
+      return new Group(fromJSON(json.nestedSequence), json.amount);
     case "signMove":
       // TODO: Double-check that there is no outer layer without an inner layer?
       if (!json.family) { throw "Missing family" }

@@ -1,5 +1,5 @@
 export {
-  Algorithm,
+  AlgPart,
   Unit,
   UnitWithAmount,
   BaseMove,
@@ -33,7 +33,7 @@ export {
 } from "./example"
 
 export {
-  AlgorithmJSON,
+  AlgJSON,
   fromJSON
 } from "./json"
 

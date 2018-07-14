@@ -1,5 +1,5 @@
 import {
-  Algorithm,
+  AlgPart,
   Unit,
   BaseMove,
   Sequence,
@@ -22,23 +22,24 @@ import {
   expand,
   structureEquals,
   coalesceBaseMoves,
-  algToString
+  algToString,
+  algPartToStringForTesting
 } from "../src/traversal"
 import {fromJSON} from "../src/json"
 import {parse} from "../src/parser"
 
 import { expect } from "chai";
 
-var U  = BareSiGNMove("U", 1);
+var U  = new Sequence([BareSiGNMove("U", 1)]);
 var UU = new Sequence([BareSiGNMove("U", 1), BareSiGNMove("U", 1)]);
 var U2 = new Sequence([BareSiGNMove("U", 2)]);
 var R  = new Sequence([BareSiGNMove("R", 1)]);
 
-var e = function(a1: Algorithm, a2: Algorithm) {
+var e = function(a1: Sequence, a2: Sequence) {
   return expect(structureEquals(a1, a2));
 }
 
-describe("Algorithm", () => {
+describe("AlgPart", () => {
   class PauseSubClass extends Pause {
     public type: string = "fakePause";
   }
@@ -49,8 +50,8 @@ describe("Algorithm", () => {
 });
 
 describe("Sequence", () => {
-  it("should throw an error for an empty sequence", () => {
-    expect(() => new Sequence([])).to.throw(/cannot be empty/);
+  it("should allow an empty sequence", () => {
+    expect(() => new Sequence([])).to.not.throw();
   });
 
   it("should throw an error for a nested sequence", () => {
@@ -60,24 +61,24 @@ describe("Sequence", () => {
 
 describe("SiGNMove", () => {
   it("should allow constructing: x, U, u", () => {
-    expect(algToString(BareSiGNMove("x", 1))).to.equal("x");
-    expect(algToString(BareSiGNMove("U", 1))).to.equal("U");
-    expect(algToString(BareSiGNMove("u", 1))).to.equal("u");
+    expect(algToString(new Sequence([BareSiGNMove("x", 1)]))).to.equal("x");
+    expect(algToString(new Sequence([BareSiGNMove("U", 1)]))).to.equal("U");
+    expect(algToString(new Sequence([BareSiGNMove("u", 1)]))).to.equal("u");
   });
 
   it("should allow constructing: 2U, 2u", () => {
-    expect(algToString(LayerSiGNMove(2, "U", 1))).to.equal("2U");
-    expect(algToString(LayerSiGNMove(2, "u", 1))).to.equal("2u");
+    expect(algToString(new Sequence([LayerSiGNMove(2, "U", 1)]))).to.equal("2U");
+    expect(algToString(new Sequence([LayerSiGNMove(2, "u", 1)]))).to.equal("2u");
   });
 
   it("should prevent constructing: 2x, [-2]U, [-2]u", () => {
-    expect(() => LayerSiGNMove(2, "x", 1)).to.throw(/cannot have an inner slice/);
-    expect(() => LayerSiGNMove(-2, "U", 1)).to.throw(/Cannot have an inner layer of 0 or less/);
-    expect(() => LayerSiGNMove(-2, "u", 1)).to.throw(/Cannot have an inner layer of 0 or less/);
+    expect(() => new Sequence([LayerSiGNMove(2, "x", 1)])).to.throw(/cannot have an inner slice/);
+    expect(() => new Sequence([LayerSiGNMove(-2, "U", 1)])).to.throw(/Cannot have an inner layer of 0 or less/);
+    expect(() => new Sequence([LayerSiGNMove(-2, "u", 1)])).to.throw(/Cannot have an inner layer of 0 or less/);
   });
 
   it("should allow constructing: 2-3u", () => {
-    expect(algToString(RangeSiGNMove(2, 3, "u", 1))).to.equal("2-3u");
+    expect(algToString(new Sequence([RangeSiGNMove(2, 3, "u", 1)]))).to.equal("2-3u");
   });
 
   it("should prevent constructing: 2-3x, 2-3U, [-2]-3u, 4-3u", () => {
@@ -94,7 +95,7 @@ describe("SiGNMove", () => {
   });
 
   it("should support a default amount of 1.", () => {
-    e(BareSiGNMove("U"), BareSiGNMove("U", 1)).to.be.true;
+    e(new Sequence([BareSiGNMove("U")]), new Sequence([BareSiGNMove("U", 1)])).to.be.true;
   });
 
   it("should throw an error for an invalid family", () => {
@@ -122,17 +123,17 @@ describe("SiGNMove", () => {
 
 describe("algToString()", () => {
   it("should convert all move types correctly", () => {
-    expect(algToString(BareSiGNMove("x", 2))).to.equal("x2");
-    expect(algToString(BareSiGNMove("R", 3))).to.equal("R3");
-    expect(algToString(BareSiGNMove("u", -5))).to.equal("u5'");
-    expect(algToString(LayerSiGNMove(2, "R", 10))).to.equal("2R10");
-    expect(algToString(LayerSiGNMove(3, "L", -13))).to.equal("3L13'");
-    expect(algToString(RangeSiGNMove(2, 12, "u", 15))).to.equal("2-12u15");
+    expect(algToString(new Sequence([BareSiGNMove("x", 2)]))).to.equal("x2");
+    expect(algToString(new Sequence([BareSiGNMove("R", 3)]))).to.equal("R3");
+    expect(algToString(new Sequence([BareSiGNMove("u", -5)]))).to.equal("u5'");
+    expect(algToString(new Sequence([LayerSiGNMove(2, "R", 10)]))).to.equal("2R10");
+    expect(algToString(new Sequence([LayerSiGNMove(3, "L", -13)]))).to.equal("3L13'");
+    expect(algToString(new Sequence([RangeSiGNMove(2, 12, "u", 15)]))).to.equal("2-12u15");
   });
 
   it("should distinguish between 1R and R", () => {
-    expect(algToString(LayerSiGNMove(1, "R"))).to.equal("1R");
-    expect(algToString(BareSiGNMove("R"))).to.equal("R");
+    expect(algToString(new Sequence([LayerSiGNMove(1, "R")]))).to.equal("1R");
+    expect(algToString(new Sequence([BareSiGNMove("R")]))).to.equal("R");
   });
 
   it("should convert Sune to string", () => {
@@ -152,17 +153,13 @@ describe("algToString()", () => {
   });
 });
 
-var e = function(a1: Algorithm, a2: Algorithm) {
-  return expect(structureEquals(a1, a2));
-}
-
 describe("Traversal", () => {
   class FakePause extends Unit {
     public type: string = "pause";
   }
 
   it("cannot subclass directly", () => {
-    expect(() => algToString(new FakePause())).to.throw(/Algorithm is not an object of type Pause despite having "type": "pause"/);
+    expect(() => algToString(new Sequence([new FakePause()]))).to.throw(/Alg part is not an object of type Pause despite having "type": "pause"/);
   });
 });
 
@@ -220,16 +217,16 @@ describe("JSON", () => {
 
 describe("Object Freezing", () => {
   it("should freeze all example alg types", () => {
-    // Update this based on the length of AllAlgTypes.
-    expect(Ex.AllAlgTypes.length).to.equal(9);
-    for (var a of Ex.AllAlgTypes) {
+    // Update this based on the length of AllAlgParts.
+    expect(Ex.AllAlgParts.length).to.equal(9);
+    for (var a of Ex.AllAlgParts) {
       expect(Object.isFrozen(a)).to.be.true;
     }
   });
 
-  it("should freeze `nestedAlgs` list on Sequence", () => {
-    // Update this based on the length of AllAlgTypes.
-    expect(Object.isFrozen(new Sequence([BareSiGNMove("R", 1)]).nestedAlgs)).to.be.true;
+  it("should freeze `nestedUnits` list on Sequence", () => {
+    // Update this based on the length of AllAlgParts.
+    expect(Object.isFrozen(new Sequence([BareSiGNMove("R", 1)]).nestedUnits)).to.be.true;
   });
 
   it("should not be possible to modify a BaseMove", () => {
@@ -275,9 +272,10 @@ describe("Parser", () => {
   });
 
   it("should round-trip all alg types through a string", () => {
-    // Update this based on the length of AllAlgTypes.
-    for (var a of Ex.AllAlgTypes) {
-      e(parse(algToString(a)), a).to.be.true;
+    // Update this based on the length of AllAlgParts.
+    for (var a of Ex.AllAlgParts) {
+      var seq = (a instanceof Sequence) ? a : new Sequence([a]);
+      e(parse(algToString(seq)), seq).to.be.true;
     }
   });
 });

@@ -117,12 +117,12 @@ OPTIONAL_WHITESPACE
 
 REPEATABLE_UNIT
     : SIGN_MOVE
-    | OPEN_BRACKET UNIT_OR_SEQUENCE COMMA UNIT_OR_SEQUENCE CLOSE_BRACKET
+    | OPEN_BRACKET SEQUENCE COMMA SEQUENCE CLOSE_BRACKET
         {$$ = {"type": "commutator", "A": $2, "B": $4};}
-    | OPEN_BRACKET UNIT_OR_SEQUENCE COLON UNIT_OR_SEQUENCE CLOSE_BRACKET
+    | OPEN_BRACKET SEQUENCE COLON SEQUENCE CLOSE_BRACKET
         {$$ = {"type": "conjugate", "A": $2, "B": $4};}
-    | OPEN_PARENTHESIS UNIT_OR_SEQUENCE CLOSE_PARENTHESIS
-        {$$ = {"type": "group", "nestedAlg": $UNIT_OR_SEQUENCE};}
+    | OPEN_PARENTHESIS SEQUENCE CLOSE_PARENTHESIS
+        {$$ = {"type": "group", "nestedSequence": $SEQUENCE};}
     ;
 
 REPEATED_UNIT
@@ -138,21 +138,20 @@ REPEATED_UNIT
     ;
 
 UNIT_LIST
-    : REPEATED_UNIT OPTIONAL_WHITESPACE REPEATED_UNIT
-        {$$ = [$1, $3];}
+    : REPEATED_UNIT
+        {$$ = [$REPEATED_UNIT];}
     | UNIT_LIST OPTIONAL_WHITESPACE REPEATED_UNIT
-        {$$ = $1.concat([$3]);}
+        {$$ = $UNIT_LIST.concat([$REPEATED_UNIT]);}
     ;
 
-UNIT_OR_SEQUENCE
-    : OPTIONAL_WHITESPACE REPEATED_UNIT OPTIONAL_WHITESPACE
-        {$$ = $REPEATED_UNIT;}
-    | OPTIONAL_WHITESPACE UNIT_LIST OPTIONAL_WHITESPACE
-        {$$ = {"type": "sequence", "nestedAlgs": $UNIT_LIST};}
+SEQUENCE
+    : OPTIONAL_WHITESPACE UNIT_LIST OPTIONAL_WHITESPACE
+        {$$ = {"type": "sequence", "nestedUnits": $UNIT_LIST};}
+    | OPTIONAL_WHITESPACE
+        {$$ = {"type": "sequence", "nestedUnits": []};}
     ;
-
 TOP_LEVEL_ALG
-    : UNIT_OR_SEQUENCE
+    : SEQUENCE
         {$$ = $1;}
 /*
     | OPTIONAL_WHITESPACE TIMESTAMP OPTIONAL_WHITESPACE

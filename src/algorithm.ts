@@ -6,17 +6,20 @@ import {
   algToString
 } from "./traversal"
 
-export abstract class Algorithm {
+// TODO: Remove AlgPart and only have Sequence and Unit?
+export abstract class AlgPart {
   public readonly abstract type: string
 
-  // TODO: Figure out if we can statically enforce that all Algorithm subclasses
+  // TODO: Figure out if we can statically enforce that all AlgPart subclasses
   // are frozen after initial construction.
   protected freeze() {
     Object.freeze(this);
   }
 }
 
-export abstract class Unit extends Algorithm {}
+export abstract class Unit extends AlgPart {}
+
+export abstract class Annotation extends Unit {}
 
 export abstract class UnitWithAmount extends Unit {
   // TODO: Allow `amount` to be `undefined`, to distinguish between R and R1?
@@ -28,31 +31,30 @@ export abstract class UnitWithAmount extends Unit {
 export abstract class BaseMove extends UnitWithAmount {
 }
 
-export class Sequence extends Algorithm {
+// TODO: Reintroduce an Algorithm class, and allow a mutable sequence too?
+export class Sequence extends AlgPart {
   public type: string = "sequence";
-  constructor(public nestedAlgs: Unit[]) {
+  constructor(public nestedUnits: Unit[]) {
     super();
-    if (nestedAlgs.length == 0) {
-      throw "A sequence cannot be empty."
-    }
-    for (var n of nestedAlgs) {
+    for (var n of nestedUnits) {
       if (!(n instanceof Unit)) {
         throw "A Sequence can only contain `Unit`s."
       }
     }
-    Object.freeze(this.nestedAlgs);
+    Object.freeze(this.nestedUnits);
     this.freeze();
   }
 }
 
 export class Group extends UnitWithAmount {
   public type: string = "group";
-  constructor(public nestedAlg: Unit | Sequence, amount?: number) {
+  constructor(public nestedSequence: Sequence, amount?: number) {
     super(amount);
     this.freeze();
   }
 }
 
+// TODO: Move SiGN move defs into a separate file.
 export type MoveFamily = string; // TODO: Convert to an enum with string mappings.
 
 type FamilyList = { [s: string]: boolean; }
@@ -177,7 +179,7 @@ export function RangeSiGNMove(outerLayer: number,innerLayer: number, family: Mov
 
 export class Commutator extends UnitWithAmount {
   public type: string = "commutator";
-  constructor(public A: Algorithm, public B: Algorithm, amount?: number) {
+  constructor(public A: Sequence, public B: Sequence, amount?: number) {
     super(amount);
     this.freeze();
   }
@@ -185,7 +187,7 @@ export class Commutator extends UnitWithAmount {
 
 export class Conjugate extends UnitWithAmount {
   public type: string = "conjugate";
-  constructor(public A: Algorithm, public B: Algorithm, amount?: number) {
+  constructor(public A: Sequence, public B: Sequence, amount?: number) {
     super(amount);
     this.freeze();
   }
@@ -199,7 +201,7 @@ export class Pause extends Unit {
   }
 }
 
-export class NewLine extends Algorithm {
+export class NewLine extends Annotation {
   public type: string = "newLine";
   constructor() {
     super();
@@ -207,7 +209,8 @@ export class NewLine extends Algorithm {
   }
 }
 
-export class CommentShort extends Algorithm {
+// TODO: must be followed by a newline, unless at the end of an alg?
+export class CommentShort extends Annotation {
   public type: string = "commentShort";
   constructor(public comment: string) {
     super();
@@ -215,7 +218,7 @@ export class CommentShort extends Algorithm {
   }
 }
 
-export class CommentLong extends Algorithm {
+export class CommentLong extends Annotation {
   public type: string = "commentLong";
   constructor(public comment: string) {
     super();
@@ -224,4 +227,4 @@ export class CommentLong extends Algorithm {
 }
 
 // TODO
-// export class TimeStamp extends Algorithm implements Algorithm
+// export class TimeStamp extends AlgPart implements AlgPart

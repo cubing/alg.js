@@ -1,5 +1,5 @@
 import {
-  Algorithm,
+  AlgPart,
   Unit,
   BaseMove,
   Sequence,
@@ -37,19 +37,19 @@ export namespace Example {
     BareSiGNMove("R", -1)
   ]);
 
-  export const SuneCommutator: Algorithm = new Commutator(
+  export const SuneCommutator: Sequence = new Sequence([new Commutator(
     new Sequence([
       BareSiGNMove("R",  1),
       BareSiGNMove("U",  1),
       BareSiGNMove("R", -2)
     ]),
-    new Conjugate(
-      BareSiGNMove("R",  1),
-      BareSiGNMove("U",  1),
+    new Sequence([new Conjugate(
+      new Sequence([BareSiGNMove("R",  1)]),
+      new Sequence([BareSiGNMove("U",  1)]),
       1
-    ),
+    )]),
     1
-  )
+  )]);
 
   export const Niklas: Sequence = new Sequence([
     BareSiGNMove("R",  1),
@@ -65,43 +65,49 @@ export namespace Example {
   export const EPerm: Sequence = new Sequence([
     BareSiGNMove("x", -1),
     new Commutator(
-      new Conjugate(BareSiGNMove("R", 1), BareSiGNMove("U", -1), 1),
-      BareSiGNMove("D", 1),
+      new Sequence([new Conjugate(
+        new Sequence([BareSiGNMove("R", 1)]),
+        new Sequence([BareSiGNMove("U", -1)])
+      )]),
+      new Sequence([BareSiGNMove("D", 1)]),
       1
     ),
     new Commutator(
-      new Conjugate(BareSiGNMove("R", 1), BareSiGNMove("U", 1), 1),
-      BareSiGNMove("D", 1),
+      new Sequence([new Conjugate(
+        new Sequence([BareSiGNMove("R", 1)]),
+        new Sequence([BareSiGNMove("U", 1)])
+      )]),
+      new Sequence([BareSiGNMove("D", 1)]),
       1
     ),
     BareSiGNMove("x", 1)
   ]);
 
-  export const FURURFCompact: Algorithm = new Conjugate(
-    BareSiGNMove("F",  1),
-    new Commutator(
-      BareSiGNMove("U",  1),
-      BareSiGNMove("R",  1),
+  export const FURURFCompact: Sequence = new Sequence([new Conjugate(
+    new Sequence([BareSiGNMove("F",  1)]),
+    new Sequence([new Commutator(
+      new Sequence([BareSiGNMove("U",  1)]),
+      new Sequence([BareSiGNMove("R",  1)]),
       1
-    ),
+    )]),
     1
-  );
+  )]);
 
-  export const APermCompact: Algorithm = new Conjugate(
-    BareSiGNMove("R", 2),
-    new Commutator(
-      BareSiGNMove("F", 2),
+  export const APermCompact: Sequence = new Sequence([new Conjugate(
+    new Sequence([BareSiGNMove("R", 2)]),
+    new Sequence([new Commutator(
+      new Sequence([BareSiGNMove("F", 2)]),
       new Sequence([
         BareSiGNMove("R", -1),
         BareSiGNMove("B", -1),
         BareSiGNMove("R", 1),
       ]),
       1
-    ),
+    )]),
     1
-  );
+  )]);
 
-  export const FURURFMoves: Algorithm = new Sequence([
+  export const FURURFMoves: Sequence = new Sequence([
     BareSiGNMove("F",  1),
     BareSiGNMove("U",  1),
     BareSiGNMove("R",  1),
@@ -110,7 +116,7 @@ export namespace Example {
     BareSiGNMove("F", -1)
   ]);
 
-  export const TPerm: Algorithm = new Sequence([
+  export const TPerm: Sequence = new Sequence([
     BareSiGNMove("R",  1),
     BareSiGNMove("U",  1),
     BareSiGNMove("R", -1),
@@ -128,18 +134,18 @@ export namespace Example {
   ]);
 
 
-  export const HeadlightSwaps: Algorithm = new Conjugate(
-    BareSiGNMove("F", 1),
-    new Commutator(
-      BareSiGNMove("R", 1),
-      BareSiGNMove("U", 1),
+  export const HeadlightSwaps: Sequence = new Sequence([new Conjugate(
+    new Sequence([BareSiGNMove("F", 1)]),
+    new Sequence([new Commutator(
+      new Sequence([BareSiGNMove("R", 1)]),
+      new Sequence([BareSiGNMove("U", 1)]),
       3
-    ),
+    )]),
     1
-  );
+  )]);
 
 
-  export const TriplePause: Algorithm = new Sequence([
+  export const TriplePause: Sequence = new Sequence([
       new Pause(),
       new Pause(),
       new Pause(),
@@ -147,13 +153,13 @@ export namespace Example {
   );
 
 
-  export const AllAlgTypes: Algorithm[] = [
+  export const AllAlgParts: AlgPart[] = [
     new Sequence([BareSiGNMove("R", 1), BareSiGNMove("U", -1)]),
-    new Group(BareSiGNMove("F", 1), 2),
+    new Group(new Sequence([BareSiGNMove("F", 1)]), 2),
     // new Rotation("y", -1),
     BareSiGNMove("R", 2),
-    new Commutator(BareSiGNMove("R", 2), BareSiGNMove("U", 2), 2),
-    new Conjugate(BareSiGNMove("L", 2), BareSiGNMove("D", -1), 2),
+    new Commutator(new Sequence([BareSiGNMove("R", 2)]), new Sequence([BareSiGNMove("U", 2)]), 2),
+    new Conjugate(new Sequence([BareSiGNMove("L", 2)]), new Sequence([BareSiGNMove("D", -1)]), 2),
     new Pause(),
     new NewLine(),
     new CommentShort("short comment"),
