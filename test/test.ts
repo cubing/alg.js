@@ -183,7 +183,7 @@ describe("expand()", () => {
   });
 
   it("should correctly expand a group with two units", () => {
-    e(expand(parse("(R U)2")), expand(parse("R U R U"))).to.be.true;
+    e(expand(parse("(R U)2")), parse("R U R U")).to.be.true;
   });
 
   it("should correctly expand an E-Perm", () => {
