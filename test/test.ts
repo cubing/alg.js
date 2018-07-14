@@ -143,6 +143,10 @@ describe("algToString()", () => {
     expect(algToString(UU)).to.equal("U U");
   });
 
+ it("should convert E-Perm to string", () => {
+   expect(algToString(Ex.EPerm)).to.equal("x' [[R: U'], D] [[R: U], D] x");
+ });
+
   it("should convert triple pause to ... (without spaces)", () => {
     expect(algToString(Ex.TriplePause)).to.equal("...");
   });
@@ -180,6 +184,10 @@ describe("expand()", () => {
 
   it("should correctly expand a group with two units", () => {
     e(expand(parse("(R U)2")), expand(parse("R U R U"))).to.be.true;
+  });
+
+  it("should correctly expand an E-Perm", () => {
+    e(expand(Ex.EPerm), parse("x' R U' R' D R U R' D' R U R' D R U' R' D' x")).to.be.true;
   });
 });
 

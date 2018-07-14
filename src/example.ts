@@ -62,20 +62,20 @@ export namespace Example {
     BareSiGNMove("U", 1)
   ]);
 
-  // export const EPerm: Sequence = new Sequence([
-  //   new Rotation("x", -1),
-  //   new Commutator(
-  //     new Conjugate(BareSiGNMove("R", 1), BareSiGNMove("U", -1), 1),
-  //     BareSiGNMove("D", 1),
-  //     1
-  //   ),
-  //   new Commutator(
-  //     new Conjugate(BareSiGNMove("R", 1), BareSiGNMove("U", 1), 1),
-  //     BareSiGNMove("D", 1),
-  //     1
-  //   ),
-  //   new Rotation("x", 1)
-  // ]);
+  export const EPerm: Sequence = new Sequence([
+    BareSiGNMove("x", -1),
+    new Commutator(
+      new Conjugate(BareSiGNMove("R", 1), BareSiGNMove("U", -1), 1),
+      BareSiGNMove("D", 1),
+      1
+    ),
+    new Commutator(
+      new Conjugate(BareSiGNMove("R", 1), BareSiGNMove("U", 1), 1),
+      BareSiGNMove("D", 1),
+      1
+    ),
+    BareSiGNMove("x", 1)
+  ]);
 
   export const FURURFCompact: Algorithm = new Conjugate(
     BareSiGNMove("F",  1),
