@@ -5,7 +5,7 @@ import {
   Sequence,
   Group,
   MoveFamily,
-  BlockMove,
+  SiGNMove,
   Commutator,
   Conjugate,
   Pause,
@@ -14,10 +14,13 @@ import {
   CommentLong
 } from "./algorithm";
 
+// TODO: Turn this into a union.
 export interface AlgorithmJSON {
   type: string;
   nestedAlg?: AlgorithmJSON;
   nestedAlgs?: AlgorithmJSON[];
+  innerLayer?: number;
+  outerLayer?: number;
   family?: string;
   amount?: number;
   A?: AlgorithmJSON;
@@ -35,11 +38,11 @@ export function fromJSON(json: AlgorithmJSON): Algorithm {
       if (!json.nestedAlg) { throw "Missing nestedAlg" }
       if (!json.amount) { throw "Missing amount" }
       return new Group(fromJSON(json.nestedAlg), json.amount);
-    case "blockMove":
-      // TODO: Handle layers
+    case "signMove":
+      // TODO: Double-check that there is no outer layer without an inner layer?
       if (!json.family) { throw "Missing family" }
       if (!json.amount) { throw "Missing amount" }
-      return new BlockMove(json.family, json.amount);
+      return new SiGNMove(json.outerLayer, json.innerLayer, json.family, json.amount);
     case "commutator":
       if (!json.A) { throw "Missing A" }
       if (!json.B) { throw "Missing B" }

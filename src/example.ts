@@ -5,7 +5,8 @@ import {
   Sequence,
   Group,
   MoveFamily,
-  BlockMove,
+  SiGNMove,
+  BareSiGNMove,
   Commutator,
   Conjugate,
   Pause,
@@ -17,83 +18,83 @@ import {
 export namespace Example {
 
   export const Sune: Sequence = new Sequence([
-    new BlockMove("R",  1),
-    new BlockMove("U",  1),
-    new BlockMove("R", -1),
-    new BlockMove("U",  1),
-    new BlockMove("R",  1),
-    new BlockMove("U", -2),
-    new BlockMove("R", -1)
+    BareSiGNMove("R",  1),
+    BareSiGNMove("U",  1),
+    BareSiGNMove("R", -1),
+    BareSiGNMove("U",  1),
+    BareSiGNMove("R",  1),
+    BareSiGNMove("U", -2),
+    BareSiGNMove("R", -1)
   ]);
 
   export const AntiSune: Sequence = new Sequence([
-    new BlockMove("R",  1),
-    new BlockMove("U",  2),
-    new BlockMove("R", -1),
-    new BlockMove("U", -1),
-    new BlockMove("R",  1),
-    new BlockMove("U", -1),
-    new BlockMove("R", -1)
+    BareSiGNMove("R",  1),
+    BareSiGNMove("U",  2),
+    BareSiGNMove("R", -1),
+    BareSiGNMove("U", -1),
+    BareSiGNMove("R",  1),
+    BareSiGNMove("U", -1),
+    BareSiGNMove("R", -1)
   ]);
 
   export const SuneCommutator: Algorithm = new Commutator(
     new Sequence([
-      new BlockMove("R",  1),
-      new BlockMove("U",  1),
-      new BlockMove("R", -2)
+      BareSiGNMove("R",  1),
+      BareSiGNMove("U",  1),
+      BareSiGNMove("R", -2)
     ]),
     new Conjugate(
-      new BlockMove("R",  1),
-      new BlockMove("U",  1),
+      BareSiGNMove("R",  1),
+      BareSiGNMove("U",  1),
       1
     ),
     1
   )
 
   export const Niklas: Sequence = new Sequence([
-    new BlockMove("R",  1),
-    new BlockMove("U",  -1),
-    new BlockMove("L", -1),
-    new BlockMove("U", 1),
-    new BlockMove("R",  -1),
-    new BlockMove("U",  -1),
-    new BlockMove("L", 1),
-    new BlockMove("U", 1)
+    BareSiGNMove("R",  1),
+    BareSiGNMove("U",  -1),
+    BareSiGNMove("L", -1),
+    BareSiGNMove("U", 1),
+    BareSiGNMove("R",  -1),
+    BareSiGNMove("U",  -1),
+    BareSiGNMove("L", 1),
+    BareSiGNMove("U", 1)
   ]);
 
   // export const EPerm: Sequence = new Sequence([
   //   new Rotation("x", -1),
   //   new Commutator(
-  //     new Conjugate(new BlockMove("R", 1), new BlockMove("U", -1), 1),
-  //     new BlockMove("D", 1),
+  //     new Conjugate(BareSiGNMove("R", 1), BareSiGNMove("U", -1), 1),
+  //     BareSiGNMove("D", 1),
   //     1
   //   ),
   //   new Commutator(
-  //     new Conjugate(new BlockMove("R", 1), new BlockMove("U", 1), 1),
-  //     new BlockMove("D", 1),
+  //     new Conjugate(BareSiGNMove("R", 1), BareSiGNMove("U", 1), 1),
+  //     BareSiGNMove("D", 1),
   //     1
   //   ),
   //   new Rotation("x", 1)
   // ]);
 
   export const FURURFCompact: Algorithm = new Conjugate(
-    new BlockMove("F",  1),
+    BareSiGNMove("F",  1),
     new Commutator(
-      new BlockMove("U",  1),
-      new BlockMove("R",  1),
+      BareSiGNMove("U",  1),
+      BareSiGNMove("R",  1),
       1
     ),
     1
   );
 
   export const APermCompact: Algorithm = new Conjugate(
-    new BlockMove("R", 2),
+    BareSiGNMove("R", 2),
     new Commutator(
-      new BlockMove("F", 2),
+      BareSiGNMove("F", 2),
       new Sequence([
-        new BlockMove("R", -1),
-        new BlockMove("B", -1),
-        new BlockMove("R", 1),
+        BareSiGNMove("R", -1),
+        BareSiGNMove("B", -1),
+        BareSiGNMove("R", 1),
       ]),
       1
     ),
@@ -101,37 +102,37 @@ export namespace Example {
   );
 
   export const FURURFMoves: Algorithm = new Sequence([
-    new BlockMove("F",  1),
-    new BlockMove("U",  1),
-    new BlockMove("R",  1),
-    new BlockMove("U", -1),
-    new BlockMove("R", -1),
-    new BlockMove("F", -1)
+    BareSiGNMove("F",  1),
+    BareSiGNMove("U",  1),
+    BareSiGNMove("R",  1),
+    BareSiGNMove("U", -1),
+    BareSiGNMove("R", -1),
+    BareSiGNMove("F", -1)
   ]);
 
   export const TPerm: Algorithm = new Sequence([
-    new BlockMove("R",  1),
-    new BlockMove("U",  1),
-    new BlockMove("R", -1),
-    new BlockMove("U", -1),
-    new BlockMove("R", -1),
-    new BlockMove("F",  1),
-    new BlockMove("R",  2),
-    new BlockMove("U", -1),
-    new BlockMove("R", -1),
-    new BlockMove("U", -1),
-    new BlockMove("R",  1),
-    new BlockMove("U",  1),
-    new BlockMove("R", -1),
-    new BlockMove("F", -1)
+    BareSiGNMove("R",  1),
+    BareSiGNMove("U",  1),
+    BareSiGNMove("R", -1),
+    BareSiGNMove("U", -1),
+    BareSiGNMove("R", -1),
+    BareSiGNMove("F",  1),
+    BareSiGNMove("R",  2),
+    BareSiGNMove("U", -1),
+    BareSiGNMove("R", -1),
+    BareSiGNMove("U", -1),
+    BareSiGNMove("R",  1),
+    BareSiGNMove("U",  1),
+    BareSiGNMove("R", -1),
+    BareSiGNMove("F", -1)
   ]);
 
 
   export const HeadlightSwaps: Algorithm = new Conjugate(
-    new BlockMove("F", 1),
+    BareSiGNMove("F", 1),
     new Commutator(
-      new BlockMove("R", 1),
-      new BlockMove("U", 1),
+      BareSiGNMove("R", 1),
+      BareSiGNMove("U", 1),
       3
     ),
     1
@@ -147,12 +148,12 @@ export namespace Example {
 
 
   export const AllAlgTypes: Algorithm[] = [
-    new Sequence([new BlockMove("R", 1), new BlockMove("U", -1)]),
-    new Group(new BlockMove("F", 1), 2),
+    new Sequence([BareSiGNMove("R", 1), BareSiGNMove("U", -1)]),
+    new Group(BareSiGNMove("F", 1), 2),
     // new Rotation("y", -1),
-    new BlockMove("R", 2),
-    new Commutator(new BlockMove("R", 2), new BlockMove("U", 2), 2),
-    new Conjugate(new BlockMove("L", 2), new BlockMove("D", -1), 2),
+    BareSiGNMove("R", 2),
+    new Commutator(BareSiGNMove("R", 2), BareSiGNMove("U", 2), 2),
+    new Conjugate(BareSiGNMove("L", 2), BareSiGNMove("D", -1), 2),
     new Pause(),
     new NewLine(),
     new CommentShort("short comment"),

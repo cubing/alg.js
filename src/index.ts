@@ -6,7 +6,7 @@ export {
   Sequence,
   Group,
   MoveFamily,
-  BlockMove,
+  SiGNMove,
   Commutator,
   Conjugate,
   Pause,

@@ -6,7 +6,7 @@ import {
   Sequence,
   Group,
   MoveFamily,
-  BlockMove,
+  SiGNMove,
   Commutator,
   Conjugate,
   Pause,
@@ -27,11 +27,11 @@ function dispatch<DataDown, DataUp>(t: TraversalDownUp<DataDown, DataUp>, algori
         throw `Algorithm is not an object of type Group despite having "type": \"${algorithm.type}\"`
       }
       return t.traverseGroup(<Group >algorithm, dataDown);
-    case "blockMove":
-      if (!(algorithm instanceof BlockMove)) {
-        throw `Algorithm is not an object of type BlockMove despite having "type": \"${algorithm.type}\"`
+    case "signMove":
+      if (!(algorithm instanceof SiGNMove)) {
+        throw `Algorithm is not an object of type SiGNMove despite having "type": \"${algorithm.type}\"`
       }
-      return t.traverseBlockMove(<BlockMove >algorithm, dataDown);
+      return t.traverseSiGNMove(<SiGNMove >algorithm, dataDown);
     case "commutator":
       if (!(algorithm instanceof Commutator)) {
         throw `Algorithm is not an object of type Commutator despite having "type": \"${algorithm.type}\"`
@@ -83,7 +83,7 @@ export abstract class TraversalDownUp<DataDown, DataUp> {
 
   public abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
   public abstract traverseGroup(group: Group, dataDown: DataDown): DataUp;
-  public abstract traverseBlockMove(blockMove: BlockMove, dataDown: DataDown): DataUp;
+  public abstract traverseSiGNMove(signMove: SiGNMove, dataDown: DataDown): DataUp;
   public abstract traverseCommutator(commutator: Commutator, dataDown: DataDown): DataUp;
   public abstract traverseConjugate(conjugate: Conjugate, dataDown: DataDown): DataUp;
   public abstract traversePause(pause: Pause, dataDown: DataDown): DataUp;
@@ -107,7 +107,7 @@ export abstract class TraversalUp<DataUp> extends TraversalDownUp<undefined, Dat
 
   public abstract traverseSequence(sequence: Sequence): DataUp;
   public abstract traverseGroup(group: Group): DataUp;
-  public abstract traverseBlockMove(blockMove: BlockMove): DataUp;
+  public abstract traverseSiGNMove(signMove: SiGNMove): DataUp;
   public abstract traverseCommutator(commutator: Commutator): DataUp;
   public abstract traverseConjugate(conjugate: Conjugate): DataUp;
   public abstract traversePause(pause: Pause): DataUp;
@@ -125,8 +125,8 @@ export class Invert extends TraversalUp<Algorithm> {
   public traverseGroup(group: Group): Algorithm {
     return new Group(this.traverse(group.nestedAlg), group.amount);
   }
-  public traverseBlockMove(blockMove: BlockMove): Algorithm {
-    return new BlockMove(blockMove.family, -blockMove.amount);
+  public traverseSiGNMove(signMove: SiGNMove): Algorithm {
+    return new SiGNMove(signMove.outerLayer, signMove.innerLayer, signMove.family, -signMove.amount);
   }
   public traverseCommutator(commutator: Commutator): Algorithm {
     return new Commutator(commutator.B, commutator.A, commutator.amount);
@@ -183,8 +183,8 @@ export class Expand extends TraversalUp<Algorithm> {
     // TODO: Pass raw Algorithm[] to sequence.
     return this.repeat(this.flattenSequenceOneLevel([this.traverse(group.nestedAlg)]), group);
   }
-  public traverseBlockMove(blockMove: BlockMove): Algorithm {
-    return blockMove;
+  public traverseSiGNMove(signMove: SiGNMove): Algorithm {
+    return signMove;
   }
   public traverseCommutator(commutator: Commutator): Algorithm {
     var expandedA = this.traverse(commutator.A)
@@ -233,11 +233,13 @@ export class StructureEquals extends TraversalDownUp<Algorithm, boolean> {
   public traverseGroup(group: Group, dataDown: Algorithm): boolean {
     return (dataDown instanceof Group) && this.traverse(group.nestedAlg, dataDown.nestedAlg);
   }
-  public traverseBlockMove(blockMove: BlockMove, dataDown: Algorithm): boolean {
+  public traverseSiGNMove(signMove: SiGNMove, dataDown: Algorithm): boolean {
     // TODO: Handle layers.
-    return dataDown instanceof BlockMove &&
-           blockMove.family === dataDown.family &&
-           blockMove.amount === dataDown.amount;
+    return dataDown instanceof SiGNMove &&
+           signMove.outerLayer === dataDown.outerLayer &&
+           signMove.innerLayer === dataDown.innerLayer &&
+           signMove.family === dataDown.family &&
+           signMove.amount === dataDown.amount;
   }
   public traverseCommutator(commutator: Commutator, dataDown: Algorithm): boolean {
     return (dataDown instanceof Commutator) &&
@@ -265,20 +267,22 @@ export class StructureEquals extends TraversalDownUp<Algorithm, boolean> {
 
 // TODO: Test that inverses are bijections.
 export class CoalesceBaseMoves extends TraversalUp<Algorithm> {
-  private sameBlock(moveA: BlockMove, moveB: BlockMove): boolean {
+  private sameBlock(moveA: SiGNMove, moveB: SiGNMove): boolean {
     // TODO: Handle layers
-    return moveA.family === moveB.family;
+    return moveA.outerLayer === moveB.outerLayer &&
+           moveA.innerLayer === moveB.innerLayer &&
+           moveA.family === moveB.family;
   }
 
   // TODO: Handle
   public traverseSequence(sequence: Sequence): Sequence {
     var coalesced: Unit[] = [];
     for (var part of sequence.nestedAlgs) {
-      if (!(part instanceof BlockMove)) {
+      if (!(part instanceof SiGNMove)) {
         coalesced.push(this.traverseIntoUnit(part));
       } else if (coalesced.length > 0) {
         var last = coalesced[coalesced.length-1];
-        if (last instanceof BlockMove &&
+        if (last instanceof SiGNMove &&
             this.sameBlock(last, part)) {
           // TODO: This is cube-specific. Perhaps pass the modules as DataDown?
           var amount = last.amount + part.amount;
@@ -288,7 +292,7 @@ export class CoalesceBaseMoves extends TraversalUp<Algorithm> {
             // but this is safe against shifting coding practices.
             // TODO: Figure out if the shoot-in-the-foot risk
             // modification is worth the speed.
-            coalesced.push(new BlockMove(part.family, amount));
+            coalesced.push(new SiGNMove(part.outerLayer, part.innerLayer, part.family, amount));
           }
         } else {
           coalesced.push(part);
@@ -300,7 +304,7 @@ export class CoalesceBaseMoves extends TraversalUp<Algorithm> {
     return new Sequence(coalesced);
   }
   public traverseGroup(group: Group):                      Algorithm { return group; }
-  public traverseBlockMove(blockMove: BlockMove):          Algorithm { return blockMove; }
+  public traverseSiGNMove(signMove: SiGNMove):             Algorithm { return signMove; }
   public traverseCommutator(commutator: Commutator):       Algorithm { return commutator; }
   public traverseConjugate(conjugate: Conjugate):          Algorithm { return conjugate; }
   public traversePause(pause: Pause):                      Algorithm { return pause; }
@@ -321,7 +325,7 @@ export class CoalesceBaseMoves extends TraversalUp<Algorithm> {
 //   }
 //   public traverseSequence(     sequence:     Sequence,     dataDown: Algorithm): Sequence {return this.concatIntoSequence(sequence.nestedAlgs, dataDown); }
 //   public traverseGroup(        group:        Group,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([group]          , dataDown); }
-//   public traverseBlockMove(    BlockMove:    BlockMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([BlockMove]      , dataDown); }
+//   public traverseSiGNMove(    SiGNMove:    SiGNMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([SiGNMove]      , dataDown); }
 //   public traverseCommutator(   commutator:   Commutator,   dataDown: Algorithm): Sequence {return this.concatIntoSequence([commutator]     , dataDown); }
 //   public traverseConjugate(    conjugate:    Conjugate,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([conjugate]      , dataDown); }
 //   public traversePause(        pause:        Pause,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([pause]          , dataDown); }
@@ -360,7 +364,16 @@ export class ToString extends TraversalUp<string> {
     return output;
   }
   public traverseGroup(        group:        Group       ): string { return "(" + this.traverse(group.nestedAlg) + ")" + this.repetitionSuffix(group.amount); }
-  public traverseBlockMove(    blockMove:    BlockMove   ): string { return blockMove.family + this.repetitionSuffix(blockMove.amount); }
+  public traverseSiGNMove(     signMove:     SiGNMove    ): string {
+    var out = signMove.family + this.repetitionSuffix(signMove.amount);
+    if (typeof signMove.innerLayer !== "undefined") {
+      out = String(signMove.innerLayer) + out;
+      if (typeof signMove.outerLayer !== "undefined") {
+        out = String(signMove.outerLayer) + "-" + out;
+      }
+    }
+    return out;
+  }
   public traverseCommutator(   commutator:   Commutator  ): string { return "[" + this.traverse(commutator.A) + ", " + this.traverse(commutator.B) + "]" + this.repetitionSuffix(commutator.amount); }
   public traverseConjugate(    conjugate:    Conjugate   ): string { return "[" + this.traverse(conjugate.A) + ": " + this.traverse(conjugate.B) + "]" + this.repetitionSuffix(conjugate.amount); }
   // TODO: Remove spaces between repeated pauses (in traverseSequence)

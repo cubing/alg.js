@@ -14,17 +14,13 @@
 
 [^\S\r\n]+             return "WHITESPACE"
 [0-9]+                 return "NUMBER"
-/*
 "-"                    return "DASH"
-*/
 
-(R|F|U|B|L|D)          return "FAMILY_UPPERCASE"
-/*
-(r|f|u|b|l|d)          return "FAMILY_LOWERCASE"
 (Rw|Fw|Uw|Bw|Lw|Dw)    return "FAMILY_W"
+(R|F|U|B|L|D)          return "FAMILY_UPPERCASE"
+(r|f|u|b|l|d)          return "FAMILY_LOWERCASE"
 (x|y|z)                return "FAMILY_ROTATION"
 (M|E|S|m|e|s)          return "FAMILY_SLICE"
-*/
 
 "'"                    return "PRIME"
 "."                    return "PAUSE"
@@ -53,12 +49,10 @@ expressions
         { return $TOP_LEVEL_ALG; }
     ;
 
-/*
 LAYER
     : NUMBER
         {$$ = parseInt($NUMBER);}
     ;
-*/
 
 REPETITION
     : NUMBER
@@ -80,33 +74,33 @@ COMMENT
         {$$ = {type: "commentLong", comment: $COMMENT_LONG.slice(2, -2)};}
     ;
 
-/*
 FAMILY_WIDE
     : FAMILY_W
     | FAMILY_LOWERCASE
     ;
-*/
 
-BLOCK_MOVE_FAMILY
+FAMILY_SINGLE_SLICE
     : FAMILY_UPPERCASE
-/*
-    | FAMILY_WIDE
-    | FAMILY_ROTATION
-    | FAMILY_SLICE
-*/
     ;
 
-BLOCK_MOVE
-    : BLOCK_MOVE_FAMILY
-        {$$ = {type: "blockMove", family: $BLOCK_MOVE_FAMILY};}
-/*
-    | LAYER FAMILY_UPPERCASE
-        {$$ = {type: "move", family: $FAMILY_UPPERCASE, layer: $LAYER};}
+FAMILY_PLAIN
+    : FAMILY_ROTATION
+    | FAMILY_SLICE
+    ;
+
+SIGN_MOVE
+    : FAMILY_WIDE
+        {$$ = {type: "signMove", family: $1};}
+    | FAMILY_SINGLE_SLICE
+        {$$ = {type: "signMove", family: $1};}
+    | FAMILY_PLAIN
+        {$$ = {type: "signMove", family: $1};}
     | LAYER FAMILY_WIDE
-        {$$ = {type: "move", family: $FAMILY_WIDE, endLayer: $LAYER};}
+        {$$ = {type: "signMove", family: $2, innerLayer: $1};}
+    | LAYER FAMILY_SINGLE_SLICE
+        {$$ = {type: "signMove", family: $2, innerLayer: $1};}
     | LAYER DASH LAYER FAMILY_WIDE
-        {$$ = {type: "move", family: $FAMILY_WIDE, startLayer: $1, endLayer: $3};}
-*/
+        {$$ = {type: "signMove", family: $4, outerLayer: $1, innerLayer: $3};}
     ;
 
 /*
@@ -122,7 +116,7 @@ OPTIONAL_WHITESPACE
     ;
 
 REPEATABLE_UNIT
-    : BLOCK_MOVE
+    : SIGN_MOVE
     | OPEN_BRACKET UNIT_OR_SEQUENCE COMMA UNIT_OR_SEQUENCE CLOSE_BRACKET
         {$$ = {"type": "commutator", "A": $2, "B": $4};}
     | OPEN_BRACKET UNIT_OR_SEQUENCE COLON UNIT_OR_SEQUENCE CLOSE_BRACKET
