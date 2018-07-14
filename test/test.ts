@@ -234,7 +234,7 @@ describe("Object Freezing", () => {
 
   it("should not be possible to modify a BaseMove", () => {
       var b = BareSiGNMove("R", 4);
-      var e: any;
+      var e: Error | undefined;
       try {
         b.amount = 2;
       } catch (err) {
