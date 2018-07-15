@@ -36,7 +36,7 @@ export function fromJSON(json: AlgJSON): Sequence {
   return new Sequence(json.nestedUnits.map(j => unitFromJSON(j)));
 }
 
-export function unitFromJSON(json: AlgJSON): AlgPart {
+function unitFromJSON(json: AlgJSON): AlgPart {
   switch (json.type) {
     case "sequence":
       throw `Expected AlgPart while parsing, got \`Sequence\`.`
