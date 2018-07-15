@@ -1,10 +1,3 @@
-import {
-  invert,
-  expand,
-  structureEquals,
-  coalesceBaseMoves,
-  algToString
-} from "./traversal"
 
 // TODO: Remove AlgPart and only have Sequence and Unit?
 export abstract class AlgPart {

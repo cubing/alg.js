@@ -1,11 +1,7 @@
 import {
   AlgPart,
-  Unit,
-  BaseMove,
   Sequence,
   Group,
-  MoveFamily,
-  SiGNMove,
   BareSiGNMove,
   Commutator,
   Conjugate,

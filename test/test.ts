@@ -1,20 +1,12 @@
 import {
-  AlgPart,
   Unit,
-  BaseMove,
   Sequence,
   Group,
-  MoveFamily,
-  SiGNMove,
   BareSiGNMove,
   LayerSiGNMove,
   RangeSiGNMove,
   Commutator,
-  Conjugate,
   Pause,
-  NewLine,
-  CommentShort,
-  CommentLong
 } from "../src/algorithm";
 import {Example as Ex} from "../src/example"
 import {
@@ -30,10 +22,8 @@ import {parse} from "../src/parser"
 
 import { expect } from "chai";
 
-var U  = new Sequence([BareSiGNMove("U", 1)]);
 var UU = new Sequence([BareSiGNMove("U", 1), BareSiGNMove("U", 1)]);
 var U2 = new Sequence([BareSiGNMove("U", 2)]);
-var R  = new Sequence([BareSiGNMove("R", 1)]);
 
 var e = function(a1: Sequence, a2: Sequence) {
   return expect(structureEquals(a1, a2));
@@ -62,14 +52,14 @@ describe("Sequence", () => {
 
 describe("SiGNMove", () => {
   it("should allow constructing: x, U, u", () => {
-    expect(algToString(new Sequence([BareSiGNMove("x", 1)]))).to.equal("x");
-    expect(algToString(new Sequence([BareSiGNMove("U", 1)]))).to.equal("U");
-    expect(algToString(new Sequence([BareSiGNMove("u", 1)]))).to.equal("u");
+    expect(algPartToStringForTesting(BareSiGNMove("x", 1))).to.equal("x");
+    expect(algPartToStringForTesting(BareSiGNMove("U", 1))).to.equal("U");
+    expect(algPartToStringForTesting(BareSiGNMove("u", 1))).to.equal("u");
   });
 
   it("should allow constructing: 2U, 2u", () => {
-    expect(algToString(new Sequence([LayerSiGNMove(2, "U", 1)]))).to.equal("2U");
-    expect(algToString(new Sequence([LayerSiGNMove(2, "u", 1)]))).to.equal("2u");
+    expect(algPartToStringForTesting(LayerSiGNMove(2, "U", 1))).to.equal("2U");
+    expect(algPartToStringForTesting(LayerSiGNMove(2, "u", 1))).to.equal("2u");
   });
 
   it("should prevent constructing: 2x, [-2]U, [-2]u", () => {
@@ -79,7 +69,7 @@ describe("SiGNMove", () => {
   });
 
   it("should allow constructing: 2-3u", () => {
-    expect(algToString(new Sequence([RangeSiGNMove(2, 3, "u", 1)]))).to.equal("2-3u");
+    expect(algPartToStringForTesting(RangeSiGNMove(2, 3, "u", 1))).to.equal("2-3u");
   });
 
   it("should prevent constructing: 2-3x, 2-3U, [-2]-3u, 4-3u", () => {
@@ -90,9 +80,9 @@ describe("SiGNMove", () => {
   });
 
   it("should prevent constructing: w, 2T, 2-3q", () => {
-    expect(() =>algToString(new Sequence([BareSiGNMove("w", 1)]))).to.throw(/Invalid SiGN plain move family: w/);
-    expect(() =>algToString(new Sequence([LayerSiGNMove(2, "T", 1)]))).to.throw(/The provided SiGN move family is invalid, or cannot have an inner slice: T/);
-    expect(() =>algToString(new Sequence([RangeSiGNMove(2, 3, "q", 1)]))).to.throw(/The provided SiGN move family is invalid, or cannot have an outer and inner layer: q/);
+    expect(() =>algPartToStringForTesting(BareSiGNMove("w", 1))).to.throw(/Invalid SiGN plain move family: w/);
+    expect(() =>algPartToStringForTesting(LayerSiGNMove(2, "T", 1))).to.throw(/The provided SiGN move family is invalid, or cannot have an inner slice: T/);
+    expect(() =>algPartToStringForTesting(RangeSiGNMove(2, 3, "q", 1))).to.throw(/The provided SiGN move family is invalid, or cannot have an outer and inner layer: q/);
   });
 
   it("should support a default amount of 1.", () => {
@@ -124,22 +114,22 @@ describe("SiGNMove", () => {
 
 describe("algToString()", () => {
   it("should convert all move types correctly", () => {
-    expect(algToString(new Sequence([BareSiGNMove("x", 2)]))).to.equal("x2");
-    expect(algToString(new Sequence([BareSiGNMove("R", 3)]))).to.equal("R3");
-    expect(algToString(new Sequence([BareSiGNMove("u", -5)]))).to.equal("u5'");
-    expect(algToString(new Sequence([LayerSiGNMove(2, "R", 10)]))).to.equal("2R10");
-    expect(algToString(new Sequence([LayerSiGNMove(3, "L", -13)]))).to.equal("3L13'");
-    expect(algToString(new Sequence([RangeSiGNMove(2, 12, "u", 15)]))).to.equal("2-12u15");
+    expect(algPartToStringForTesting(BareSiGNMove("x", 2))).to.equal("x2");
+    expect(algPartToStringForTesting(BareSiGNMove("R", 3))).to.equal("R3");
+    expect(algPartToStringForTesting(BareSiGNMove("u", -5))).to.equal("u5'");
+    expect(algPartToStringForTesting(LayerSiGNMove(2, "R", 10))).to.equal("2R10");
+    expect(algPartToStringForTesting(LayerSiGNMove(3, "L", -13))).to.equal("3L13'");
+    expect(algPartToStringForTesting(RangeSiGNMove(2, 12, "u", 15))).to.equal("2-12u15");
   });
 
   it("should distinguish between 1R and R", () => {
-    expect(algToString(new Sequence([LayerSiGNMove(1, "R")]))).to.equal("1R");
-    expect(algToString(new Sequence([BareSiGNMove("R")]))).to.equal("R");
+    expect(algPartToStringForTesting(LayerSiGNMove(1, "R"))).to.equal("1R");
+    expect(algPartToStringForTesting(BareSiGNMove("R"))).to.equal("R");
   });
 
   it("should handle empty sequences", () => {
     expect(algToString(new Sequence([]))).to.equal("");
-    expect(algToString(new Sequence([new Group(new Sequence([]))]))).to.equal("()");
+    expect(algPartToStringForTesting(new Group(new Sequence([])))).to.equal("()");
     // TODO: Should this be "[,]"
     expect(algToString(
       new Sequence([
@@ -174,7 +164,7 @@ describe("Traversal", () => {
   }
 
   it("cannot subclass directly", () => {
-    expect(() => algToString(new Sequence([new FakePause()]))).to.throw(/Alg part is not an object of type Pause despite having "type": "pause"/);
+    expect(() => algPartToStringForTesting(new FakePause())).to.throw(/Alg part is not an object of type Pause despite having "type": "pause"/);
   });
 });
 
