@@ -28,7 +28,7 @@ export interface AlgJSON {
   comment?: string;
 }
 
-export function fromJSON(json:AlgJSON): Sequence {
+export function fromJSON(json: AlgJSON): Sequence {
   if (json.type !== "sequence") {
     throw `Expected Sequence while parsing, got: ${json.type}`
   }
