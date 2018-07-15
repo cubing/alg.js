@@ -52,6 +52,7 @@ describe("AlgPart", () => {
 describe("Sequence", () => {
   it("should allow an empty sequence", () => {
     expect(() => new Sequence([])).to.not.throw();
+    expect(() => new Commutator(new Sequence([]), new Sequence([]))).to.not.throw();
   });
 
   it("should throw an error for a nested sequence", () => {
@@ -134,6 +135,20 @@ describe("algToString()", () => {
   it("should distinguish between 1R and R", () => {
     expect(algToString(new Sequence([LayerSiGNMove(1, "R")]))).to.equal("1R");
     expect(algToString(new Sequence([BareSiGNMove("R")]))).to.equal("R");
+  });
+
+  it("should handle empty sequences", () => {
+    expect(algToString(new Sequence([]))).to.equal("");
+    expect(algToString(new Sequence([new Group(new Sequence([]))]))).to.equal("()");
+    // TODO: Should this be "[,]"
+    expect(algToString(
+      new Sequence([
+        new Commutator(
+          new Sequence([]),
+          new Sequence([])
+        )
+      ])
+    )).to.equal("[, ]");
   });
 
   it("should convert Sune to string", () => {
@@ -242,6 +257,11 @@ describe("Object Freezing", () => {
 });
 
 describe("Parser", () => {
+  it("should parse an empty sequence", () => {
+    e(parse(""), new Sequence([])).to.be.true;
+    e(parse("()"), new Sequence([new Group(new Sequence([]))])).to.be.true;
+  });
+
   it("should parse a Sune", () => {
     e(parse("R U R' U R U2' R'"), Ex.Sune).to.be.true;
   });
