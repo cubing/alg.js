@@ -89,9 +89,9 @@ describe("SiGNMove", () => {
   });
 
   it("should prevent constructing: w, 2T, 2-3q", () => {
-    expect(() =>algToString(BareSiGNMove("w", 1))).to.throw(/Invalid SiGN plain move family: w/);
-    expect(() =>algToString(LayerSiGNMove(2, "T", 1))).to.throw(/The provided SiGN move family is invalid, or cannot have an inner slice: T/);
-    expect(() =>algToString(RangeSiGNMove(2, 3, "q", 1))).to.throw(/The provided SiGN move family is invalid, or cannot have an outer and inner layer: q/);
+    expect(() =>algToString(new Sequence([BareSiGNMove("w", 1)]))).to.throw(/Invalid SiGN plain move family: w/);
+    expect(() =>algToString(new Sequence([LayerSiGNMove(2, "T", 1)]))).to.throw(/The provided SiGN move family is invalid, or cannot have an inner slice: T/);
+    expect(() =>algToString(new Sequence([RangeSiGNMove(2, 3, "q", 1)]))).to.throw(/The provided SiGN move family is invalid, or cannot have an outer and inner layer: q/);
   });
 
   it("should support a default amount of 1.", () => {

@@ -393,13 +393,11 @@ const structureEqualsInstance = new StructureEquals();
 const coalesceBaseMovesInstance = new CoalesceBaseMoves();
 const algToStringInstance = new ToString();
 
-export const invert            = invertInstance.traverseSequence.bind(invertInstance)
-export const expand            = expandInstance.traverseSequence.bind(expandInstance);
-export const structureEquals   = function(a1: Sequence, a2: Sequence) {
-  return structureEqualsInstance.traverseSequence(a1, a2);
-}
-export const coalesceBaseMoves = coalesceBaseMovesInstance.traverseSequence.bind(coalesceBaseMovesInstance);
-export const algToString       = algToStringInstance.traverseSequence.bind(algToStringInstance);
+export const invert            = <(a: Sequence) => Sequence>invertInstance.traverseSequence.bind(invertInstance)
+export const expand            = <(a: Sequence) => Sequence>expandInstance.traverseSequence.bind(expandInstance);
+export const structureEquals   = <(a1: Sequence, a2: Sequence) => boolean>structureEqualsInstance.traverseSequence.bind(structureEqualsInstance);
+export const coalesceBaseMoves = <(a: Sequence) => Sequence>coalesceBaseMovesInstance.traverseSequence.bind(coalesceBaseMovesInstance);
+export const algToString       = <(a: Sequence) => string>algToStringInstance.traverseSequence.bind(algToStringInstance);
 
-export const algPartStructureEqualsForTesting = algToStringInstance.traverse.bind(algToStringInstance);
-export const algPartToStringForTesting = algToStringInstance.traverse.bind(algToStringInstance);
+export const algPartStructureEqualsForTesting = <(a1: AlgPart, a2: AlgPart) => boolean>algToStringInstance.traverse.bind(algToStringInstance);
+export const algPartToStringForTesting = <(a: AlgPart) => Sequence>algToStringInstance.traverse.bind(algToStringInstance);
