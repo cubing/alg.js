@@ -1,6 +1,6 @@
 {
   "name": "alg",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "A library for parsing and transforming puzzle algorithms (\"algs\").",
   "author": "Lucas Garron <code@garron.net> (https://garron.net/)",
   "license": "MIT",
