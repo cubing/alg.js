@@ -220,13 +220,13 @@ describe("Object Freezing", () => {
     // Update this based on the length of AllAlgParts.
     expect(Ex.AllAlgParts.length).to.equal(9);
     for (var a of Ex.AllAlgParts) {
-      expect(Object.isFrozen(a)).to.be.true;
+      expect(a).to.be.frozen;
     }
   });
 
   it("should freeze `nestedUnits` list on Sequence", () => {
     // Update this based on the length of AllAlgParts.
-    expect(Object.isFrozen(new Sequence([BareSiGNMove("R", 1)]).nestedUnits)).to.be.true;
+    expect(new Sequence([BareSiGNMove("R", 1)]).nestedUnits).to.be.frozen;
   });
 
   it("should not be possible to modify a BaseMove", () => {
