@@ -18,5 +18,6 @@ export {
   SiGNMove,
   BareSiGNMove,
   LayerSiGNMove,
-  RangeSiGNMove
+  RangeSiGNMove,
+  allowLongMoveNames
 } from "./sign-move";

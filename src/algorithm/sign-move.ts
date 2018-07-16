@@ -42,16 +42,17 @@ var wideMoveFamilies: FamilyList = {
   "Dw": true
 }
 
-var shouldValidateFamily = true;
+var shouldAllowLongMoveNames = false;
 // TODO: Remove this after the parser and family definitions are robust.
-export function validateSiGNMoveFamily(validate: boolean) {
-  shouldValidateFamily = validate;
+export function allowLongMoveNames(allow: boolean) {
+  shouldAllowLongMoveNames = allow;
 }
 
 function validateFamily(family: string, allowedFamilyLists: FamilyList[]): boolean {
-  if (!shouldValidateFamily) {
+  if (shouldAllowLongMoveNames && /^<[A-Za-z]+(_[A-Za-z]+)*>*$/.test(family)) {
     return true;
   }
+
   for (var list of allowedFamilyLists) {
     if (list[family] === true) {
       return true;

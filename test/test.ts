@@ -7,6 +7,7 @@ import {
   RangeSiGNMove,
   Commutator,
   Pause,
+  allowLongMoveNames
 } from "../src/algorithm";
 import {Example as Ex} from "../src/example"
 import {
@@ -109,6 +110,23 @@ describe("SiGNMove", () => {
     expect(LayerSiGNMove(2, "R", 10).amount).to.equal(10);
     expect(LayerSiGNMove(3, "L", -13).amount).to.equal(-13);
     expect(RangeSiGNMove(2, 12, "u", 15).amount).to.equal(15);
+  });
+
+  it("should allow valid long move names iff shouldAllowLongMoves(true) was called.", () => {
+    expect(() => parse("<R>")).to.throw(/Invalid SiGN plain move family/);
+    expect(() => parse("2-3<UF>")).to.throw(/The provided SiGN move family is invalid/);
+    expect(() => parse("4<TEST_Hello>")).to.throw(/The provided SiGN move family is invalid/);
+    expect(() => parse("<_R>")).to.throw(/Parse error/);
+    allowLongMoveNames(true);
+    expect(algPartToStringForTesting(parse("<R>"))).to.equal("<R>");
+    expect(algPartToStringForTesting(parse("2-3<UF>"))).to.equal("2-3<UF>");
+    expect(algPartToStringForTesting(parse("<TEST_Hello>"))).to.equal("<TEST_Hello>");
+    expect(() => parse("<_R>")).to.throw(/Parse error/);
+    allowLongMoveNames(false);
+    expect(() => parse("<R>")).to.throw(/Invalid SiGN plain move family/);
+    expect(() => parse("2-3<UF>")).to.throw(/The provided SiGN move family is invalid/);
+    expect(() => parse("4<TEST_Hello>")).to.throw(/The provided SiGN move family is invalid/);
+    expect(() => parse("<_R>")).to.throw(/Parse error/);
   });
 });
 

@@ -16,6 +16,8 @@
 [0-9]+                 return "NUMBER"
 "-"                    return "DASH"
 
+\<[A-Za-z]+(_[A-Za-z]+)*\> return "LONG_FAMILY_NAME"
+
 (Rw|Fw|Uw|Bw|Lw|Dw)    return "FAMILY_W"
 (R|F|U|B|L|D)          return "FAMILY_UPPERCASE"
 (r|f|u|b|l|d)          return "FAMILY_LOWERCASE"
@@ -95,11 +97,19 @@ SIGN_MOVE
         {$$ = {type: "signMove", family: $1};}
     | FAMILY_PLAIN
         {$$ = {type: "signMove", family: $1};}
+    | LONG_FAMILY_NAME
+        {$$ = {type: "signMove", family: $1};}
     | LAYER FAMILY_WIDE
         {$$ = {type: "signMove", family: $2, innerLayer: $1};}
     | LAYER FAMILY_SINGLE_SLICE
         {$$ = {type: "signMove", family: $2, innerLayer: $1};}
+    | LAYER LONG_FAMILY_NAME
+        {$$ = {type: "signMove", family: $2, innerLayer: $1};}
     | LAYER DASH LAYER FAMILY_WIDE
+        {$$ = {type: "signMove", family: $4, outerLayer: $1, innerLayer: $3};}
+    | LAYER DASH LAYER FAMILY_WIDE
+        {$$ = {type: "signMove", family: $4, outerLayer: $1, innerLayer: $3};}
+    | LAYER DASH LAYER LONG_FAMILY_NAME
         {$$ = {type: "signMove", family: $4, outerLayer: $1, innerLayer: $3};}
     ;
 
