@@ -16,7 +16,7 @@ export {
   NewLine,
   CommentShort,
   CommentLong,
-  allowLongMoveNames
+  allowMoreMoveFamilies
 } from "./algorithm";
 
 export {

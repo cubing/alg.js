@@ -16,13 +16,9 @@
 [0-9]+                 return "NUMBER"
 "-"                    return "DASH"
 
-\<[A-Za-z]+(_[A-Za-z]+)*\> return "LONG_FAMILY_NAME"
+[a-z]|([A-Z]w?)            return "SIGN_FAMILY"
+\<[A-Za-z]+(_[A-Za-z]+)*\> return "LONG_FAMILY"
 
-(Rw|Fw|Uw|Bw|Lw|Dw)    return "FAMILY_W"
-(R|F|U|B|L|D)          return "FAMILY_UPPERCASE"
-(r|f|u|b|l|d)          return "FAMILY_LOWERCASE"
-(x|y|z)                return "FAMILY_ROTATION"
-(M|E|S|m|e|s)          return "FAMILY_SLICE"
 
 "'"                    return "PRIME"
 "."                    return "PAUSE"
@@ -76,40 +72,17 @@ COMMENT
         {$$ = {type: "commentLong", comment: $COMMENT_LONG.slice(2, -2)};}
     ;
 
-FAMILY_WIDE
-    : FAMILY_W
-    | FAMILY_LOWERCASE
-    ;
-
-FAMILY_SINGLE_SLICE
-    : FAMILY_UPPERCASE
-    ;
-
-FAMILY_PLAIN
-    : FAMILY_ROTATION
-    | FAMILY_SLICE
+FAMILY
+    : SIGN_FAMILY
+    | LONG_FAMILY
     ;
 
 SIGN_MOVE
-    : FAMILY_WIDE
+    : FAMILY
         {$$ = {type: "signMove", family: $1};}
-    | FAMILY_SINGLE_SLICE
-        {$$ = {type: "signMove", family: $1};}
-    | FAMILY_PLAIN
-        {$$ = {type: "signMove", family: $1};}
-    | LONG_FAMILY_NAME
-        {$$ = {type: "signMove", family: $1};}
-    | LAYER FAMILY_WIDE
+    | LAYER FAMILY
         {$$ = {type: "signMove", family: $2, innerLayer: $1};}
-    | LAYER FAMILY_SINGLE_SLICE
-        {$$ = {type: "signMove", family: $2, innerLayer: $1};}
-    | LAYER LONG_FAMILY_NAME
-        {$$ = {type: "signMove", family: $2, innerLayer: $1};}
-    | LAYER DASH LAYER FAMILY_WIDE
-        {$$ = {type: "signMove", family: $4, outerLayer: $1, innerLayer: $3};}
-    | LAYER DASH LAYER FAMILY_WIDE
-        {$$ = {type: "signMove", family: $4, outerLayer: $1, innerLayer: $3};}
-    | LAYER DASH LAYER LONG_FAMILY_NAME
+    | LAYER DASH LAYER FAMILY
         {$$ = {type: "signMove", family: $4, outerLayer: $1, innerLayer: $3};}
     ;
 

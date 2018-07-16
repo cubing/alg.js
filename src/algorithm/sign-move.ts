@@ -42,15 +42,20 @@ var wideMoveFamilies: FamilyList = {
   "Dw": true
 }
 
-var shouldAllowLongMoveNames = false;
+var shouldAllowMoreMoveFamilies = false;
 // TODO: Remove this after the parser and family definitions are robust.
-export function allowLongMoveNames(allow: boolean) {
-  shouldAllowLongMoveNames = allow;
+export function allowMoreMoveFamilies(allow: boolean) {
+  shouldAllowMoreMoveFamilies = allow;
 }
 
 function validateFamily(family: string, allowedFamilyLists: FamilyList[]): boolean {
-  if (shouldAllowLongMoveNames && /^<[A-Za-z]+(_[A-Za-z]+)*>*$/.test(family)) {
-    return true;
+  if (shouldAllowMoreMoveFamilies) {
+    if (/^<[A-Za-z]+(_[A-Za-z]+)*>*$/.test(family)) {
+      return true;
+    }
+    if (/^[a-z]|([A-Z]w?)$/.test(family)) {
+      return true;
+    }
   }
 
   for (var list of allowedFamilyLists) {

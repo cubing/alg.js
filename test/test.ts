@@ -7,7 +7,7 @@ import {
   RangeSiGNMove,
   Commutator,
   Pause,
-  allowLongMoveNames
+  allowMoreMoveFamilies
 } from "../src/algorithm";
 import {Example as Ex} from "../src/example"
 import {
@@ -113,16 +113,25 @@ describe("SiGNMove", () => {
   });
 
   it("should allow valid long move names iff shouldAllowLongMoves(true) was called.", () => {
+    expect(() => parse("g")).to.throw(/Invalid SiGN plain move family/);
+    expect(() => parse("2Ww")).to.throw(/The provided SiGN move family is invalid/);
+    expect(() => parse("2-3T")).to.throw(/The provided SiGN move family is invalid/);
     expect(() => parse("<R>")).to.throw(/Invalid SiGN plain move family/);
     expect(() => parse("2-3<UF>")).to.throw(/The provided SiGN move family is invalid/);
     expect(() => parse("4<TEST_Hello>")).to.throw(/The provided SiGN move family is invalid/);
     expect(() => parse("<_R>")).to.throw(/Parse error/);
-    allowLongMoveNames(true);
+    allowMoreMoveFamilies(true);
+    expect(algPartToStringForTesting(parse("g"))).to.equal("g");
+    expect(algPartToStringForTesting(parse("2Ww"))).to.equal("2Ww");
+    expect(algPartToStringForTesting(parse("2-3T"))).to.equal("2-3T");
     expect(algPartToStringForTesting(parse("<R>"))).to.equal("<R>");
     expect(algPartToStringForTesting(parse("2-3<UF>"))).to.equal("2-3<UF>");
     expect(algPartToStringForTesting(parse("<TEST_Hello>"))).to.equal("<TEST_Hello>");
     expect(() => parse("<_R>")).to.throw(/Parse error/);
-    allowLongMoveNames(false);
+    allowMoreMoveFamilies(false);
+    expect(() => parse("g")).to.throw(/Invalid SiGN plain move family/);
+    expect(() => parse("2Ww")).to.throw(/The provided SiGN move family is invalid/);
+    expect(() => parse("2-3T")).to.throw(/The provided SiGN move family is invalid/);
     expect(() => parse("<R>")).to.throw(/Invalid SiGN plain move family/);
     expect(() => parse("2-3<UF>")).to.throw(/The provided SiGN move family is invalid/);
     expect(() => parse("4<TEST_Hello>")).to.throw(/The provided SiGN move family is invalid/);
