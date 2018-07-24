@@ -15,8 +15,7 @@ export {
   Pause,
   NewLine,
   CommentShort,
-  CommentLong,
-  allowMoreMoveFamilies
+  CommentLong
 } from "./algorithm";
 
 export {
@@ -45,3 +44,10 @@ export {
 export {
   keyToMove
 } from "./keyboard"
+
+export {
+  validateSiGNMoves,
+  validateFlatAlg,
+  validateSiGNAlg,
+  ValidationError
+} from "./validation"
