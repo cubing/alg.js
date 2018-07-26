@@ -5,9 +5,12 @@ import {
   BareSiGNMove,
   LayerSiGNMove,
   RangeSiGNMove,
+  Conjugate,
   Commutator,
   Pause,
-  allowMoreMoveFamilies
+  allowMoreMoveFamilies,
+  Square1Slash,
+  Square1MovePair
 } from "../src/algorithm";
 import {Example as Ex} from "../src/example"
 import {
@@ -315,4 +318,21 @@ describe("Parser", () => {
       e(parse(algToString(seq)), seq).to.be.true;
     }
   });
+});
+
+describe("Square-1", () => {
+  it("should be able to construct an alg", () => {
+    // Update this based on the length of AllAlgParts.
+    expect(algToString(new Sequence([
+      new Conjugate(
+        new Sequence([
+          new Square1Slash()
+        ]),
+        new Sequence([
+          new Square1MovePair(3, 0)
+        ])
+        )
+      ]))).to.equal("[/: (3, 0)]");
+  });
+
 });

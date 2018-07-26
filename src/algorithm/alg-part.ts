@@ -96,5 +96,22 @@ export class CommentLong extends Annotation {
   }
 }
 
+// TODO: Can this extend BaseMove without an amount?
+export class Square1Slash extends Unit {
+  public type: string = "sq1Slash";
+  constructor() {
+    super();
+    this.freeze();
+  }
+}
+
+export class Square1MovePair extends Unit {
+  public type: string = "sq1MovePair";
+  constructor(public top: number, public bottom: number) {
+    super();
+    this.freeze();
+  }
+}
+
 // TODO
 // export class TimeStamp extends AlgPart implements AlgPart

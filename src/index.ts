@@ -16,7 +16,8 @@ export {
   NewLine,
   CommentShort,
   CommentLong,
-  allowMoreMoveFamilies
+  Square1Slash,
+  Square1MovePair
 } from "./algorithm";
 
 export {

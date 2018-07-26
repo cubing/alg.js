@@ -10,7 +10,9 @@ export {
   Pause,
   NewLine,
   CommentShort,
-  CommentLong
+  CommentLong,
+  Square1Slash,
+  Square1MovePair
 } from "./alg-part";
 
 export {

@@ -10,7 +10,9 @@ import {
   Pause,
   NewLine,
   CommentShort,
-  CommentLong
+  CommentLong,
+  Square1Slash,
+  Square1MovePair
 } from "./algorithm";
 
 function dispatch<DataDown, DataUp>(t: TraversalDownUp<DataDown, DataUp>, algPart: AlgPart, dataDown: DataDown): DataUp {
@@ -60,6 +62,16 @@ function dispatch<DataDown, DataUp>(t: TraversalDownUp<DataDown, DataUp>, algPar
         throw `Alg part is not an object of type CommentLong despite having "type": \"${algPart.type}\"`
       }
       return t.traverseCommentLong (<CommentLong>algPart, dataDown);
+    case "sq1Slash":
+      if (!(algPart instanceof Square1Slash)) {
+        throw `Alg part is not an object of type Square1Slash despite having "type": \"${algPart.type}\"`
+      }
+      return t.traverseSquare1Slash(<Square1Slash>algPart, dataDown);
+    case "sq1MovePair":
+      if (!(algPart instanceof Square1MovePair)) {
+        throw `Alg part is not an object of type Square1MovePair despite having "type": \"${algPart.type}\"`
+      }
+      return t.traverseSquare1MovePair(<Square1MovePair>algPart, dataDown);
     default: 
       throw `Unknown algPart type: ${algPart.type}`
   }
@@ -88,6 +100,8 @@ export abstract class TraversalDownUp<DataDown, DataUp> {
   public abstract traverseNewLine(newLine: NewLine, dataDown: DataDown): DataUp;
   public abstract traverseCommentShort(commentShort: CommentShort, dataDown: DataDown): DataUp;
   public abstract traverseCommentLong(commentLong: CommentLong, dataDown: DataDown): DataUp;
+  public abstract traverseSquare1Slash(square1Slash: Square1Slash, dataDown: DataDown): DataUp;
+  public abstract traverseSquare1MovePair(square1Slash: Square1Slash, dataDown: DataDown): DataUp;
 }
 
 export abstract class TraversalUp<DataUp> extends TraversalDownUp<undefined, DataUp> {
@@ -112,6 +126,8 @@ export abstract class TraversalUp<DataUp> extends TraversalDownUp<undefined, Dat
   public abstract traverseNewLine(newLine: NewLine): DataUp;
   public abstract traverseCommentShort(commentShort: CommentShort): DataUp;
   public abstract traverseCommentLong(commentLong: CommentLong): DataUp;
+  public abstract traverseSquare1Slash(square1Slash: Square1Slash): DataUp;
+  public abstract traverseSquare1MovePair(square1MovePair: Square1MovePair): DataUp;
 };
 
 // TODO: Test that inverses are bijections.
@@ -136,6 +152,8 @@ export class Invert extends TraversalUp<AlgPart> {
   public traverseNewLine(newLine: NewLine):                AlgPart { return newLine; }
   public traverseCommentShort(commentShort: CommentShort): AlgPart { return commentShort; }
   public traverseCommentLong(commentLong: CommentLong):    AlgPart { return commentLong; }
+  public traverseSquare1Slash(square1Slash: Square1Slash): AlgPart { return square1Slash; }
+  public traverseSquare1MovePair(square1MovePair: Square1MovePair): AlgPart { return new Square1MovePair(-square1MovePair.top, -square1MovePair.bottom); }
 }
 
 export class Expand extends TraversalUp<AlgPart> {
@@ -211,6 +229,8 @@ export class Expand extends TraversalUp<AlgPart> {
   public traverseNewLine(newLine: NewLine):                AlgPart { return newLine; }
   public traverseCommentShort(commentShort: CommentShort): AlgPart { return commentShort; }
   public traverseCommentLong(commentLong: CommentLong):    AlgPart { return commentLong; }
+  public traverseSquare1Slash(square1Slash: Square1Slash): AlgPart { return square1Slash; }
+  public traverseSquare1MovePair(square1MovePair: Square1MovePair): AlgPart { return square1MovePair; }
 }
 
 export class StructureEquals extends TraversalDownUp<AlgPart, boolean> {
@@ -261,6 +281,12 @@ export class StructureEquals extends TraversalDownUp<AlgPart, boolean> {
   public traverseCommentLong(commentLong: CommentLong, dataDown: AlgPart): boolean {
     return (dataDown instanceof CommentLong) && (commentLong.comment == dataDown.comment);
   }
+  public traverseSquare1Slash(square1Slash: Square1Slash, dataDown: AlgPart): boolean {
+    return (dataDown instanceof Square1Slash);
+  }
+  public traverseSquare1MovePair(square1MovePair: Square1MovePair, dataDown: AlgPart): boolean {
+    return (dataDown instanceof Square1MovePair) && (square1MovePair.top == dataDown.top) && (square1MovePair.bottom == dataDown.bottom);
+  }
 }
 
 // TODO: Test that inverses are bijections.
@@ -309,6 +335,8 @@ export class CoalesceBaseMoves extends TraversalUp<AlgPart> {
   public traverseNewLine(newLine: NewLine):                AlgPart { return newLine; }
   public traverseCommentShort(commentShort: CommentShort): AlgPart { return commentShort; }
   public traverseCommentLong(commentLong: CommentLong):    AlgPart { return commentLong; }
+  public traverseSquare1Slash(square1Slash: Square1Slash): AlgPart { return square1Slash; }
+  public traverseSquare1MovePair(square1MovePair: Square1MovePair): AlgPart { return square1MovePair; }
 }
 
 // export class Concat extends TraversalDownUp<Algorithm, Sequence> {
@@ -383,6 +411,8 @@ export class ToString extends TraversalUp<string> {
   public traverseCommentShort( commentShort: CommentShort): string { return "//" + commentShort.comment; }
     // TODO: Sanitize `*/`
   public traverseCommentLong(  commentLong:  CommentLong ): string { return "/*" + commentLong.comment + "*/"; }
+  public traverseSquare1Slash(square1Slash: Square1Slash): string { return "/"; }
+  public traverseSquare1MovePair(square1MovePair: Square1MovePair): string { return `(${square1MovePair.top}, ${square1MovePair.bottom})`; }
 }
 
 const invertInstance = new Invert();
