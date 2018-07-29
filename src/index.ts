@@ -41,3 +41,7 @@ export {
 export {
   parse
  } from "./parser"
+
+export {
+  keyToMove
+} from "./keyboard"
