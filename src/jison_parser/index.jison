@@ -16,8 +16,7 @@
 [0-9]+                 return "NUMBER"
 "-"                    return "DASH"
 
-[a-z]|([A-Z]w?)            return "SIGN_FAMILY"
-\<[A-Za-z]+(_[A-Za-z]+)*\> return "LONG_FAMILY"
+[_A-Za-z]+             return "LONG_FAMILY"
 
 
 "'"                    return "PRIME"
@@ -73,8 +72,7 @@ COMMENT
     ;
 
 FAMILY
-    : SIGN_FAMILY
-    | LONG_FAMILY
+    : LONG_FAMILY
     ;
 
 SIGN_MOVE
@@ -113,18 +111,34 @@ REPEATED_UNIT
         {$REPEATABLE_UNIT.amount = 1; $$ = $REPEATABLE_UNIT;}
     | REPEATABLE_UNIT AMOUNT
         {$REPEATABLE_UNIT.amount = $AMOUNT; $$ = $REPEATABLE_UNIT;}
+    ;
+
+ANNOTATION
+    : NEWLINE
+        {$$ = {"type": "newLine"};}
     | PAUSE
-        {$$ = {type: "pause"};}
-    | NEWLINE
-        {$$ = {type: "newLine"};}
+        {$$ = {"type": "pause"};}
     | COMMENT
     ;
 
-UNIT_LIST
+UNIT_LIST_WITHOUT_WHITESPACE
     : REPEATED_UNIT
-        {$$ = [$REPEATED_UNIT];}
-    | UNIT_LIST OPTIONAL_WHITESPACE REPEATED_UNIT
-        {$$ = $UNIT_LIST.concat([$REPEATED_UNIT]);}
+        {$$ = [$1];}
+    | UNIT_LIST_WITHOUT_WHITESPACE ANNOTATION UNIT_LIST_WITHOUT_WHITESPACE
+        {$$ = $1.concat([$2]).concat($3);}
+    | ANNOTATION UNIT_LIST_WITHOUT_WHITESPACE
+        {$$ = [$1].concat($2);}
+    | UNIT_LIST_WITHOUT_WHITESPACE ANNOTATION
+        {$$ = $1.concat([$2]);}
+    | ANNOTATION
+        {$$ = [$1];}
+    ;
+
+UNIT_LIST
+    : UNIT_LIST_WITHOUT_WHITESPACE
+        {$$ = $UNIT_LIST_WITHOUT_WHITESPACE;}
+    | UNIT_LIST WHITESPACE UNIT_LIST_WITHOUT_WHITESPACE
+        {$$ = $UNIT_LIST.concat($UNIT_LIST_WITHOUT_WHITESPACE);}
     ;
 
 SEQUENCE
