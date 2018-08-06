@@ -1,3 +1,4 @@
+import {CHECK_TYPES} from "../debug"
 
 // TODO: Remove AlgPart and only have Sequence and Unit?
 export abstract class AlgPart {
@@ -30,7 +31,7 @@ export class Sequence extends AlgPart {
   constructor(public nestedUnits: Unit[]) {
     super();
     for (var n of nestedUnits) {
-      if (!(n instanceof Unit)) {
+      if (CHECK_TYPES && !(n instanceof Unit)) {
         throw "A Sequence can only contain `Unit`s."
       }
     }

@@ -1,3 +1,5 @@
+import {CHECK_TYPES} from "./debug"
+
 import {
   AlgPart,
   Unit,
@@ -16,47 +18,47 @@ import {
 function dispatch<DataDown, DataUp>(t: TraversalDownUp<DataDown, DataUp>, algPart: AlgPart, dataDown: DataDown): DataUp {
   switch (algPart.type) {
     case "sequence":
-      if (!(algPart instanceof Sequence)) {
+      if (CHECK_TYPES && !(algPart instanceof Sequence)) {
         throw `Alg part is not an object of type Sequence despite having "type": \"${algPart.type}\"`
       }
       return t.traverseSequence(<Sequence >algPart, dataDown);
     case "group":
-      if (!(algPart instanceof Group)) {
+      if (CHECK_TYPES && !(algPart instanceof Group)) {
         throw `Alg part is not an object of type Group despite having "type": \"${algPart.type}\"`
       }
       return t.traverseGroup(<Group >algPart, dataDown);
     case "signMove":
-      if (!(algPart instanceof SiGNMove)) {
+      if (CHECK_TYPES && !(algPart instanceof SiGNMove)) {
         throw `Alg part is not an object of type SiGNMove despite having "type": \"${algPart.type}\"`
       }
       return t.traverseSiGNMove(<SiGNMove >algPart, dataDown);
     case "commutator":
-      if (!(algPart instanceof Commutator)) {
+      if (CHECK_TYPES && !(algPart instanceof Commutator)) {
         throw `Alg part is not an object of type Commutator despite having "type": \"${algPart.type}\"`
       }
       return t.traverseCommutator (<Commutator>algPart, dataDown);
     case "conjugate":
-      if (!(algPart instanceof Conjugate)) {
+      if (CHECK_TYPES && !(algPart instanceof Conjugate)) {
         throw `Alg part is not an object of type Conjugate despite having "type": \"${algPart.type}\"`
       }
       return t.traverseConjugate(<Conjugate >algPart, dataDown);
     case "pause":
-      if (!(algPart instanceof Pause)) {
+      if (CHECK_TYPES && !(algPart instanceof Pause)) {
         throw `Alg part is not an object of type Pause despite having "type": \"${algPart.type}\"`
       }
       return t.traversePause(<Pause>algPart, dataDown);
     case "newLine":
-      if (!(algPart instanceof NewLine)) {
+      if (CHECK_TYPES && !(algPart instanceof NewLine)) {
         throw `Alg part is not an object of type NewLine despite having "type": \"${algPart.type}\"`
       }
       return t.traverseNewLine(<NewLine >algPart, dataDown);
     case "commentShort":
-      if (!(algPart instanceof CommentShort)) {
+      if (CHECK_TYPES && !(algPart instanceof CommentShort)) {
         throw `Alg part is not an object of type CommentShort despite having "type": \"${algPart.type}\"`
       }
       return t.traverseCommentShort (<CommentShort>algPart, dataDown);
     case "commentLong":
-      if (!(algPart instanceof CommentLong)) {
+      if (CHECK_TYPES && !(algPart instanceof CommentLong)) {
         throw `Alg part is not an object of type CommentLong despite having "type": \"${algPart.type}\"`
       }
       return t.traverseCommentLong (<CommentLong>algPart, dataDown);
@@ -73,10 +75,10 @@ export abstract class TraversalDownUp<DataDown, DataUp> {
 
   public traverseIntoUnit(algPart: AlgPart, dataDown: DataDown): Unit {
     var out = this.traverse(algPart, dataDown);
-    if (!(out instanceof Unit)) {
+    if (CHECK_TYPES && !(out instanceof Unit)) {
       throw "Traversal did not produce a unit as expected."
     }
-    return <Unit>out;
+    return <Unit><any>out;
   }
 
   public abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
@@ -97,10 +99,10 @@ export abstract class TraversalUp<DataUp> extends TraversalDownUp<undefined, Dat
 
   public traverseIntoUnit(algPart: AlgPart): Unit {
     var out = this.traverse(algPart);
-    if (!(out instanceof Unit)) {
+    if (CHECK_TYPES && !(out instanceof Unit)) {
       throw "Traversal did not produce a unit as expected."
     }
-    return <Unit>out;
+    return <Unit><any>out;
   }
 
   public abstract traverseSequence(sequence: Sequence): DataUp;
