@@ -9,8 +9,8 @@ dev: src/jison_parser/index.js
 	${NODE_BIN}/webpack-cli --watch
 
 .PHONY: test
-test: dist
-	${NODE_BIN}/mocha -r ts-node/register test/*.ts
+test: src/jison_parser/index.js
+	npm test
 
 ./node_modules/.bin/jison:
 	@echo "Run `yarn install` to run jison."
