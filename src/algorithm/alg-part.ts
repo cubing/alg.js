@@ -1,29 +1,14 @@
 import {CHECK_TYPES} from "../debug"
 
-// TODO: Remove AlgPart and only have Sequence and Unit?
 export abstract class AlgPart {
-  public readonly abstract type: string
-
-  // TODO: Figure out if we can statically enforce that all AlgPart subclasses
-  // are frozen after initial construction.
-  protected freeze() {
-    Object.freeze(this);
-  }
+  type: string;
 }
 
 export abstract class Unit extends AlgPart {}
 
+export abstract class Move extends Unit {}
 export abstract class Annotation extends Unit {}
-
-export abstract class UnitWithAmount extends Unit {
-  // TODO: Allow `amount` to be `undefined`, to distinguish between R and R1?
-  constructor(public amount: number = 1) {
-    super();
-  }
-}
-
-export abstract class BaseMove extends UnitWithAmount {
-}
+export abstract class Container extends Unit {}
 
 // TODO: Reintroduce an Algorithm class, and allow a mutable sequence too?
 export class Sequence extends AlgPart {
@@ -36,39 +21,44 @@ export class Sequence extends AlgPart {
       }
     }
     Object.freeze(this.nestedUnits);
-    this.freeze();
+    Object.freeze(this);
   }
 }
 
-export class Group extends UnitWithAmount {
+export interface WithAmount {
+  // TODO: Allow `amount` to be `undefined`, to distinguish between R and R1?
+  amount: number;
+}
+
+export class Group extends Container implements WithAmount {
   public type: string = "group";
-  constructor(public nestedSequence: Sequence, amount?: number) {
-    super(amount);
-    this.freeze();
+  constructor(public nestedSequence: Sequence, public amount: number=1) {
+    super();
+    Object.freeze(this);
   }
 }
 
-export class Commutator extends UnitWithAmount {
+export class Commutator extends Container implements WithAmount {
   public type: string = "commutator";
-  constructor(public A: Sequence, public B: Sequence, amount?: number) {
-    super(amount);
-    this.freeze();
+  constructor(public A: Sequence, public B: Sequence, public amount: number=1) {
+    super();
+    Object.freeze(this);
   }
 }
 
-export class Conjugate extends UnitWithAmount {
+export class Conjugate extends Container implements WithAmount {
   public type: string = "conjugate";
-  constructor(public A: Sequence, public B: Sequence, amount?: number) {
-    super(amount);
-    this.freeze();
+  constructor(public A: Sequence, public B: Sequence, public amount: number=1) {
+    super();
+    Object.freeze(this);
   }
 }
 
-export class Pause extends Unit {
+export class Pause extends Move {
   public type: string = "pause";
   constructor() {
     super();
-    this.freeze();
+    Object.freeze(this);
   }
 }
 
@@ -76,7 +66,7 @@ export class NewLine extends Annotation {
   public type: string = "newLine";
   constructor() {
     super();
-    this.freeze();
+    Object.freeze(this);
   }
 }
 
@@ -85,7 +75,7 @@ export class CommentShort extends Annotation {
   public type: string = "commentShort";
   constructor(public comment: string) {
     super();
-    this.freeze();
+    Object.freeze(this);
   }
 }
 
@@ -93,7 +83,7 @@ export class CommentLong extends Annotation {
   public type: string = "commentLong";
   constructor(public comment: string) {
     super();
-    this.freeze();
+    Object.freeze(this);
   }
 }
 

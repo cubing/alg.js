@@ -75,13 +75,13 @@ FAMILY
     : LONG_FAMILY
     ;
 
-SIGN_MOVE
+BLOCK_MOVE
     : FAMILY
-        {$$ = {type: "signMove", family: $1};}
+        {$$ = {type: "blockMove", family: $1};}
     | LAYER FAMILY
-        {$$ = {type: "signMove", family: $2, innerLayer: $1};}
+        {$$ = {type: "blockMove", family: $2, innerLayer: $1};}
     | LAYER DASH LAYER FAMILY
-        {$$ = {type: "signMove", family: $4, outerLayer: $1, innerLayer: $3};}
+        {$$ = {type: "blockMove", family: $4, outerLayer: $1, innerLayer: $3};}
     ;
 
 /*
@@ -97,7 +97,7 @@ OPTIONAL_WHITESPACE
     ;
 
 REPEATABLE_UNIT
-    : SIGN_MOVE
+    : BLOCK_MOVE
     | OPEN_BRACKET SEQUENCE COMMA SEQUENCE CLOSE_BRACKET
         {$$ = {"type": "commutator", "A": $2, "B": $4};}
     | OPEN_BRACKET SEQUENCE COLON SEQUENCE CLOSE_BRACKET
@@ -107,7 +107,7 @@ REPEATABLE_UNIT
     ;
 
 REPEATABLE_UNIT
-    : SIGN_MOVE
+    : BLOCK_MOVE
     | OPEN_BRACKET SEQUENCE COMMA SEQUENCE CLOSE_BRACKET
         {$$ = {"type": "commutator", "A": $2, "B": $4};}
     | OPEN_BRACKET SEQUENCE COLON SEQUENCE CLOSE_BRACKET

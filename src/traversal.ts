@@ -3,16 +3,16 @@ import {CHECK_TYPES} from "./debug"
 import {
   AlgPart,
   Unit,
-  UnitWithAmount,
   Sequence,
   Group,
-  SiGNMove,
+  BlockMove,
   Commutator,
   Conjugate,
   Pause,
   NewLine,
   CommentShort,
-  CommentLong
+  CommentLong,
+  WithAmount
 } from "./algorithm";
 
 function dispatch<DataDown, DataUp>(t: TraversalDownUp<DataDown, DataUp>, algPart: AlgPart, dataDown: DataDown): DataUp {
@@ -27,11 +27,11 @@ function dispatch<DataDown, DataUp>(t: TraversalDownUp<DataDown, DataUp>, algPar
         throw `Alg part is not an object of type Group despite having "type": \"${algPart.type}\"`
       }
       return t.traverseGroup(<Group >algPart, dataDown);
-    case "signMove":
-      if (CHECK_TYPES && !(algPart instanceof SiGNMove)) {
-        throw `Alg part is not an object of type SiGNMove despite having "type": \"${algPart.type}\"`
+    case "blockMove":
+      if (CHECK_TYPES && !(algPart instanceof BlockMove)) {
+        throw `Alg part is not an object of type BlockMove despite having "type": \"${algPart.type}\"`
       }
-      return t.traverseSiGNMove(<SiGNMove >algPart, dataDown);
+      return t.traverseBlockMove(<BlockMove >algPart, dataDown);
     case "commutator":
       if (CHECK_TYPES && !(algPart instanceof Commutator)) {
         throw `Alg part is not an object of type Commutator despite having "type": \"${algPart.type}\"`
@@ -63,7 +63,7 @@ function dispatch<DataDown, DataUp>(t: TraversalDownUp<DataDown, DataUp>, algPar
       }
       return t.traverseCommentLong (<CommentLong>algPart, dataDown);
     default: 
-      throw `Unknown algPart type: ${algPart.type}`
+      throw `Unknown AlgPart type: ${algPart.type}`
   }
 }
 
@@ -83,7 +83,7 @@ export abstract class TraversalDownUp<DataDown, DataUp> {
 
   public abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
   public abstract traverseGroup(group: Group, dataDown: DataDown): DataUp;
-  public abstract traverseSiGNMove(signMove: SiGNMove, dataDown: DataDown): DataUp;
+  public abstract traverseBlockMove(blockMove: BlockMove, dataDown: DataDown): DataUp;
   public abstract traverseCommutator(commutator: Commutator, dataDown: DataDown): DataUp;
   public abstract traverseConjugate(conjugate: Conjugate, dataDown: DataDown): DataUp;
   public abstract traversePause(pause: Pause, dataDown: DataDown): DataUp;
@@ -107,7 +107,7 @@ export abstract class TraversalUp<DataUp> extends TraversalDownUp<undefined, Dat
 
   public abstract traverseSequence(sequence: Sequence): DataUp;
   public abstract traverseGroup(group: Group): DataUp;
-  public abstract traverseSiGNMove(signMove: SiGNMove): DataUp;
+  public abstract traverseBlockMove(blockMove: BlockMove): DataUp;
   public abstract traverseCommutator(commutator: Commutator): DataUp;
   public abstract traverseConjugate(conjugate: Conjugate): DataUp;
   public abstract traversePause(pause: Pause): DataUp;
@@ -125,8 +125,8 @@ export class Invert extends TraversalUp<AlgPart> {
   public traverseGroup(group: Group): AlgPart {
     return new Group(this.traverseSequence(group.nestedSequence), group.amount);
   }
-  public traverseSiGNMove(signMove: SiGNMove): AlgPart {
-    return new SiGNMove(signMove.outerLayer, signMove.innerLayer, signMove.family, -signMove.amount);
+  public traverseBlockMove(blockMove: BlockMove): AlgPart {
+    return new BlockMove(blockMove.outerLayer, blockMove.innerLayer, blockMove.family, -blockMove.amount);
   }
   public traverseCommutator(commutator: Commutator): AlgPart {
     return new Commutator(commutator.B, commutator.A, commutator.amount);
@@ -155,7 +155,7 @@ export class Expand extends TraversalUp<AlgPart> {
     return flattened;
   }
 
-  private repeat(algList: Unit[], accordingTo: UnitWithAmount): Sequence {
+  private repeat(algList: Unit[], accordingTo: WithAmount): Sequence {
     var amount = Math.abs(accordingTo.amount);
     var amountDir = (accordingTo.amount > 0) ? 1 : -1; // Mutable
 
@@ -183,8 +183,8 @@ export class Expand extends TraversalUp<AlgPart> {
     // TODO: Pass raw AlgPart[] to sequence.
     return this.repeat(this.flattenSequenceOneLevel([this.traverse(group.nestedSequence)]), group);
   }
-  public traverseSiGNMove(signMove: SiGNMove): AlgPart {
-    return signMove;
+  public traverseBlockMove(blockMove: BlockMove): AlgPart {
+    return blockMove;
   }
   public traverseCommutator(commutator: Commutator): AlgPart {
     var expandedA = this.traverseSequence(commutator.A)
@@ -233,13 +233,13 @@ export class StructureEquals extends TraversalDownUp<AlgPart, boolean> {
   public traverseGroup(group: Group, dataDown: AlgPart): boolean {
     return (dataDown instanceof Group) && this.traverse(group.nestedSequence, dataDown.nestedSequence);
   }
-  public traverseSiGNMove(signMove: SiGNMove, dataDown: AlgPart): boolean {
+  public traverseBlockMove(blockMove: BlockMove, dataDown: AlgPart): boolean {
     // TODO: Handle layers.
-    return dataDown instanceof SiGNMove &&
-           signMove.outerLayer === dataDown.outerLayer &&
-           signMove.innerLayer === dataDown.innerLayer &&
-           signMove.family === dataDown.family &&
-           signMove.amount === dataDown.amount;
+    return dataDown instanceof BlockMove &&
+           blockMove.outerLayer === dataDown.outerLayer &&
+           blockMove.innerLayer === dataDown.innerLayer &&
+           blockMove.family === dataDown.family &&
+           blockMove.amount === dataDown.amount;
   }
   public traverseCommutator(commutator: Commutator, dataDown: AlgPart): boolean {
     return (dataDown instanceof Commutator) &&
@@ -267,7 +267,7 @@ export class StructureEquals extends TraversalDownUp<AlgPart, boolean> {
 
 // TODO: Test that inverses are bijections.
 export class CoalesceBaseMoves extends TraversalUp<AlgPart> {
-  private sameBlock(moveA: SiGNMove, moveB: SiGNMove): boolean {
+  private sameBlock(moveA: BlockMove, moveB: BlockMove): boolean {
     // TODO: Handle layers
     return moveA.outerLayer === moveB.outerLayer &&
            moveA.innerLayer === moveB.innerLayer &&
@@ -278,11 +278,11 @@ export class CoalesceBaseMoves extends TraversalUp<AlgPart> {
   public traverseSequence(sequence: Sequence): Sequence {
     var coalesced: Unit[] = [];
     for (var part of sequence.nestedUnits) {
-      if (!(part instanceof SiGNMove)) {
+      if (!(part instanceof BlockMove)) {
         coalesced.push(this.traverseIntoUnit(part));
       } else if (coalesced.length > 0) {
         var last = coalesced[coalesced.length-1];
-        if (last instanceof SiGNMove &&
+        if (last instanceof BlockMove &&
             this.sameBlock(last, part)) {
           // TODO: This is cube-specific. Perhaps pass the modules as DataDown?
           var amount = last.amount + part.amount;
@@ -292,7 +292,7 @@ export class CoalesceBaseMoves extends TraversalUp<AlgPart> {
             // but this is safe against shifting coding practices.
             // TODO: Figure out if the shoot-in-the-foot risk
             // modification is worth the speed.
-            coalesced.push(new SiGNMove(part.outerLayer, part.innerLayer, part.family, amount));
+            coalesced.push(new BlockMove(part.outerLayer, part.innerLayer, part.family, amount));
           }
         } else {
           coalesced.push(part);
@@ -304,7 +304,7 @@ export class CoalesceBaseMoves extends TraversalUp<AlgPart> {
     return new Sequence(coalesced);
   }
   public traverseGroup(group: Group):                      AlgPart { return group; }
-  public traverseSiGNMove(signMove: SiGNMove):             AlgPart { return signMove; }
+  public traverseBlockMove(blockMove: BlockMove):             AlgPart { return blockMove; }
   public traverseCommutator(commutator: Commutator):       AlgPart { return commutator; }
   public traverseConjugate(conjugate: Conjugate):          AlgPart { return conjugate; }
   public traversePause(pause: Pause):                      AlgPart { return pause; }
@@ -325,7 +325,7 @@ export class CoalesceBaseMoves extends TraversalUp<AlgPart> {
 //   }
 //   public traverseSequence(     sequence:     Sequence,     dataDown: Algorithm): Sequence {return this.concatIntoSequence(sequence.nestedUnits, dataDown); }
 //   public traverseGroup(        group:        Group,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([group]          , dataDown); }
-//   public traverseSiGNMove(    SiGNMove:    SiGNMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([SiGNMove]      , dataDown); }
+//   public traverseBlockMove(    BlockMove:    BlockMove,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([BlockMove]      , dataDown); }
 //   public traverseCommutator(   commutator:   Commutator,   dataDown: Algorithm): Sequence {return this.concatIntoSequence([commutator]     , dataDown); }
 //   public traverseConjugate(    conjugate:    Conjugate,    dataDown: Algorithm): Sequence {return this.concatIntoSequence([conjugate]      , dataDown); }
 //   public traversePause(        pause:        Pause,        dataDown: Algorithm): Sequence {return this.concatIntoSequence([pause]          , dataDown); }
@@ -366,12 +366,12 @@ export class ToString extends TraversalUp<string> {
     return output;
   }
   public traverseGroup(        group:        Group       ): string { return "(" + this.traverse(group.nestedSequence) + ")" + this.repetitionSuffix(group.amount); }
-  public traverseSiGNMove(     signMove:     SiGNMove    ): string {
-    var out = signMove.family + this.repetitionSuffix(signMove.amount);
-    if (typeof signMove.innerLayer !== "undefined") {
-      out = String(signMove.innerLayer) + out;
-      if (typeof signMove.outerLayer !== "undefined") {
-        out = String(signMove.outerLayer) + "-" + out;
+  public traverseBlockMove(     blockMove:     BlockMove    ): string {
+    var out = blockMove.family + this.repetitionSuffix(blockMove.amount);
+    if (typeof blockMove.innerLayer !== "undefined") {
+      out = String(blockMove.innerLayer) + out;
+      if (typeof blockMove.outerLayer !== "undefined") {
+        out = String(blockMove.outerLayer) + "-" + out;
       }
     }
     return out;

@@ -1,8 +1,8 @@
 import {
-  AlgPart,
+  Unit,
   Sequence,
   Group,
-  SiGNMove,
+  BlockMove,
   Commutator,
   Conjugate,
   Pause,
@@ -33,7 +33,7 @@ export function fromJSON(json: AlgJSON): Sequence {
   return new Sequence(json.nestedUnits.map(j => unitFromJSON(j)));
 }
 
-function unitFromJSON(json: AlgJSON): AlgPart {
+function unitFromJSON(json: AlgJSON): Unit {
   switch (json.type) {
     case "sequence":
       throw `Expected AlgPart while parsing, got \`Sequence\`.`
@@ -41,11 +41,11 @@ function unitFromJSON(json: AlgJSON): AlgPart {
       if (!json.nestedSequence) { throw "Missing nestedSequence" }
       if (!json.amount) { throw "Missing amount" }
       return new Group(fromJSON(json.nestedSequence), json.amount);
-    case "signMove":
+    case "blockMove":
       // TODO: Double-check that there is no outer layer without an inner layer?
       if (!json.family) { throw "Missing family" }
       if (!json.amount) { throw "Missing amount" }
-      return new SiGNMove(json.outerLayer, json.innerLayer, json.family, json.amount);
+      return new BlockMove(json.outerLayer, json.innerLayer, json.family, json.amount);
     case "commutator":
       if (!json.A) { throw "Missing A" }
       if (!json.B) { throw "Missing B" }

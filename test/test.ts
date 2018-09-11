@@ -2,9 +2,9 @@ import {
   Unit,
   Sequence,
   Group,
-  BareSiGNMove,
-  LayerSiGNMove,
-  RangeSiGNMove,
+  BareBlockMove,
+  LayerBlockMove,
+  RangeBlockMove,
   Commutator,
   Pause
 } from "../src/algorithm";
@@ -29,8 +29,8 @@ import {
   validateSiGNMoves
 } from "../src/validation"
 
-var UU = new Sequence([BareSiGNMove("U", 1), BareSiGNMove("U", 1)]);
-var U2 = new Sequence([BareSiGNMove("U", 2)]);
+var UU = new Sequence([BareBlockMove("U", 1), BareBlockMove("U", 1)]);
+var U2 = new Sequence([BareBlockMove("U", 2)]);
 
 var e = function(a1: Sequence, a2: Sequence) {
   return expect(structureEquals(a1, a2));
@@ -53,69 +53,69 @@ describe("Sequence", () => {
   });
 
   it("should throw an error for a nested sequence", () => {
-    expect(() => new Sequence([new Sequence([BareSiGNMove("R", 1)])])).toThrowError(/can only contain/);
+    expect(() => new Sequence([new Sequence([BareBlockMove("R", 1)])])).toThrowError(/can only contain/);
   });
 });
 
-describe("SiGNMove", () => {
+describe("BlockMove", () => {
   it("should allow constructing: x, U, u", () => {
-    expect(algPartToStringForTesting(BareSiGNMove("x", 1))).toBe("x");
-    expect(algPartToStringForTesting(BareSiGNMove("U", 1))).toBe("U");
-    expect(algPartToStringForTesting(BareSiGNMove("u", 1))).toBe("u");
+    expect(algPartToStringForTesting(BareBlockMove("x", 1))).toBe("x");
+    expect(algPartToStringForTesting(BareBlockMove("U", 1))).toBe("U");
+    expect(algPartToStringForTesting(BareBlockMove("u", 1))).toBe("u");
   });
 
   it("should allow constructing: 2U, 2u", () => {
-    expect(algPartToStringForTesting(LayerSiGNMove(2, "U", 1))).toBe("2U");
-    expect(algPartToStringForTesting(LayerSiGNMove(2, "u", 1))).toBe("2u");
+    expect(algPartToStringForTesting(LayerBlockMove(2, "U", 1))).toBe("2U");
+    expect(algPartToStringForTesting(LayerBlockMove(2, "u", 1))).toBe("2u");
   });
 
   it("should prevent constructing: 2x, [-2]U, [-2]u", () => {
-    expect(() => validateSiGNMoves(new Sequence([LayerSiGNMove(2, "x", 1)]))).toThrowError(/cannot have an inner slice/);
-    expect(() => validateSiGNMoves(new Sequence([LayerSiGNMove(-2, "U", 1)]))).toThrowError(/Cannot have an inner layer of 0 or less/);
-    expect(() => validateSiGNMoves(new Sequence([LayerSiGNMove(-2, "u", 1)]))).toThrowError(/Cannot have an inner layer of 0 or less/);
+    expect(() => validateSiGNMoves(new Sequence([LayerBlockMove(2, "x", 1)]))).toThrowError(/cannot have an inner slice/);
+    expect(() => validateSiGNMoves(new Sequence([LayerBlockMove(-2, "U", 1)]))).toThrowError(/Cannot have an inner layer of 0 or less/);
+    expect(() => validateSiGNMoves(new Sequence([LayerBlockMove(-2, "u", 1)]))).toThrowError(/Cannot have an inner layer of 0 or less/);
   });
 
   it("should allow constructing: 2-3u", () => {
-    expect(algPartToStringForTesting(RangeSiGNMove(2, 3, "u", 1))).toBe("2-3u");
+    expect(algPartToStringForTesting(RangeBlockMove(2, 3, "u", 1))).toBe("2-3u");
   });
 
   it("should prevent constructing: 2-3x, 2-3U, [-2]-3u, 4-3u", () => {
-    expect(() => validateSiGNMoves(new Sequence([RangeSiGNMove(2, 3, "x", 1)]))).toThrowError(/cannot have an outer and inner layer/);
-    expect(() => validateSiGNMoves(new Sequence([RangeSiGNMove(2, 3, "U", 1)]))).toThrowError(/cannot have an outer and inner layer/);
-    expect(() => validateSiGNMoves(new Sequence([RangeSiGNMove(-2, 3, "u", 1)]))).toThrowError(/Cannot have an outer layer of 0 or less/);
-    expect(() => validateSiGNMoves(new Sequence([RangeSiGNMove(4, 3, "u", 1)]))).toThrowError(/The outer layer must be less than the inner layer/);
+    expect(() => validateSiGNMoves(new Sequence([RangeBlockMove(2, 3, "x", 1)]))).toThrowError(/cannot have an outer and inner layer/);
+    expect(() => validateSiGNMoves(new Sequence([RangeBlockMove(2, 3, "U", 1)]))).toThrowError(/cannot have an outer and inner layer/);
+    expect(() => validateSiGNMoves(new Sequence([RangeBlockMove(-2, 3, "u", 1)]))).toThrowError(/Cannot have an outer layer of 0 or less/);
+    expect(() => validateSiGNMoves(new Sequence([RangeBlockMove(4, 3, "u", 1)]))).toThrowError(/The outer layer must be less than the inner layer/);
   });
 
   it("should prevent constructing: w, 2T, 2-3q", () => {
-    // expect(() =>algPartToStringForTesting(BareSiGNMove("w", 1))).toThrowError(/Invalid SiGN plain move family: w/);
-    // expect(() =>algPartToStringForTesting(LayerSiGNMove(2, "T", 1))).toThrowError(/The provided SiGN move family is invalid, or cannot have an inner slice: T/);
-    // expect(() =>algPartToStringForTesting(RangeSiGNMove(2, 3, "q", 1))).toThrowError(/The provided SiGN move family is invalid, or cannot have an outer and inner layer: q/);
+    // expect(() =>algPartToStringForTesting(BareBlockMove("w", 1))).toThrowError(/Invalid SiGN plain move family: w/);
+    // expect(() =>algPartToStringForTesting(LayerBlockMove(2, "T", 1))).toThrowError(/The provided SiGN move family is invalid, or cannot have an inner slice: T/);
+    // expect(() =>algPartToStringForTesting(RangeBlockMove(2, 3, "q", 1))).toThrowError(/The provided SiGN move family is invalid, or cannot have an outer and inner layer: q/);
   });
 
   it("should support a default amount of 1.", () => {
-    e(new Sequence([BareSiGNMove("U")]), new Sequence([BareSiGNMove("U", 1)])).toBe(true);
+    e(new Sequence([BareBlockMove("U")]), new Sequence([BareBlockMove("U", 1)])).toBe(true);
   });
 
   it("should throw an error for an invalid family", () => {
-    // expect(() => BareSiGNMove("Q", 1)).toThrowError(/Invalid SiGN plain move family/);
+    // expect(() => BareBlockMove("Q", 1)).toThrowError(/Invalid SiGN plain move family/);
   });
 
   it("should have a default amount of 1", () => {
-    expect(BareSiGNMove("x").amount).toBe(1);
-    expect(BareSiGNMove("R").amount).toBe(1);
-    expect(BareSiGNMove("u").amount).toBe(1);
-    expect(LayerSiGNMove(2, "R").amount).toBe(1);
-    expect(LayerSiGNMove(3, "u").amount).toBe(1);
-    expect(RangeSiGNMove(2, 3, "u").amount).toBe(1);
+    expect(BareBlockMove("x").amount).toBe(1);
+    expect(BareBlockMove("R").amount).toBe(1);
+    expect(BareBlockMove("u").amount).toBe(1);
+    expect(LayerBlockMove(2, "R").amount).toBe(1);
+    expect(LayerBlockMove(3, "u").amount).toBe(1);
+    expect(RangeBlockMove(2, 3, "u").amount).toBe(1);
   });
 
   it("should allow different amounts 1", () => {
-    expect(BareSiGNMove("x", 2).amount).toBe(2);
-    expect(BareSiGNMove("R", 3).amount).toBe(3);
-    expect(BareSiGNMove("u", -5).amount).toBe(-5);
-    expect(LayerSiGNMove(2, "R", 10).amount).toBe(10);
-    expect(LayerSiGNMove(3, "L", -13).amount).toBe(-13);
-    expect(RangeSiGNMove(2, 12, "u", 15).amount).toBe(15);
+    expect(BareBlockMove("x", 2).amount).toBe(2);
+    expect(BareBlockMove("R", 3).amount).toBe(3);
+    expect(BareBlockMove("u", -5).amount).toBe(-5);
+    expect(LayerBlockMove(2, "R", 10).amount).toBe(10);
+    expect(LayerBlockMove(3, "L", -13).amount).toBe(-13);
+    expect(RangeBlockMove(2, 12, "u", 15).amount).toBe(15);
   });
 
   it("should catch invalid moves with parseSiGN().", () => {
@@ -131,17 +131,17 @@ describe("SiGNMove", () => {
 
 describe("algToString()", () => {
   it("should convert all move types correctly", () => {
-    expect(algPartToStringForTesting(BareSiGNMove("x", 2))).toBe("x2");
-    expect(algPartToStringForTesting(BareSiGNMove("R", 3))).toBe("R3");
-    expect(algPartToStringForTesting(BareSiGNMove("u", -5))).toBe("u5'");
-    expect(algPartToStringForTesting(LayerSiGNMove(2, "R", 10))).toBe("2R10");
-    expect(algPartToStringForTesting(LayerSiGNMove(3, "L", -13))).toBe("3L13'");
-    expect(algPartToStringForTesting(RangeSiGNMove(2, 12, "u", 15))).toBe("2-12u15");
+    expect(algPartToStringForTesting(BareBlockMove("x", 2))).toBe("x2");
+    expect(algPartToStringForTesting(BareBlockMove("R", 3))).toBe("R3");
+    expect(algPartToStringForTesting(BareBlockMove("u", -5))).toBe("u5'");
+    expect(algPartToStringForTesting(LayerBlockMove(2, "R", 10))).toBe("2R10");
+    expect(algPartToStringForTesting(LayerBlockMove(3, "L", -13))).toBe("3L13'");
+    expect(algPartToStringForTesting(RangeBlockMove(2, 12, "u", 15))).toBe("2-12u15");
   });
 
   it("should distinguish between 1R and R", () => {
-    expect(algPartToStringForTesting(LayerSiGNMove(1, "R"))).toBe("1R");
-    expect(algPartToStringForTesting(BareSiGNMove("R"))).toBe("R");
+    expect(algPartToStringForTesting(LayerBlockMove(1, "R"))).toBe("1R");
+    expect(algPartToStringForTesting(BareBlockMove("R"))).toBe("R");
   });
 
   it("should handle empty sequences", () => {
@@ -248,11 +248,11 @@ describe("Object Freezing", () => {
 
   it("should freeze `nestedUnits` list on Sequence", () => {
     // Update this based on the length of AllAlgParts.
-    expect(Object.isFrozen(new Sequence([BareSiGNMove("R", 1)]).nestedUnits)).toBe(true);
+    expect(Object.isFrozen(new Sequence([BareBlockMove("R", 1)]).nestedUnits)).toBe(true);
   });
 
   it("should not be possible to modify a BaseMove", () => {
-      var b = BareSiGNMove("R", 4);
+      var b = BareBlockMove("R", 4);
       var e: Error | undefined;
       try {
         b.amount = 2;
@@ -309,19 +309,22 @@ describe("Parser", () => {
 
 describe("Validator", () => {
   it("can validate flat algs", () => {
-    expect(() => parse("(R)",  {validators: [validateFlatAlg]})).toThrowError(ValidationError, /cannot contain a group/);
-    expect(() => parse("Qw",   {validators: [validateFlatAlg]})).not.toThrowError();
-    expect(() => parse("(Qw)", {validators: [validateFlatAlg]})).toThrowError(ValidationError, /cannot contain a group/);
+    expect(() => parse("(R)",  {validators: [validateFlatAlg]})).toThrowError(/cannot contain a group/); //toThrowError(ValidationError, /cannot contain a group/);
+    expect(() => parse("Qw",   {validators: [validateFlatAlg]})).not.toThrow(); //not.toThrowError();
+    expect(() => parse("(Qw)", {validators: [validateFlatAlg]})).toThrowError(/cannot contain a group/); //toThrowError(ValidationError, );
   });
   it("can validate cube base moves alg", () => {
     expect(() => parse("(R)",  {validators: [validateSiGNMoves]})).not.toThrowError();
-    expect(() => parse("Qw",   {validators: [validateSiGNMoves]})).toThrowError(ValidationError, /Invalid SiGN plain move family/);
-    expect(() => parse("(Qw)", {validators: [validateSiGNMoves]})).toThrowError(ValidationError, /Invalid SiGN plain move family/);
+    expect(() => parse("Qw",   {validators: [validateSiGNMoves]})).toThrowError(/Invalid SiGN plain move family/);
+    expect(() => parse("(Qw)", {validators: [validateSiGNMoves]})).toThrowError(/Invalid SiGN plain move family/);
   });
   it("can validate cube algs", () => {
-    expect(() => parse("(R)",  {validators: [validateSiGNAlg]})).toThrowError(ValidationError, /cannot contain a group/);
-    expect(() => parse("Qw",   {validators: [validateSiGNAlg]})).toThrowError(ValidationError, /Invalid SiGN plain move family/);
+    expect(() => parse("(R)",  {validators: [validateSiGNAlg]})).toThrowError(/cannot contain a group/);
+    expect(() => parse("Qw",   {validators: [validateSiGNAlg]})).toThrowError(/Invalid SiGN plain move family/);
     expect(() => parse("(Qw)", {validators: [validateSiGNAlg]})).toThrowError(ValidationError);
+  });
+  it("throws ValidationError", () => {
+    expect(() => parse("(R)",  {validators: [validateFlatAlg]})).toThrowError(ValidationError);
   });
 });
 

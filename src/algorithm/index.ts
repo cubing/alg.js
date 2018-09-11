@@ -1,8 +1,10 @@
 export {
   AlgPart,
   Unit,
-  UnitWithAmount,
-  BaseMove,
+  Move,
+  Annotation,
+  Container,
+  WithAmount,
   Sequence,
   Group,
   Commutator,
@@ -15,8 +17,8 @@ export {
 
 export {
   MoveFamily,
-  SiGNMove,
-  BareSiGNMove,
-  LayerSiGNMove,
-  RangeSiGNMove
-} from "./sign-move";
+  BlockMove,
+  BareBlockMove,
+  LayerBlockMove,
+  RangeBlockMove
+} from "./block-move";

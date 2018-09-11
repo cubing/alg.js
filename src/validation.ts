@@ -1,7 +1,7 @@
 import {
   Sequence,
   Group,
-  SiGNMove,
+  BlockMove,
   Commutator,
   Conjugate,
   Pause,
@@ -89,34 +89,34 @@ abstract class BaseMoveValidator extends ValidatorTraversal {
 }
 
 // TODO: Export function instead?
-export class SiGNMoveValidator extends BaseMoveValidator {
-  public traverseSiGNMove(signMove: SiGNMove): void {
-    if (typeof signMove.outerLayer !== "undefined") {
-      if (typeof signMove.innerLayer === "undefined") {
-        throw new ValidationError("A SiGNMove with an outer layer must have an inner layer.");
+export class BlockMoveValidator extends BaseMoveValidator {
+  public traverseBlockMove(blockMove: BlockMove): void {
+    if (typeof blockMove.outerLayer !== "undefined") {
+      if (typeof blockMove.innerLayer === "undefined") {
+        throw new ValidationError("A BlockMove with an outer layer must have an inner layer.");
       }
-      if (!validateFamily(signMove.family, [wideMoveFamilies])) {
-        throw new ValidationError(`The provided SiGN move family is invalid, or cannot have an outer and inner layer: ${signMove.family}`);
+      if (!validateFamily(blockMove.family, [wideMoveFamilies])) {
+        throw new ValidationError(`The provided SiGN move family is invalid, or cannot have an outer and inner layer: ${blockMove.family}`);
       }
-      if (signMove.outerLayer <= 0) {
+      if (blockMove.outerLayer <= 0) {
         throw new ValidationError("Cannot have an outer layer of 0 or less.");
       }
       // TODO: Allow 2-2r?
-      if (signMove.outerLayer >= signMove.innerLayer) {
+      if (blockMove.outerLayer >= blockMove.innerLayer) {
         throw new ValidationError("The outer layer must be less than the inner layer.");
       }
       return;
-    } else if (typeof signMove.innerLayer !== "undefined") {
-      if (!validateFamily(signMove.family, [wideMoveFamilies, singleSliceMoveFamilies])) {
-        throw new ValidationError(`The provided SiGN move family is invalid, or cannot have an inner slice: ${signMove.family}`);
+    } else if (typeof blockMove.innerLayer !== "undefined") {
+      if (!validateFamily(blockMove.family, [wideMoveFamilies, singleSliceMoveFamilies])) {
+        throw new ValidationError(`The provided SiGN move family is invalid, or cannot have an inner slice: ${blockMove.family}`);
       }
-      if (signMove.innerLayer <= 0) {
+      if (blockMove.innerLayer <= 0) {
         throw new ValidationError("Cannot have an inner layer of 0 or less.");
       }
       return;
     } else {
-      if (!validateFamily(signMove.family, [wideMoveFamilies, singleSliceMoveFamilies, plainMoveFamilies])) {
-          throw new ValidationError(`Invalid SiGN plain move family: ${signMove.family}`);
+      if (!validateFamily(blockMove.family, [wideMoveFamilies, singleSliceMoveFamilies, plainMoveFamilies])) {
+          throw new ValidationError(`Invalid SiGN plain move family: ${blockMove.family}`);
       }
       return;
     }
@@ -136,7 +136,7 @@ export class FlatAlgValidator extends ValidatorTraversal {
   public traverseGroup(group: Group): void {
     throw new ValidationError("A flat alg cannot contain a group.");
   }
-  public traverseSiGNMove(signMove: SiGNMove): void {
+  public traverseBlockMove(blockMove: BlockMove): void {
     return;
   }
   public traverseCommutator(commutator: Commutator): void {
@@ -153,9 +153,8 @@ export class FlatAlgValidator extends ValidatorTraversal {
 
 export type Validator = (a: Sequence) => void;
 
-
-const SiGNMoveValidatorInstance = new SiGNMoveValidator();
-export const validateSiGNMoves = <Validator>SiGNMoveValidatorInstance.traverse.bind(SiGNMoveValidatorInstance);
+const BlockMoveValidatorInstance = new BlockMoveValidator();
+export const validateSiGNMoves = <Validator>BlockMoveValidatorInstance.traverse.bind(BlockMoveValidatorInstance);
 
 const flatAlgValidatorInstance = new FlatAlgValidator();
 export const validateFlatAlg = <Validator>flatAlgValidatorInstance.traverse.bind(flatAlgValidatorInstance);
