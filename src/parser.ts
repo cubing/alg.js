@@ -13,7 +13,7 @@ export function parse(s: string, options: ParseOptions = {validators: []}): Sequ
   options.validators = options.validators || [];
 
   const algo = fromJSON(jison_parse(s));
-  for (var validate of options.validators) {
+  for (const validate of options.validators) {
     validate(algo);
   }
   return algo;

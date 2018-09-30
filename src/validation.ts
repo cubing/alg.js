@@ -19,7 +19,7 @@ export abstract class ValidatorTraversal extends TraversalUp<void> {}
 type FamilyList = { [s: string]: boolean; }
 
 function validateFamily(family: string, allowedFamilyLists: FamilyList[]): boolean {
-  for (var list of allowedFamilyLists) {
+  for (const list of allowedFamilyLists) {
     if (list[family] === true) {
       return true;
     }
@@ -67,7 +67,7 @@ var wideMoveFamilies: FamilyList = {
 abstract class BaseMoveValidator extends ValidatorTraversal {
   public traverseSequence(sequence: Sequence): void {
     // TODO: Handle newLines and comments correctly
-    for (var unit of sequence.nestedUnits) {
+    for (const unit of sequence.nestedUnits) {
       this.traverse(unit);
     }
   }
@@ -128,7 +128,7 @@ export class FlatAlgValidator extends ValidatorTraversal {
 
   public traverseSequence(sequence: Sequence): void {
     // TODO: Handle newLines and comments correctly
-    for (var unit of sequence.nestedUnits) {
+    for (const unit of sequence.nestedUnits) {
       this.traverse(unit);
     }
     return;

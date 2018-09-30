@@ -143,7 +143,7 @@ export class Invert extends TraversalUp<AlgPart> {
 export class Expand extends TraversalUp<AlgPart> {
   private flattenSequenceOneLevel(algList: AlgPart[]): Unit[] {
     var flattened: Unit[] = [];
-    for (var part of algList) {
+    for (const part of algList) {
       if (part instanceof Sequence) {
         flattened = flattened.concat(part.nestedUnits);
       } else if (part instanceof Unit) {
@@ -277,7 +277,7 @@ export class CoalesceBaseMoves extends TraversalUp<AlgPart> {
   // TODO: Handle
   public traverseSequence(sequence: Sequence): Sequence {
     var coalesced: Unit[] = [];
-    for (var part of sequence.nestedUnits) {
+    for (const part of sequence.nestedUnits) {
       if (!(part instanceof BlockMove)) {
         coalesced.push(this.traverseIntoUnit(part));
       } else if (coalesced.length > 0) {

@@ -15,7 +15,7 @@ export class Sequence extends AlgPart {
   public type: string = "sequence";
   constructor(public nestedUnits: Unit[]) {
     super();
-    for (var n of nestedUnits) {
+    for (const n of nestedUnits) {
       if (CHECK_TYPES && !(n instanceof Unit)) {
         throw "A Sequence can only contain `Unit`s."
       }

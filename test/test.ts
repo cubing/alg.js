@@ -241,7 +241,7 @@ describe("Object Freezing", () => {
   it("should freeze all example alg types", () => {
     // Update this based on the length of AllAlgParts.
     expect(Ex.AllAlgParts.length).toBe(9);
-    for (var a of Ex.AllAlgParts) {
+    for (const a of Ex.AllAlgParts) {
       expect(Object.isFrozen(a)).toBe(true);
     }
   });
@@ -300,7 +300,7 @@ describe("Parser", () => {
 
   it("should round-trip all alg types through a string", () => {
     // Update this based on the length of AllAlgParts.
-    for (var a of Ex.AllAlgParts) {
+    for (const a of Ex.AllAlgParts) {
       var seq = (a instanceof Sequence) ? a : new Sequence([a]);
       e(parse(algToString(seq)), seq).toBe(true);
     }
