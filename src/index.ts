@@ -60,3 +60,7 @@ export {
   algCubingNetLink,
   getAlgURLParam
 } from "./url"
+
+export {
+  setAlgPartTypeMismatchReportingLevel
+} from "./debug"

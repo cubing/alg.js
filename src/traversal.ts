@@ -1,4 +1,4 @@
-import {CHECK_TYPES} from "./debug"
+import {assertMatchesType, isUnit, assertIsUnit} from "./algorithm/alg-part"
 
 import {
   AlgPart,
@@ -18,49 +18,31 @@ import {
 function dispatch<DataDown, DataUp>(t: TraversalDownUp<DataDown, DataUp>, algPart: AlgPart, dataDown: DataDown): DataUp {
   switch (algPart.type) {
     case "sequence":
-      if (CHECK_TYPES && !(algPart instanceof Sequence)) {
-        throw `Alg part is not an object of type Sequence despite having "type": \"${algPart.type}\"`
-      }
+      assertMatchesType(algPart, "sequence");
       return t.traverseSequence(<Sequence >algPart, dataDown);
     case "group":
-      if (CHECK_TYPES && !(algPart instanceof Group)) {
-        throw `Alg part is not an object of type Group despite having "type": \"${algPart.type}\"`
-      }
+      assertMatchesType(algPart, "group");
       return t.traverseGroup(<Group >algPart, dataDown);
     case "blockMove":
-      if (CHECK_TYPES && !(algPart instanceof BlockMove)) {
-        throw `Alg part is not an object of type BlockMove despite having "type": \"${algPart.type}\"`
-      }
+      assertMatchesType(algPart, "blockMove");
       return t.traverseBlockMove(<BlockMove >algPart, dataDown);
     case "commutator":
-      if (CHECK_TYPES && !(algPart instanceof Commutator)) {
-        throw `Alg part is not an object of type Commutator despite having "type": \"${algPart.type}\"`
-      }
+      assertMatchesType(algPart, "commutator");
       return t.traverseCommutator (<Commutator>algPart, dataDown);
     case "conjugate":
-      if (CHECK_TYPES && !(algPart instanceof Conjugate)) {
-        throw `Alg part is not an object of type Conjugate despite having "type": \"${algPart.type}\"`
-      }
+      assertMatchesType(algPart, "conjugate");
       return t.traverseConjugate(<Conjugate >algPart, dataDown);
     case "pause":
-      if (CHECK_TYPES && !(algPart instanceof Pause)) {
-        throw `Alg part is not an object of type Pause despite having "type": \"${algPart.type}\"`
-      }
+      assertMatchesType(algPart, "pause");
       return t.traversePause(<Pause>algPart, dataDown);
     case "newLine":
-      if (CHECK_TYPES && !(algPart instanceof NewLine)) {
-        throw `Alg part is not an object of type NewLine despite having "type": \"${algPart.type}\"`
-      }
+      assertMatchesType(algPart, "newLine");
       return t.traverseNewLine(<NewLine >algPart, dataDown);
     case "commentShort":
-      if (CHECK_TYPES && !(algPart instanceof CommentShort)) {
-        throw `Alg part is not an object of type CommentShort despite having "type": \"${algPart.type}\"`
-      }
+      assertMatchesType(algPart, "commentShort");
       return t.traverseCommentShort (<CommentShort>algPart, dataDown);
     case "commentLong":
-      if (CHECK_TYPES && !(algPart instanceof CommentLong)) {
-        throw `Alg part is not an object of type CommentLong despite having "type": \"${algPart.type}\"`
-      }
+      assertMatchesType(algPart, "commentLong");
       return t.traverseCommentLong (<CommentLong>algPart, dataDown);
     default: 
       throw `Unknown AlgPart type: ${algPart.type}`
@@ -74,11 +56,7 @@ export abstract class TraversalDownUp<DataDown, DataUp> {
   }
 
   public traverseIntoUnit(algPart: AlgPart, dataDown: DataDown): Unit {
-    var out = this.traverse(algPart, dataDown);
-    if (CHECK_TYPES && !(out instanceof Unit)) {
-      throw "Traversal did not produce a unit as expected."
-    }
-    return <Unit><any>out;
+    return assertIsUnit(<any>this.traverse(algPart, dataDown));
   }
 
   public abstract traverseSequence(sequence: Sequence, dataDown: DataDown): DataUp;
@@ -98,11 +76,7 @@ export abstract class TraversalUp<DataUp> extends TraversalDownUp<undefined, Dat
   }
 
   public traverseIntoUnit(algPart: AlgPart): Unit {
-    var out = this.traverse(algPart);
-    if (CHECK_TYPES && !(out instanceof Unit)) {
-      throw "Traversal did not produce a unit as expected."
-    }
-    return <Unit><any>out;
+    return assertIsUnit(<any>this.traverse(algPart));
   }
 
   public abstract traverseSequence(sequence: Sequence): DataUp;
@@ -217,14 +191,15 @@ export class Expand extends TraversalUp<AlgPart> {
 
 export class StructureEquals extends TraversalDownUp<AlgPart, boolean> {
   public traverseSequence(sequence: Sequence, dataDown: AlgPart): boolean {
-    if (!(dataDown instanceof Sequence)) {
+    if (isUnit(dataDown)) {
       return false;
     }
-    if (sequence.nestedUnits.length !== dataDown.nestedUnits.length) {
+    const dataDownSeq = dataDown as Sequence;
+    if (sequence.nestedUnits.length !== dataDownSeq.nestedUnits.length) {
       return false;
     }
     for (var i = 0; i < sequence.nestedUnits.length; i++) {
-      if (!this.traverse(sequence.nestedUnits[i], dataDown.nestedUnits[i])) {
+      if (!this.traverse(sequence.nestedUnits[i], dataDownSeq.nestedUnits[i])) {
         return false;
       }
     }

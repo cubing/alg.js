@@ -1,4 +1,5 @@
 export {
+  AlgPartType,
   AlgPart,
   Unit,
   Move,

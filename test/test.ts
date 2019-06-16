@@ -28,6 +28,11 @@ import {
   validateFlatAlg,
   validateSiGNMoves
 } from "../src/validation"
+import {
+  setAlgPartTypeMismatchReportingLevel
+} from "../src/debug"
+
+setAlgPartTypeMismatchReportingLevel("error");
 
 var UU = new Sequence([BareBlockMove("U", 1), BareBlockMove("U", 1)]);
 var U2 = new Sequence([BareBlockMove("U", 2)]);
@@ -53,7 +58,7 @@ describe("Sequence", () => {
   });
 
   it("should throw an error for a nested sequence", () => {
-    expect(() => new Sequence([new Sequence([BareBlockMove("R", 1)])])).toThrowError(/can only contain/);
+    expect(() => new Sequence([new Sequence([BareBlockMove("R", 1)])])).toThrowError(/Expected unit, saw "sequence"/);
   });
 });
 
@@ -180,8 +185,9 @@ describe("Traversal", () => {
     public type: string = "pause";
   }
 
-  it("cannot subclass directly", () => {
-    expect(() => algPartToStringForTesting(new FakePause())).toThrowError(/Alg part is not an object of type Pause despite having "type": "pause"/);
+  it("allows subclasses with matching types", () => {
+    // expect(() => algPartToStringForTesting(new FakePause())).toThrowError(/Alg part is not an object of type Pause despite having "type": "pause"/);
+    expect(algPartToStringForTesting(new FakePause())).toBe(".");
   });
 });
 

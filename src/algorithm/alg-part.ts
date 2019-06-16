@@ -1,7 +1,39 @@
-import {CHECK_TYPES} from "../debug"
+import {reportTypeMismatch} from "../debug"
+
+export type AlgPartType = string;
 
 export abstract class AlgPart {
-  type: string;
+  abstract type: AlgPartType;
+}
+
+// type Constructor<T> = Function & { prototype: T }
+export function matchesAlgType<T extends AlgPart>(a: any, t: AlgPartType): boolean {
+  return a.type == t
+}
+
+export function assertMatchesType<T extends AlgPart>(a: any, t: AlgPartType): T {
+  if (!matchesAlgType(a, t)) {
+    reportTypeMismatch(`Expected "type": "${t}", saw "type": \"${a.type}\".`);
+  }
+  return a;
+}
+
+// Assumes that every `AlgPart` is a `Unit` or a `Sequence`.
+export function isUnit(a: AlgPart): boolean {
+  if (!("type" in a)) {
+    return false
+  }
+  return !matchesAlgType(a, "sequence");
+}
+
+export function assertIsUnit(a: AlgPart): Unit {
+  if (!("type" in a)) {
+    reportTypeMismatch(`Expected "unit", saw a value that was not an AlgPart.`);
+  }
+  if (matchesAlgType(a, "sequence")) {
+    reportTypeMismatch(`Expected unit, saw "sequence".`);
+  }
+  return a;
 }
 
 export abstract class Unit extends AlgPart {}
@@ -16,9 +48,7 @@ export class Sequence extends AlgPart {
   constructor(public nestedUnits: Unit[]) {
     super();
     for (const n of nestedUnits) {
-      if (CHECK_TYPES && !(n instanceof Unit)) {
-        throw "A Sequence can only contain `Unit`s."
-      }
+      assertIsUnit(n);
     }
     Object.freeze(this.nestedUnits);
     Object.freeze(this);
@@ -29,7 +59,6 @@ export interface WithAmount {
   // TODO: Allow `amount` to be `undefined`, to distinguish between R and R1?
   amount: number;
 }
-
 export class Group extends Container implements WithAmount {
   public type: string = "group";
   constructor(public nestedSequence: Sequence, public amount: number=1) {
@@ -37,7 +66,6 @@ export class Group extends Container implements WithAmount {
     Object.freeze(this);
   }
 }
-
 export class Commutator extends Container implements WithAmount {
   public type: string = "commutator";
   constructor(public A: Sequence, public B: Sequence, public amount: number=1) {
@@ -45,7 +73,6 @@ export class Commutator extends Container implements WithAmount {
     Object.freeze(this);
   }
 }
-
 export class Conjugate extends Container implements WithAmount {
   public type: string = "conjugate";
   constructor(public A: Sequence, public B: Sequence, public amount: number=1) {
@@ -53,7 +80,6 @@ export class Conjugate extends Container implements WithAmount {
     Object.freeze(this);
   }
 }
-
 export class Pause extends Move {
   public type: string = "pause";
   constructor() {
@@ -61,7 +87,6 @@ export class Pause extends Move {
     Object.freeze(this);
   }
 }
-
 export class NewLine extends Annotation {
   public type: string = "newLine";
   constructor() {
@@ -78,7 +103,6 @@ export class CommentShort extends Annotation {
     Object.freeze(this);
   }
 }
-
 export class CommentLong extends Annotation {
   public type: string = "commentLong";
   constructor(public comment: string) {
