@@ -1,4 +1,4 @@
-import {assertMatchesType, isUnit, assertIsUnit} from "./algorithm/alg-part"
+import {matchesAlgType, assertMatchesType, isUnit, assertIsUnit} from "./algorithm/alg-part"
 
 import {
   AlgPart,
@@ -118,9 +118,9 @@ export class Expand extends TraversalUp<AlgPart> {
   private flattenSequenceOneLevel(algList: AlgPart[]): Unit[] {
     var flattened: Unit[] = [];
     for (const part of algList) {
-      if (part instanceof Sequence) {
-        flattened = flattened.concat(part.nestedUnits);
-      } else if (part instanceof Unit) {
+      if (matchesAlgType(part, "sequence")) {
+        flattened = flattened.concat((part as Sequence).nestedUnits);
+      } else if (isUnit(part)) {
         flattened.push(part)
       } else {
         throw "expand() encountered an internal error. Did you pass in a valid Algorithm?"
@@ -206,37 +206,37 @@ export class StructureEquals extends TraversalDownUp<AlgPart, boolean> {
     return true;
   }
   public traverseGroup(group: Group, dataDown: AlgPart): boolean {
-    return (dataDown instanceof Group) && this.traverse(group.nestedSequence, dataDown.nestedSequence);
+    return (matchesAlgType(dataDown, "group")) && this.traverse(group.nestedSequence, (dataDown as Group).nestedSequence);
   }
   public traverseBlockMove(blockMove: BlockMove, dataDown: AlgPart): boolean {
     // TODO: Handle layers.
-    return dataDown instanceof BlockMove &&
-           blockMove.outerLayer === dataDown.outerLayer &&
-           blockMove.innerLayer === dataDown.innerLayer &&
-           blockMove.family === dataDown.family &&
-           blockMove.amount === dataDown.amount;
+    return matchesAlgType(dataDown, "blockMove") &&
+           blockMove.outerLayer === (dataDown as BlockMove).outerLayer &&
+           blockMove.innerLayer === (dataDown as BlockMove).innerLayer &&
+           blockMove.family === (dataDown as BlockMove).family &&
+           blockMove.amount === (dataDown as BlockMove).amount;
   }
   public traverseCommutator(commutator: Commutator, dataDown: AlgPart): boolean {
-    return (dataDown instanceof Commutator) &&
-           this.traverse(commutator.A, dataDown.A) &&
-           this.traverse(commutator.B, dataDown.B);
+    return matchesAlgType(dataDown, "commutator") &&
+           this.traverse(commutator.A, (dataDown as Commutator).A) &&
+           this.traverse(commutator.B, (dataDown as Commutator).B);
   }
   public traverseConjugate(conjugate: Conjugate, dataDown: AlgPart): boolean {
-    return (dataDown instanceof Conjugate) &&
-           this.traverse(conjugate.A, dataDown.A) &&
-           this.traverse(conjugate.B, dataDown.B);
+    return matchesAlgType(dataDown, "conjugate") &&
+           this.traverse(conjugate.A, (dataDown as Conjugate).A) &&
+           this.traverse(conjugate.B, (dataDown as Conjugate).B);
   }
   public traversePause(pause: Pause, dataDown: AlgPart): boolean {
-    return dataDown instanceof Pause;
+    return matchesAlgType(dataDown, "pause");
   }
   public traverseNewLine(newLine: NewLine, dataDown: AlgPart): boolean {
-    return dataDown instanceof NewLine;
+    return matchesAlgType(dataDown, "newLine");
   }
   public traverseCommentShort(commentShort: CommentShort, dataDown: AlgPart): boolean {
-    return (dataDown instanceof CommentShort) && (commentShort.comment == dataDown.comment);
+    return matchesAlgType(dataDown, "commentShort") && (commentShort.comment == (dataDown as CommentShort).comment);
   }
   public traverseCommentLong(commentLong: CommentLong, dataDown: AlgPart): boolean {
-    return (dataDown instanceof CommentLong) && (commentLong.comment == dataDown.comment);
+    return matchesAlgType(dataDown, "commentLong") && (commentLong.comment == (dataDown as CommentLong).comment);
   }
 }
 
@@ -253,21 +253,21 @@ export class CoalesceBaseMoves extends TraversalUp<AlgPart> {
   public traverseSequence(sequence: Sequence): Sequence {
     var coalesced: Unit[] = [];
     for (const part of sequence.nestedUnits) {
-      if (!(part instanceof BlockMove)) {
+      if (!matchesAlgType(part, "blockMove")) {
         coalesced.push(this.traverseIntoUnit(part));
       } else if (coalesced.length > 0) {
         var last = coalesced[coalesced.length-1];
-        if (last instanceof BlockMove &&
-            this.sameBlock(last, part)) {
+        if (matchesAlgType(last, "blockMove") &&
+            this.sameBlock((last as BlockMove), (part as BlockMove))) {
           // TODO: This is cube-specific. Perhaps pass the modules as DataDown?
-          var amount = last.amount + part.amount;
+          var amount = (last as BlockMove).amount + (part as BlockMove).amount;
           coalesced.pop();
           if (amount !== 0) {
             // We could modify the last element instead of creating a new one,
             // but this is safe against shifting coding practices.
             // TODO: Figure out if the shoot-in-the-foot risk
             // modification is worth the speed.
-            coalesced.push(new BlockMove(part.outerLayer, part.innerLayer, part.family, amount));
+            coalesced.push(new BlockMove((part as BlockMove).outerLayer, (part as BlockMove).innerLayer, (part as BlockMove).family, amount));
           }
         } else {
           coalesced.push(part);
@@ -289,12 +289,12 @@ export class CoalesceBaseMoves extends TraversalUp<AlgPart> {
 }
 
 // export class Concat extends TraversalDownUp<Algorithm, Sequence> {
-//   private concatIntoSequence(A: Algorithm[], B: Algorithm): Sequence {
-//     var nestedAlgs: Algorithm[] = A.slice();
-//     if (B instanceof Sequence) {
-//       nestedAlgs = nestedAlgs.concat(B.nestedUnits)
+//   private concatIntoSequence(A: Unit[], B: Algorithm): Sequence {
+//     var nestedAlgs: Unit[] = A.slice();
+//     if (matchesAlgType(B, "sequence")) {
+//       nestedAlgs = nestedAlgs.concat((B as unknown as Sequence).nestedUnits)
 //     } else {
-//       nestedAlgs.push(B);
+//       nestedAlgs.push(B as unknown as Unit);
 //     }
 //     return new Sequence(nestedAlgs)
 //   }
@@ -323,7 +323,7 @@ export class ToString extends TraversalUp<string> {
   }
 
   private spaceBetween(u1: Unit, u2: Unit): string {
-    if (u1 instanceof Pause && u2 instanceof Pause) {
+    if (matchesAlgType(u1, "pause") && matchesAlgType(u2, "pause")) {
       return ""
     }
     return " "

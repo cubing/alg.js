@@ -31,6 +31,7 @@ import {
 import {
   setAlgPartTypeMismatchReportingLevel
 } from "../src/debug"
+import { matchesAlgType } from "../src/algorithm/alg-part";
 
 setAlgPartTypeMismatchReportingLevel("error");
 
@@ -307,7 +308,7 @@ describe("Parser", () => {
   it("should round-trip all alg types through a string", () => {
     // Update this based on the length of AllAlgParts.
     for (const a of Ex.AllAlgParts) {
-      var seq = (a instanceof Sequence) ? a : new Sequence([a]);
+      var seq = (matchesAlgType(a, "sequence")) ? (a as Sequence) : new Sequence([a]);
       e(parse(algToString(seq)), seq).toBe(true);
     }
   });
